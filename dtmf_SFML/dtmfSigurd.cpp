@@ -1,19 +1,19 @@
-#include "dtmf.h"
+#include "dtmfSigurd.h"
 #include <cmath>
 
-Dtmf::Dtmf(int mSec, int sampleRate, int amplitude)
+DtmfSigurd::DtmfSigurd(int mSec, int sampleRate, int amplitude)
 {
     _mSec = mSec;
     _sampleRate = sampleRate;
     _amplitude = amplitude;
 }
 
-int Dtmf::getStatus()
+int DtmfSigurd::getStatus()
 {
     return _sound.getStatus();
 }
 
-void Dtmf::playDualTone(int freq1, int freq2)
+void DtmfSigurd::playDualTone(int freq1, int freq2)
 {
     double increment = ((double)freq1/_sampleRate) * _TWO_PI;
     double increment2 = ((double)freq2/_sampleRate) * _TWO_PI;
@@ -33,7 +33,7 @@ void Dtmf::playDualTone(int freq1, int freq2)
     while(_sound.getStatus() == 2){}
 }
 
-void Dtmf::playDtmfTone(int tone1, int tone2)
+void DtmfSigurd::playDtmfTone(int tone1, int tone2)
 {
     playDualTone(_lowFreqs[tone1], _highFreqs[tone2]);
 }

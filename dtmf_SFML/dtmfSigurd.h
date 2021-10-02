@@ -1,11 +1,11 @@
-#ifndef DTMF_H
-#define DTMF_H
+#ifndef DTMFS_H
+#define DTMFS_H
 #include <SFML/Audio.hpp>
 #include <vector>
 using namespace std;
 using namespace sf;
 
-class Dtmf
+class DtmfSigurd
 {
 private:
     const int _lowFreqs[4] = {697, 770, 852, 941};
@@ -20,7 +20,7 @@ private:
     int _sampleRate;
 
 public:
-    Dtmf(int mSec, int sampleRate, int amplitude);
+    DtmfSigurd(int mSec, int sampleRate, int amplitude);
 
     int getStatus();
     void playDualTone(int freq1, int freq2);
@@ -31,4 +31,4 @@ public:
     void setDuration(int mSec);
 };
 
-#endif // DTMF_H
+#endif // DTMFS_H
