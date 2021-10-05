@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="dtmf_SFML"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\usr\;CMake Files\..\..\..\..\..\..\usr\lib\;CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\;CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\;CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\SFML\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="dtmf_SFML">
+				<Option output="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmf_SFML" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 dtmf_SFML"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="dtmf_SFML/fast">
+				<Option output="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmf_SFML" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 dtmf_SFML/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmf.cpp">
+			<Option target="dtmf_SFML"/>
+		</Unit>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmf.h">
+			<Option target="dtmf_SFML"/>
+		</Unit>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfSigurd.cpp">
+			<Option target="dtmf_SFML"/>
+		</Unit>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfSigurd.h">
+			<Option target="dtmf_SFML"/>
+		</Unit>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfdecoder.cpp">
+			<Option target="dtmf_SFML"/>
+		</Unit>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfdecoder.h">
+			<Option target="dtmf_SFML"/>
+		</Unit>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/main.cpp">
+			<Option target="dtmf_SFML"/>
+		</Unit>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/../../../../../../usr/lib/x86_64-linux-gnu/cmake/SFML/SFMLConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\SFML\"/>
+		</Unit>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/../../../../../../usr/lib/x86_64-linux-gnu/cmake/SFML/SFMLConfigDependencies.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\SFML\"/>
+		</Unit>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/../../../../../../usr/lib/x86_64-linux-gnu/cmake/SFML/SFMLConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\SFML\"/>
+		</Unit>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/../../../../../../usr/lib/x86_64-linux-gnu/cmake/SFML/SFMLSharedTargets-none.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\SFML\"/>
+		</Unit>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/../../../../../../usr/lib/x86_64-linux-gnu/cmake/SFML/SFMLSharedTargets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\SFML\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

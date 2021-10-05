@@ -1,4 +1,5 @@
 #include "dtmf.h"
+#include <fstream>
 
 DTMF::DTMF()
 {   
@@ -22,13 +23,21 @@ void DTMF::generate(int DTMFSound)
     cout << "LOW: " << _LowFrequency[DTMFSound/4] << " Hz" << endl;
     }
 
-
+//    ofstream myfile;
+//    myfile.open ("/home/peter/Desktop/LydBuffer.txt", std::ofstream::trunc);
+//    for (int i = 0; i < _dtmf[DTMFSound].size(); i++){
+//        myfile << to_string(_dtmf[DTMFSound].at(i)) << " ";
+//    }
+//    myfile.close();
 
     One.loadFromSamples(&_dtmf[DTMFSound][0],_dtmf[DTMFSound].size(),1, _samplerate);
 
     soundObj.setBuffer(One);
 
     soundObj.play();
+
+
+
 
 }
 
@@ -46,6 +55,7 @@ void DTMF::waitSound()
 
     }
 }
+
 
 void DTMF::setDebugMode(bool state)
 {
@@ -77,7 +87,7 @@ void DTMF::set_duration(int duration_ms)
 
             for(int i = 0; i < packetlength;  i++){
 
-                dtmfPart.push_back(10000*sin((_highFrequency[highf]*2*M_PI*i)/_samplerate) + 10000*sin(_LowFrequency[lowf]*2*M_PI*i/_samplerate));
+                dtmfPart.push_back(10000*sin((_highFrequency[highf]*2*M_PI*i)/_samplerate) + 10000*sin((_LowFrequency[lowf]*2*M_PI*i)/_samplerate));
                 //dtmfPart.push_back(10000*sin((_highFrequency[highf]*2*M_PI*i)/_samplerate));
             }
 
