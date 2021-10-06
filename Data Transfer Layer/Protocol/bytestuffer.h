@@ -1,26 +1,24 @@
 #include <vector>
 using namespace std;
 
-
+//converts boolean frames into integer frames with stuffing and vice versa
+//splits buffer into frames
 class bytestuffer{
 public:
-    bytestuffer(vector<bool>,vector<bool>);
+    bytestuffer(vector<bool>,vector<bool>); //creates stuffer with etc and flag
     ~bytestuffer();
 
-    vector<int> boolToInt(vector<bool>);
-    vector<bool> intToBool(vector<int>);
+    vector<int> boolToInt(vector<bool>); //converts a boolean vector into a "hexidecinal" int vector
+    vector<bool> intToBool(vector<int>); //converts an integer vector into a vector of booleans
 
-    vector<int> stuff(vector<bool>);
+    vector<int> stuff(vector<bool>); //stuffs boolean vector with etcs ahead of flags and etcs
     
-    vector<bool> unstuff(vector<int>);
-    //vector<int> splitbuffer(vector<int>&); //pass by ref til split af buffer
-
-
-
+    vector<bool> unstuff(vector<int>); //removes 1 etc and skips what is behind it(requires etc stuffing into other etcs)
+    vector<int> splitbuffer(vector<int>&); //creates a frame from the buffer(and deletes what is taken(still needs implementing))
 
 private:
-    vector<bool> _flag;
-    vector<bool> _etc;
-    int _etcI;
-    int _flagI;
+    vector<bool> _flag; //flag as bits
+    vector<bool> _etc; //etc as bits
+    int _etcI; //etc as integer
+    int _flagI; //flag as integer
 };

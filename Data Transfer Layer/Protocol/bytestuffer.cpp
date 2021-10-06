@@ -80,8 +80,36 @@ for(int i=0;i<in.size();i++){
     }
 }
 return intToBool(in);
+}
+
+vector<int> bytestuffer::splitbuffer(vector<int> &buf){
+vector<int> frame;
+vector<int> * bufptr = &buf; //:O
+int frameStart; //starting flag position
+for(int i =0;i<bufptr->size();i++){
+    if(bufptr->at(i)==_flagI){//if flag is found it might be a starting flag
+        if(i=0){ //if it is the buffer beginning, it is a flag
+            frameStart=0;
+        }
+        if(bufptr->at(i-1)!=_etcI){//if previous int is not etc, it a flag
+            frameStart=i;
+        } //if not we keep looking (if frame can naturally consist of etc->flag, this will break)
+    }
+}
+int frameStop;
+for(int i=frameStart+1;i<bufptr->size();i++){//Starts at +1 since we do not want the starting flag
+    if(bufptr->at(i)==_flagI&&bufptr->at(i-1)!=_etcI){//the next flag we find without an etc will be the stop
+            frameStop=i;
+        }
+    }
+for(int i=frameStart;i<frameStop;i++){
+    frame.push_back(bufptr->at(i)); //frame is created based on start and stop values
+}
+//note to self: this does not use etc->etc-> flag, to detect flags that are naturally next to natural etc's
+// we just assume that the part in the frame before the flag can never be the etc, since the CRC check will never be 0000
 
 }
+
 
 
 
