@@ -36,7 +36,7 @@ private:
 
     vector<vector<sf::Int16>> _dtmf;
 
-    int _samplerate = 100000;
+    int _samplerate = 30000;
 
     vector<int> _highFrequency = {1209,1336,1477,1633};
 
