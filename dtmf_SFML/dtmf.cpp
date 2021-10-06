@@ -1,5 +1,8 @@
 #include "dtmf.h"
 
+/**
+ * DTMF function
+ */
 DTMF::DTMF()
 {   
 
