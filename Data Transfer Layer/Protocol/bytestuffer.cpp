@@ -56,3 +56,36 @@ vector<bool> bytestuffer::intToBool(vector<int> in){
     return out;
 }    
 
+vector<int> bytestuffer::stuff(vector<bool> in){
+    vector<int> inInt=boolToInt(in);
+    for(int i=0;i<inInt.size();i++){
+        if(inInt.at(i)==_etcI){
+            inInt.insert(inInt.begin()+i,_etcI);
+            i++;//i is iterated, since i+1 is now the same as the old i, which would mean etc would be added
+        }
+    }
+    for(int i=0;i<inInt.size();i++){
+        if(inInt.at(i)==_flagI){
+            inInt.insert(inInt.begin()+i,_etcI);
+            i++;
+        }
+    }
+    return inInt;
+    }
+
+vector<bool> bytestuffer::unstuff(vector<int> in){
+for(int i=0;i<in.size();i++){
+    if(in.at(i)==_etcI){
+        in.erase(in.begin()+i);//erase decrements vector size, which means we skip the 2nd etc in a series
+    }
+}
+return intToBool(in);
+
+}
+
+
+
+
+
+
+
