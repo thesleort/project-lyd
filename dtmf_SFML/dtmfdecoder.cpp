@@ -1,7 +1,15 @@
 #include "dtmfdecoder.h"
+#include "dtmfSigurd.h"
 #include <complex>
 #include <SFML/Audio.hpp>
 #include <cmath>
+#include <iostream>
+#include <math.h>
+#include <fstream>
+
+#include <unistd.h>
+
+using namespace std;
 
 DtmfDecoder::DtmfDecoder(){
 
@@ -9,7 +17,11 @@ DtmfDecoder::DtmfDecoder(){
 
 int DtmfDecoder::doSample(int msDuration)
 {
-
+    vector<complex<double>> data = recordData(msDuration);
+    vector<complex<double>> dataFreq = fft(data);
+    vector<double> amps = modulus(dataFreq);
+    //dumpDataToFile(amps, "/media/sf_VirBox_Shared", "amps");
+    return splitHighestPeak(amps);
 }
 
 vector<complex<double>> DtmfDecoder::recordData(int msDuration)
@@ -25,9 +37,12 @@ vector<complex<double>> DtmfDecoder::recordData(int msDuration)
 
     const sf::Int16* samples = buffer.getSamples();
     const long count = buffer.getSampleCount();
-
     vector<complex<double>> data;
-    for (int i = 0; i < count; i++){
+
+    // samples bliver 2 opløftet til et tal (fft funktion virker ved at spiltte data i 2 rekursivt)
+    int pow2Count = pow(2, round(log2(count)));
+
+    for (int i = 0; i < pow2Count; i++){
         complex<double> number;
         number.real((double)samples[i]);
         data.push_back(number);
@@ -90,4 +105,52 @@ vector<double> DtmfDecoder::modulus(const vector<complex<double>>& data)
         ampVector.push_back(amp);
     }
     return ampVector;
+}
+
+int DtmfDecoder::splitHighestPeak(const vector<double> &data)
+{
+    //Decoding Low frequency
+    auto it = find(data.begin(), data.begin()+450, *max_element(data.begin(), data.begin()+450));
+
+    int index = it - data.begin();
+
+    vector<double> sampletesting;
+
+    for(int i = 0; i < 4; i++){
+        sampletesting.push_back(abs(_lowFreqs[i]-(index+_cutoffLow)));
+    }
+
+    auto lowF = find(sampletesting.begin(), sampletesting.end(), *min_element(sampletesting.begin(), sampletesting.end()));
+
+    int lowIndex = lowF - sampletesting.begin();
+
+
+    //Decoding high frequency
+    int frequencyShift = 500;
+
+    it = find(data.begin()+frequencyShift, data.end(), *max_element(data.begin()+frequencyShift, data.end()));
+
+    index = it - data.begin();
+
+    sampletesting.clear();
+
+    for(int i = 0; i < 4; i++){
+        sampletesting.push_back(abs(_highFreqs[i]-(index+_cutoffLow)));
+    }
+
+    auto HighF = find(sampletesting.begin(), sampletesting.end(), *min_element(sampletesting.begin(), sampletesting.end()));
+
+    int HighIndex = HighF - sampletesting.begin();
+
+    return lowIndex*4+HighIndex;
+}
+
+void DtmfDecoder::dumpDataToFile(vector<double>& data, string path, string fileName)
+{
+    ofstream myfile;
+    myfile.open (path + "/" + fileName + ".txt", std::ofstream::trunc);
+    for (int i = 0; i < data.size(); i++){
+        myfile << to_string(data.at(i)) << " ";
+    }
+    myfile.close();
 }

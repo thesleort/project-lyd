@@ -10,7 +10,7 @@ class DtmfSigurd
 private:
     const int _lowFreqs[4] = {697, 770, 852, 941};
     const int _highFreqs[4] = {1209, 1336, 1477, 1633};
-    const double _TWO_PI = 6.28318;
+    const double _2PI = 6.28318;
 
     Sound _sound;
     SoundBuffer _buffer;
@@ -24,7 +24,7 @@ public:
 
     int getStatus();
     void playDualTone(int freq1, int freq2);
-    void playDtmfTone(int tone1, int tone2);
+    void playDtmfTone(int tone);
 
     void setAmplitude(int amplitude);
     void setSampleRate(int sampleRate);
