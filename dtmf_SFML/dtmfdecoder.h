@@ -12,11 +12,14 @@ public:
     DtmfDecoder();
     vector<double> doSample(int msDuration);
 
+
 private:
-    const int _lowFreqs[4] = {697, 770, 852, 941};
-    const int _highFreqs[4] = {1209, 1336, 1477, 1633};
-    const int _cutoffLow = 600;
-    const int _cutoffHigh = 1800;
+    vector<double> _lowFreqs = {697, 770, 852, 941};
+    vector<double> _highFreqs = {1209, 1336, 1477, 1633};
+    int _cutoffLow = 600;
+    int _cutoffHigh = 1800;
+    int _FrequencyShift = 1100; //hop fra lav frekvenser til høje frekvenser, kun til testning.
+    int _msDuration;
 
     // records amplitudes of sound for given duration, returns amplitudes as real part of complex number (complex are just zero)
     vector<complex<double>> recordData(int msDuration);
