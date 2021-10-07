@@ -15,13 +15,17 @@ DtmfDecoder::DtmfDecoder(){
 
 }
 
-int DtmfDecoder::doSample(int msDuration)
+vector<double> DtmfDecoder::doSample(int msDuration)
 {
     vector<complex<double>> data = recordData(msDuration);
     vector<complex<double>> dataFreq = fft(data);
     vector<double> amps = modulus(dataFreq);
     //dumpDataToFile(amps, "/media/sf_VirBox_Shared", "amps");
     return splitHighestPeak(amps);
+
+
+
+
 }
 
 vector<complex<double>> DtmfDecoder::recordData(int msDuration)
@@ -107,8 +111,14 @@ vector<double> DtmfDecoder::modulus(const vector<complex<double>>& data)
     return ampVector;
 }
 
-int DtmfDecoder::splitHighestPeak(const vector<double> &data)
+vector<double> DtmfDecoder::splitHighestPeak(const vector<double> &data)
 {
+
+    double DistanceLow;
+    double DistanceHigh;
+
+    //Cut off 600 Hz, CutOff high 1800 Derfor er 450
+
     //Decoding Low frequency
     auto it = find(data.begin(), data.begin()+450, *max_element(data.begin(), data.begin()+450));
 
@@ -124,9 +134,11 @@ int DtmfDecoder::splitHighestPeak(const vector<double> &data)
 
     int lowIndex = lowF - sampletesting.begin();
 
+     DistanceLow = *min_element(sampletesting.begin(), sampletesting.end());
+
 
     //Decoding high frequency
-    int frequencyShift = 500;
+    int frequencyShift = 500; // Ændre frequency shift, således at de høje og de laver toner ikke overlapper
 
     it = find(data.begin()+frequencyShift, data.end(), *max_element(data.begin()+frequencyShift, data.end()));
 
@@ -142,7 +154,16 @@ int DtmfDecoder::splitHighestPeak(const vector<double> &data)
 
     int HighIndex = HighF - sampletesting.begin();
 
-    return lowIndex*4+HighIndex;
+    DistanceHigh = *min_element(sampletesting.begin(), sampletesting.end());
+
+    vector<double> Distances;
+
+    Distances.push_back(DistanceLow);
+    Distances.push_back(DistanceHigh);
+    Distances.push_back(lowIndex);
+    Distances.push_back(HighIndex);
+
+    return Distances;
 }
 
 void DtmfDecoder::dumpDataToFile(vector<double>& data, string path, string fileName)

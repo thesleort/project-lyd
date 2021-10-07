@@ -25,7 +25,7 @@
 #target_link_libraries(dtmf_SFML sfml-graphics sfml-audio)
 
 cmake_minimum_required(VERSION 2.8)
-Set(CMAKE_CXX_STANDARD 11)
+Set(CMAKE_CXX_STANDARD 14)
 project(dtmf_SFML)
 add_executable(
     dtmf_SFML

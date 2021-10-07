@@ -2,6 +2,7 @@
 #include <SFML/Audio.hpp>
 #include <cmath>
 #include "dtmfSigurd.h"
+#include "dtmfdecoder.h"
 #include <vector>
 #include <complex>
 #include <string>
@@ -57,8 +58,54 @@ vector<cd> fft(vector<cd>& a)
     return y;
 }
 
-int main()
-{
+
+
+int decodeDTMF(vector<double> ampVector){
+    //Decoding af frekvens spektrum
+
+    vector<int>  _highFreqs = {1209,1336,1477,1633};
+
+    vector<int>  _lowFreqs = {697,770,852,941};
+
+    //Decoding Low frequency
+   auto it = find(ampVector.begin(), ampVector.begin()+450, *max_element(ampVector.begin(), ampVector.begin()+450));
+
+   int index = it - ampVector.begin();
+
+   vector<double> sampletesting;
+
+   for(int i = 0; i < _lowFreqs.size(); i++){
+       sampletesting.push_back(abs(_lowFreqs[i]-(index+600)));
+   }
+
+   auto lowF = find(sampletesting.begin(), sampletesting.end(), *min_element(sampletesting.begin(), sampletesting.end()));
+
+   int lowIndex = lowF - sampletesting.begin();
+
+
+   //Decoding high frequency
+   int frequencyShift = 500;
+
+   it = find(ampVector.begin()+frequencyShift, ampVector.end(), *max_element(ampVector.begin()+frequencyShift, ampVector.end()));
+
+   index = it - ampVector.begin();
+
+   sampletesting.clear();
+
+   for(int i = 0; i < _highFreqs.size(); i++){
+       sampletesting.push_back(abs(_highFreqs[i]-(index+600)));
+   }
+
+   auto HighF = find(sampletesting.begin(), sampletesting.end(), *min_element(sampletesting.begin(), sampletesting.end()));
+
+   int HighIndex = HighF - sampletesting.begin();
+
+    return lowIndex*4+HighIndex;
+
+}
+
+
+vector<double> RecordSound(){
 
     // first check if an input audio device is available on the system
     if (!sf::SoundBufferRecorder::isAvailable())
@@ -66,26 +113,28 @@ int main()
         cout << "no recording device" << endl;
     }
 
-    // create the recorder
     sf::SoundBufferRecorder recorder;
+
 
     DTMF peterLyde(3000);
 
-    // start the capture
-    peterLyde.generate(15);
+    int sound_number = 2;
+
+    peterLyde.generate(sound_number);
+    cout << "Generating sound number: " << sound_number << endl;
+
+
     cout << "Wait sound start" << endl;
-    sleep(2); //Sleep 2 således at den kan recorde i lang nok tid
+
+    sleep(2);
+
     cout << "sound finished" << endl;
     recorder.start();
     peterLyde.waitSound();
+    //usleep(500000);
 
-//    DtmfSigurd generator(1000, 44100, 0);
-//    generator.playDualTone(697, 1609);
-
-    // stop the capture
     recorder.stop();
 
-    // retrieve the buffer that contains the captured audio data
     const sf::SoundBuffer& buffer = recorder.getBuffer();
 
     const Int16* samples = buffer.getSamples();
@@ -100,6 +149,8 @@ int main()
         data.push_back(number);
     }
 
+    //ÆNDRET. Rigtige værdier er min: 600
+                               //max: 1800
     int cutoffLow = 600;
     int cutoffHigh = 1800;
 
@@ -113,12 +164,136 @@ int main()
         ampVector.push_back(amp);
     }
 
+
+
+
+
     ofstream myfile2;
     myfile2.open ("/home/peter/Desktop/ProjektLyd.txt", std::ofstream::trunc);
     for (int i = 0; i < ampVector.size(); i++){
         myfile2 << to_string(ampVector.at(i)) << " ";
     }
     myfile2.close();
+
+    return ampVector;
+}
+
+
+
+int main()
+{
+    DtmfSigurd generator(3000, 44100, 10000);
+    DtmfDecoder DecodeObj;
+
+    const int _lowFreqs[4] = {697, 770, 852, 941};
+    const int _highFreqs[4] = {1209, 1336, 1477, 1633};
+
+
+
+for(int tone = 0; tone < 16; tone++){
+    for(int ms = 1000; ms > 200; ms -= 50){
+
+        int DistanceLowFrequency = 0;
+        int DistanceHighFrequency = 0;
+
+        vector<double> data;
+
+        for(int i = 0; i < 10; i++){
+
+            generator.playDtmfTone(tone);
+
+            data = DecodeObj.doSample(ms);
+
+            DistanceLowFrequency += data[0];
+            DistanceHighFrequency += data[1];
+        }
+
+        DistanceLowFrequency = DistanceLowFrequency/10;
+        DistanceHighFrequency = DistanceHighFrequency/10;
+        cout << DistanceLowFrequency << data[3] << tone/4 << endl;
+        cout << DistanceHighFrequency << data[4] << tone%4 << endl;
+
+    }
+
+
+}
+
+
+    while(generator.getStatus() == sf::Sound::Status::Playing){
+
+    }
+
+
+
+
+
+
+
+
+//    // first check if an input audio device is available on the system
+//    if (!sf::SoundBufferRecorder::isAvailable())
+//    {
+//        cout << "no recording device" << endl;
+//    }
+
+//    // create the recorder
+//    sf::SoundBufferRecorder recorder;
+
+//    DTMF peterLyde(3000);
+
+    // start the capture
+//    int sound_number = 2;
+
+//    peterLyde.generate(sound_number);
+//    cout << "Generating sound number: " << sound_number << endl;
+//    cout << "Wait sound start" << endl;
+//    sleep(2); //Sleep 2 således at den kan recorde i lang nok tid
+//    cout << "sound finished" << endl;
+//    recorder.start();
+//    peterLyde.waitSound();
+
+////    DtmfSigurd generator(1000, 44100, 10000);
+////    generator.playDualTone(697, 1609);
+
+//    // stop the capture
+//    recorder.stop();
+
+    // retrieve the buffer that contains the captured audio data
+//    const sf::SoundBuffer& buffer = recorder.getBuffer();
+
+//    const Int16* samples = buffer.getSamples();
+//    const long count = buffer.getSampleCount();
+
+//    cout << log2(count) << endl;
+
+//    vector<cd> data;
+//    for (int i = 0; i < count; i++){
+//        cd number;
+//        number.real((double)samples[i]);
+//        data.push_back(number);
+//    }
+
+//    int cutoffLow = 600;
+//    int cutoffHigh = 1800;
+
+//    vector<cd> dataT = fft(data);
+//    vector<double> ampVector;
+
+//    for (int i = cutoffLow; i < cutoffHigh; i++){
+//        double real = dataT.at(i).real();
+//        double imag = dataT.at(i).imag();
+//        double amp = sqrt(real*real + imag*imag);
+//        ampVector.push_back(amp);
+//    }
+
+
+
+//    ofstream myfile2;
+//    myfile2.open ("/home/peter/Desktop/ProjektLyd.txt", std::ofstream::trunc);
+//    for (int i = 0; i < ampVector.size(); i++){
+//        myfile2 << to_string(ampVector.at(i)) << " ";
+//    }
+//    myfile2.close();
 
 
     // Need some way to indentify peaks.

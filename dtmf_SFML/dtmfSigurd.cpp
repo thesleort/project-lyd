@@ -32,7 +32,7 @@ void DtmfSigurd::playDualTone(int freq1, int freq2)
     _buffer.loadFromSamples(samples, nSamples, 1, _sampleRate);
     _sound.setBuffer(_buffer);
     _sound.play();
-    while(_sound.getStatus() == 2){}
+    //while(_sound.getStatus() == 2){} Kommenteret ud for at teste dtmf præcision
 }
 
 void DtmfSigurd::playDtmfTone(int tone)

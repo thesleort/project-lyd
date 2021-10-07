@@ -10,7 +10,7 @@ class DtmfDecoder
 {
 public:
     DtmfDecoder();
-    int doSample(int msDuration);
+    vector<double> doSample(int msDuration);
 
 private:
     const int _lowFreqs[4] = {697, 770, 852, 941};
@@ -21,6 +21,7 @@ private:
     // records amplitudes of sound for given duration, returns amplitudes as real part of complex number (complex are just zero)
     vector<complex<double>> recordData(int msDuration);
 
+
     // witchcraft
     vector<complex<double>> fft(vector<complex<double>>& data);
 
@@ -28,7 +29,7 @@ private:
     vector<double> modulus(const vector<complex<double>>& data);
 
     // Finds dtmf tone given list of amplitudes
-    int splitHighestPeak(const vector<double>& data);
+    vector<double>  splitHighestPeak(const vector<double>& data);
 
     // dumps a vector<double> to a textfile for debugging
     void dumpDataToFile(vector<double>& data, string path, string fileName);
