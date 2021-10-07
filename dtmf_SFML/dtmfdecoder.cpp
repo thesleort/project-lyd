@@ -20,7 +20,7 @@ int DtmfDecoder::doSample(int msDuration)
     vector<complex<double>> data = recordData(msDuration);
     vector<complex<double>> dataFreq = fft(data);
     vector<double> amps = modulus(dataFreq);
-    //dumpDataToFile(amps, "/media/sf_VirBox_Shared", "amps");
+    dumpDataToFile(amps, "/media/sf_VirBox_Shared", "amps");
     return splitHighestPeak(amps);
 }
 
@@ -39,10 +39,7 @@ vector<complex<double>> DtmfDecoder::recordData(int msDuration)
     const long count = buffer.getSampleCount();
     vector<complex<double>> data;
 
-    // samples bliver 2 opløftet til et tal (fft funktion virker ved at spiltte data i 2 rekursivt)
-    int pow2Count = pow(2, round(log2(count)));
-
-    for (int i = 0; i < pow2Count; i++){
+    for (int i = 0; i < count; i++){
         complex<double> number;
         number.real((double)samples[i]);
         data.push_back(number);
@@ -109,7 +106,12 @@ vector<double> DtmfDecoder::modulus(const vector<complex<double>>& data)
 
 int DtmfDecoder::splitHighestPeak(const vector<double> &data)
 {
-    //Decoding Low frequency
+    // En anden måde at splitte en vektor i 2, syntes syntax her er mere clean
+    // std::vector<int> v = { 1, 2, 3, 4, 5 };
+    //
+    // std::vector<int> left(v.begin(), v.begin() + v.size() / 2);
+    // std::vector<int> right(v.begin() + v.size() / 2, v.end());
+
     auto it = find(data.begin(), data.begin()+450, *max_element(data.begin(), data.begin()+450));
 
     int index = it - data.begin();
@@ -123,7 +125,6 @@ int DtmfDecoder::splitHighestPeak(const vector<double> &data)
     auto lowF = find(sampletesting.begin(), sampletesting.end(), *min_element(sampletesting.begin(), sampletesting.end()));
 
     int lowIndex = lowF - sampletesting.begin();
-
 
     //Decoding high frequency
     int frequencyShift = 500;
@@ -149,7 +150,7 @@ void DtmfDecoder::dumpDataToFile(vector<double>& data, string path, string fileN
 {
     ofstream myfile;
     myfile.open (path + "/" + fileName + ".txt", std::ofstream::trunc);
-    for (int i = 0; i < data.size(); i++){
+    for (unsigned long i = 0; i < data.size(); i++){
         myfile << to_string(data.at(i)) << " ";
     }
     myfile.close();
