@@ -159,6 +159,7 @@ vector<double> DtmfDecoder::splitHighestPeak(const vector<double> &data)
     index = (it - data.begin()+_cutoffLow)*1000/_msDuration;
 
     cout << "high frequency: " << index << endl;
+    cout << "___________________________________________" << endl;
 
     sampletesting.clear();
 

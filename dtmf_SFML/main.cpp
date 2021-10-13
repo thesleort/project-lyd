@@ -206,7 +206,7 @@ for(int tone = 0; tone < 16; tone++){
 
         vector<double> data;
 
-        for(int i = 0; i < 5; i++){
+        for(int i = 0; i < 20; i++){
             while(generator.getStatus() == sf::Sound::Status::Playing){
 
             }
@@ -220,8 +220,8 @@ for(int tone = 0; tone < 16; tone++){
 
         }
 
-        DistanceLowFrequency = DistanceLowFrequency/5;
-        DistanceHighFrequency = DistanceHighFrequency/5;
+        DistanceLowFrequency = DistanceLowFrequency/20;
+        DistanceHighFrequency = DistanceHighFrequency/20;
         cout << "ms duration: " << ms << endl;
         cout << "sound: " << data.at(2) << " Control: " << tone << endl;
         cout << "distance from low theoretical: " << DistanceLowFrequency  << endl;
