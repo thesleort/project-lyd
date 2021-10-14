@@ -210,7 +210,7 @@ for(int tone = 0; tone < 16; tone++){
             while(generator.getStatus() == sf::Sound::Status::Playing){
 
             }
-            generator.playDtmfTone(tone);
+            generator.playDualTone(2019, 3627);
             sleep(1);
 
             data = DecodeObj.doSample(ms);

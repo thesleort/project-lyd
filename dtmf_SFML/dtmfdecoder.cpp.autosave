@@ -151,7 +151,7 @@ vector<double> DtmfDecoder::splitHighestPeak(const vector<double> &data)
     vector<double> sampletesting;
 
     for(int i = 0; i < 4; i++){
-        sampletesting.push_back(abs(_lowFreqs[i]-(index)));
+        sampletesting.push_back(abs(_lowFreqs[i]-(index)));                       
     }
 
     cout << "low frequency: " << index << endl;
