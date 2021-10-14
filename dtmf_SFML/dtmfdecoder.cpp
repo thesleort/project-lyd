@@ -6,45 +6,26 @@
 #include <iostream>
 #include <math.h>
 #include <fstream>
+#include <cassert>
 
 #include <unistd.h>
 
 using namespace std;
 
-DtmfDecoder::DtmfDecoder(){
+DtmfDecoder::DtmfDecoder(double sampleTime) : sampleTime(sampleTime){
 
 }
 
-int DtmfDecoder::doSample(int msDuration)
+vector<complex<double> > DtmfDecoder::realToComplexVector(Int16* reals, int count)
 {
-    vector<complex<double>> data = recordData(msDuration);
-    vector<complex<double>> dataFreq = fft(data);
-    vector<double> amps = modulus(dataFreq);
-    dumpDataToFile(amps, "/media/sf_VirBox_Shared", "amps");
-    return splitHighestPeak(amps);
-}
-
-vector<complex<double>> DtmfDecoder::recordData(int msDuration)
-{
-    sf::Clock clock;
-    _recorder.start();
-
-    while(clock.getElapsedTime().asMilliseconds() < msDuration){}
-
-    _recorder.stop();
-
-    const sf::SoundBuffer& buffer = _recorder.getBuffer();
-
-    const sf::Int16* samples = buffer.getSamples();
-    const long count = buffer.getSampleCount();
-    vector<complex<double>> data;
+    vector<complex<double>> complexes;
 
     for (int i = 0; i < count; i++){
         complex<double> number;
-        number.real((double)samples[i]);
-        data.push_back(number);
+        number.real((double)reals[i]);
+        complexes.push_back(number);
     }
-    return data;
+    return complexes;
 }
 
 vector<complex<double>> DtmfDecoder::fft(vector<complex<double> > &a)
@@ -91,17 +72,76 @@ vector<complex<double>> DtmfDecoder::fft(vector<complex<double> > &a)
     return y;
 }
 
-vector<double> DtmfDecoder::modulus(const vector<complex<double>>& data)
+vector<double> DtmfDecoder::complexToAmplitude(vector<complex<double> > &sequence)
 {
-    vector<double> ampVector;
-
-    for (int i = _cutoffLow; i < _cutoffHigh; i++){
-        double real = data.at(i).real();
-        double imag = data.at(i).imag();
-        double amp = sqrt(real*real + imag*imag);
-        ampVector.push_back(amp);
+    vector<double> amps;
+    for (int i = frequencyToSequence(_cutoffLow); i < frequencyToSequence(_cutoffHigh); i++){
+        double real = sequence.at(i).real();
+        double imag = sequence.at(i).imag();
+        double amp = sqrt(real*real + imag*imag); // possible optimization by not taking square root
+        amps.push_back(amp);
     }
-    return ampVector;
+    return amps;
+}
+
+double DtmfDecoder::error(double val, double ref){
+    return (val-ref)/ref;
+}
+
+int DtmfDecoder::intervalMax(const vector<double>& amps, int begin, int end){
+    int largestIndex;
+    double largestAmp;
+    for(int i = begin; i < end; i++){
+        if(amps.at(i) > largestAmp){
+            largestAmp = amps.at(i);
+            largestIndex = i;
+        }
+    }
+    return largestIndex;
+}
+
+int DtmfDecoder::splitHighestPeaks(const vector<double>& amps){
+
+    double middleFreq = (_lowFreqs[3] + _highFreqs[0]) / 2;
+    int middleIndex = frequencyToSequence(middleFreq) - frequencyToSequence(_cutoffLow);
+
+    int lowMaxIndex = intervalMax(amps, 0, middleIndex);
+    int highMaxIndex = intervalMax(amps, middleIndex, amps.size());
+
+    vector<double> lowfreq
+
+    auto it = find(data.begin(), data.begin()+450, *max_element(data.begin(), data.begin()+450));
+
+    int index = it - data.begin();
+
+    vector<double> sampletesting;
+
+    for(int i = 0; i < 4; i++){
+        sampletesting.push_back(abs(_lowFreqs[i]-(index+_cutoffLow)));
+    }
+
+    auto lowF = find(sampletesting.begin(), sampletesting.end(), *min_element(sampletesting.begin(), sampletesting.end()));
+
+    int lowIndex = lowF - sampletesting.begin();
+
+    //Decoding high frequency
+    int frequencyShift = 500;
+
+    it = find(data.begin()+frequencyShift, data.end(), *max_element(data.begin()+frequencyShift, data.end()));
+
+    index = it - data.begin();
+
+    sampletesting.clear();
+
+    for(int i = 0; i < 4; i++){
+        sampletesting.push_back(abs(_highFreqs[i]-(index+_cutoffLow)));
+    }
+
+    auto HighF = find(sampletesting.begin(), sampletesting.end(), *min_element(sampletesting.begin(), sampletesting.end()));
+
+    int HighIndex = HighF - sampletesting.begin();
+
+    return lowIndex*4+HighIndex;
 }
 
 int DtmfDecoder::splitHighestPeak(const vector<double> &data)

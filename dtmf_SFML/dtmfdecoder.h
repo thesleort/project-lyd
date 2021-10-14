@@ -9,31 +9,36 @@ using namespace std;
 class DtmfDecoder
 {
 public:
-    DtmfDecoder();
-    int doSample(int msDuration);
+    DtmfDecoder(double sampleTime);
+    int indentifyDTMF(sf::Int16* data, int count);
 
 private:
     const int _lowFreqs[4] = {697, 770, 852, 941};
     const int _highFreqs[4] = {1209, 1336, 1477, 1633};
     const int _cutoffLow = 600;
     const int _cutoffHigh = 1800;
+    const double sampleTime;
 
-    // records amplitudes of sound for given duration, returns amplitudes as real part of complex number (complex are just zero)
-    vector<complex<double>> recordData(int msDuration);
+    double sequenceToFreqency(int sequence){return sequence / sampleTime; };
+    int frequencyToSequence(double frequency){return frequency * sampleTime; };
 
-    // witchcraft
+    vector<complex<double>> realToComplexVector(sf::Int16* reals, int count);
+
     vector<complex<double>> fft(vector<complex<double>>& data);
 
-    // Return a list of amplitudes given a list of complex numbers
-    vector<double> modulus(const vector<complex<double>>& data);
+    vector<double> complexToAmplitude(vector<complex<double>>& complexes);
 
-    // Finds dtmf tone given list of amplitudes
-    int splitHighestPeak(const vector<double>& data);
+    double error(double val, double ref);
+
+    int intervalMax(const vector<double>& amps, int begin, int end);
+
+    int splitHighestPeaks(const vector<double>& amps);
 
     // dumps a vector<double> to a textfile for debugging
     void dumpDataToFile(vector<double>& data, string path, string fileName);
 
-    sf::SoundBufferRecorder _recorder;
+    //OLD
+    int splitHighestPeak(const vector<double> &data);
 };
 
 #endif // DTMFDECODER_H
