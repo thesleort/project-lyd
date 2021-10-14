@@ -13,32 +13,34 @@ public:
     int indentifyDTMF(sf::Int16* data, int count);
 
 private:
+    struct signal {
+        signal(double amplitude, double frequency) : amplitude(amplitude), frequency(frequency){}
+        double amplitude;
+        double frequency;
+    };
     const int _lowFreqs[4] = {697, 770, 852, 941};
     const int _highFreqs[4] = {1209, 1336, 1477, 1633};
     const int _cutoffLow = 600;
     const int _cutoffHigh = 1800;
-    const double sampleTime;
+    const int sampleTime;
 
-    double sequenceToFreqency(int sequence){return sequence / sampleTime; };
-    int frequencyToSequence(double frequency){return frequency * sampleTime; };
+    int frequenceToSequence(double freq){return freq * sampleTime; };
+    double sequenceToFrequence(int seq){return seq / sampleTime; };
 
     vector<complex<double>> realToComplexVector(sf::Int16* reals, int count);
 
     vector<complex<double>> fft(vector<complex<double>>& data);
 
-    vector<double> complexToAmplitude(vector<complex<double>>& complexes);
+    vector<signal> sequenceToSignals(vector<complex<double>>& sequence);
 
     double error(double val, double ref);
 
-    int intervalMax(const vector<double>& amps, int begin, int end);
+    double intervalMaxAmp(vector<signal>& signals);
 
-    int splitHighestPeaks(const vector<double>& amps);
+    int signalsToDtmf(const vector<double>& signals);
 
     // dumps a vector<double> to a textfile for debugging
     void dumpDataToFile(vector<double>& data, string path, string fileName);
-
-    //OLD
-    int splitHighestPeak(const vector<double> &data);
 };
 
 #endif // DTMFDECODER_H
