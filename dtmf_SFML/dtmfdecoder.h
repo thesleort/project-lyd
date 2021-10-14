@@ -18,8 +18,8 @@ private:
         double amplitude;
         double frequency;
     };
-    const int _lowFreqs[4] = {697, 770, 852, 941};
-    const int _highFreqs[4] = {1209, 1336, 1477, 1633};
+    vector<int> _lowFreqs = {697, 770, 852, 941};
+    vector<int> _highFreqs = {1209, 1336, 1477, 1633};
     const int _cutoffLow = 600;
     const int _cutoffHigh = 1800;
     const int sampleTime;
@@ -37,7 +37,8 @@ private:
 
     double intervalMaxAmp(vector<signal>& signals);
 
-    int signalsToDtmf(const vector<double>& signals);
+    int signalsToDtmf(const vector<signal>& signals);
+    int frequencyToDtmf(double lowfreq, double highfreq, int error);
 
     // dumps a vector<double> to a textfile for debugging
     void dumpDataToFile(vector<double>& data, string path, string fileName);

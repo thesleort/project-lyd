@@ -88,58 +88,122 @@ double DtmfDecoder::error(double val, double ref){
     return (val - ref) / ref;
 }
 
-int signalsToDtmf(const vector<double>& signals){
+int DtmfDecoder::signalsToDtmf(const vector<signal> & signaldata){
+
+    double middleFreq = (_lowFreqs.at(_lowFreqs.size()-1)+_highFreqs.at(0))/2;
+
+    double highestAmp = 0;
+    double highestFreq;
+    vector<double> peakFreqs;
+    vector<int> dtmf_Tone;
+
+    bool searchLowFreq = true;
+
+    for(signal i : signaldata){
+        if(i.frequency-middleFreq > 0 && searchLowFreq){
+            searchLowFreq = false;
+
+            peakFreqs.push_back(highestFreq);
+
+            highestAmp = 0;
+        }
+
+        if(i.amplitude > highestAmp){
+            highestAmp = i.amplitude;
+            highestFreq = i.frequency;
+        }
+    }
+    peakFreqs.push_back(highestFreq);
+
+    return frequencyToDtmf(peakFreqs.at(0), peakFreqs.at(1), 0.01);
 
 }
 
-int DtmfDecoder::splitHighestPeak(const vector<double> &data)
-{
-    // En anden måde at splitte en vektor i 2, syntes syntax her er mere clean
-    // std::vector<int> v = { 1, 2, 3, 4, 5 };
-    //
-    // std::vector<int> left(v.begin(), v.begin() + v.size() / 2);
-    // std::vector<int> right(v.begin() + v.size() / 2, v.end());
+int DtmfDecoder::frequencyToDtmf(double lowfreq, double highfreq, int errordecimal){
 
-    auto it = find(data.begin(), data.begin()+450, *max_element(data.begin(), data.begin()+450));
+    double lowshortestDistance = abs(_lowFreqs[0]-lowfreq);
+    int lowIndex = 0;
 
-    int index = it - data.begin();
-
-    vector<double> sampletesting;
+    double highshortestDistance = abs(_highFreqs[0]-highfreq);
+    int highIndex = 0;
 
     for(int i = 0; i < 4; i++){
-        sampletesting.push_back(abs(_lowFreqs[i]-(index+_cutoffLow)));
+        if(lowshortestDistance > abs(_lowFreqs[i]-lowfreq)){
+            lowshortestDistance = abs(_lowFreqs[i]-lowfreq);
+            lowIndex = i;
+        }
+
+        if(highshortestDistance > abs(_highFreqs[i]-highfreq)){
+            highshortestDistance = abs(_highFreqs[i]-highfreq);
+            highIndex = i;
+        }
     }
 
-    auto lowF = find(sampletesting.begin(), sampletesting.end(), *min_element(sampletesting.begin(), sampletesting.end()));
-
-    int lowIndex = lowF - sampletesting.begin();
-
-    //Decoding high frequency
-    int frequencyShift = 500;
-
-    it = find(data.begin()+frequencyShift, data.end(), *max_element(data.begin()+frequencyShift, data.end()));
-
-    index = it - data.begin();
-
-    sampletesting.clear();
-
-    for(int i = 0; i < 4; i++){
-        sampletesting.push_back(abs(_highFreqs[i]-(index+_cutoffLow)));
+    if(lowshortestDistance > _lowFreqs[lowIndex]*errordecimal){
+        return -1;
     }
 
-    auto HighF = find(sampletesting.begin(), sampletesting.end(), *min_element(sampletesting.begin(), sampletesting.end()));
+    if(highshortestDistance > _highFreqs[highIndex]*errordecimal){
+        return -1;
+    }
 
-    int HighIndex = HighF - sampletesting.begin();
 
-    return lowIndex*4+HighIndex;
+    return lowIndex*4+highIndex;
+
 }
 
-void DtmfDecoder::dumpDataToFile(vector<double>& data, string path, string fileName)
-{
-    ofstream myfile;
-    myfile.open (path + "/" + fileName + ".txt", std::ofstream::trunc);
-    for (unsigned long i = 0; i < data.size(); i++){
-        myfile << to_string(data.at(i)) << " ";
-    }
-    myfile.close();
-}
+
+
+
+
+//int DtmfDecoder::splitHighestPeak(const vector<double> &data)
+//{
+//    // En anden måde at splitte en vektor i 2, syntes syntax her er mere clean
+//    // std::vector<int> v = { 1, 2, 3, 4, 5 };
+//    //
+//    // std::vector<int> left(v.begin(), v.begin() + v.size() / 2);
+//    // std::vector<int> right(v.begin() + v.size() / 2, v.end());
+
+//    auto it = find(data.begin(), data.begin()+450, *max_element(data.begin(), data.begin()+450));
+
+//    int index = it - data.begin();
+
+//    vector<double> sampletesting;
+
+//    for(int i = 0; i < 4; i++){
+//        sampletesting.push_back(abs(_lowFreqs[i]-(index+_cutoffLow)));
+//    }
+
+//    auto lowF = find(sampletesting.begin(), sampletesting.end(), *min_element(sampletesting.begin(), sampletesting.end()));
+
+//    int lowIndex = lowF - sampletesting.begin();
+
+//    //Decoding high frequency
+//    int frequencyShift = 500;
+
+//    it = find(data.begin()+frequencyShift, data.end(), *max_element(data.begin()+frequencyShift, data.end()));
+
+//    index = it - data.begin();
+
+//    sampletesting.clear();
+
+//    for(int i = 0; i < 4; i++){
+//        sampletesting.push_back(abs(_highFreqs[i]-(index+_cutoffLow)));
+//    }
+
+//    auto HighF = find(sampletesting.begin(), sampletesting.end(), *min_element(sampletesting.begin(), sampletesting.end()));
+
+//    int HighIndex = HighF - sampletesting.begin();
+
+//    return lowIndex*4+HighIndex;
+//}
+
+//void DtmfDecoder::dumpDataToFile(vector<double>& data, string path, string fileName)
+//{
+//    ofstream myfile;
+//    myfile.open (path + "/" + fileName + ".txt", std::ofstream::trunc);
+//    for (unsigned long i = 0; i < data.size(); i++){
+//        myfile << to_string(data.at(i)) << " ";
+//    }
+//    myfile.close();
+//}
