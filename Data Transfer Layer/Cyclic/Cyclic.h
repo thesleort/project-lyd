@@ -4,7 +4,10 @@ using namespace std;
 class Cyclic
 {
 public:
+    Cyclic();
     Cyclic(vector<bool>);
+    void addDivisor(vector<bool>);
+
     //vector<int> IntToVect(int);
     vector<bool> Encode(vector<bool>);
     bool Decode(vector<bool>,vector<bool>);

@@ -13,9 +13,18 @@ Cyclic::Cyclic(vector<bool> div){
     _encodertail.push_back(0);
     }
 }
+Cyclic::Cyclic(){};
 
 Cyclic::~Cyclic(){
     //deallocate heap variables
+}
+
+void Cyclic::addDivisor(vector<bool> div){
+    _divisor=div;
+    _length=div.size();
+    for(int i=0;i<_length-1;i++){ //encodertail is divisorlength-1
+    _encodertail.push_back(0);
+    }
 }
 
 vector<bool> Cyclic::remainder(vector<bool> dataword,vector<bool> tail){
