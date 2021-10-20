@@ -70,6 +70,10 @@ vector<int> bytestuffer::stuff(vector<bool> in){
             i++;
         }
     }
+    //Add flags
+    inInt.insert(inInt.begin(),_flagI);
+    inInt.insert(inInt.begin()+inInt.size(),_flagI);
+
     return inInt;
     }
 
@@ -79,7 +83,12 @@ for(int i=0;i<in.size();i++){
         in.erase(in.begin()+i);//erase decrements vector size, which means we skip the 2nd etc in a series
     }
 }
-return intToBool(in);
+//remove flags
+vector<int> noflags;
+for(int i=1;i<in.size()-1;i++){
+    noflags.push_back(in.at(i));
+}
+return intToBool(noflags);
 }
 
 vector<int> bytestuffer::splitbuffer(vector<int> &buf){

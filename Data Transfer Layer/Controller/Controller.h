@@ -1,5 +1,5 @@
-#include "Cyclic\Cyclic.h"
-#include "Protocol\bytestuffer.h"
+#include "..\Cyclic\Cyclic.h"
+#include "..\Protocol\bytestuffer.h"
 //include "framegenerator", layer below,
 #include <vector>
 
@@ -12,7 +12,7 @@ public:
     void addMessage(vector<bool>); //data
 
     void Transmit(vector<bool>); //transmits message implement framegen and lower.
-    void TransmitACK(); //Transmits ACK
+    void TransmitACK(vector<bool>); //Transmits ACK
     void Receive(vector<bool>);  //gets split message from splitter, from inputbuffer
 
     void autoTransmit();
@@ -23,8 +23,7 @@ private:
     vector<bool> * _TransmitMessageBuffer; //transmit buffer for msg
     vector<vector<bool>> * _ReceivedACKBuffer; //receive buffer for ACK
     vector<vector<vector<bool>>> * _ReceiveMessageBuffer; //receive buffer for msg
-    //vector<int> _lastMessage={-1}; //last transmitted msg, disabled for simple S&W
-    //vector<bool> _lastSeq={1,1};sequence number of -||-, disabled for simple S&W
+    vector<bool> _lastRecievedSeq={1,1};//sequence number of last received msg/last sent ACK 
     vector<bool> _currentSeq={0,0};
     //FrameGenerator _FG();
     bool _ACKReceived=0;
@@ -38,3 +37,5 @@ private:
 //transmit: transmit->timer, if ACK->good, if no ACK, retransmit
 //Receive: msg: CRC check, send ACK if CRC yields no issue
     //ACK: change bool
+
+
