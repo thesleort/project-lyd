@@ -15,15 +15,23 @@ DtmfDecoder::DtmfDecoder(){
 
 }
 
-vector<double> DtmfDecoder::doSample(int msDuration)
+int DtmfDecoder::doSample(int msDuration)
 {
+
+    cout << "Speed sampling" << endl;
     _msDuration = msDuration;
 
-    _cutoffLow = 600*msDuration/1000;
+    //    _cutoffLow = 600*msDuration/1000;
 
-    _cutoffHigh = 1800*msDuration/1000;
+    //    _cutoffHigh = 1800*msDuration/1000;
 
-    _FrequencyShift = 1100*msDuration/1000;
+    //    _FrequencyShift = 1100*msDuration/1000;
+
+    _cutoffLow = 0;
+
+    _cutoffHigh = 15;
+
+    _FrequencyShift = 8;
 
 
 
@@ -31,9 +39,27 @@ vector<double> DtmfDecoder::doSample(int msDuration)
     vector<complex<double>> dataFreq = fft(data);
     vector<double> amps = modulus(dataFreq);
     //dumpDataToFile(amps, "/media/sf_VirBox_Shared", "amps");
-    return splitHighestPeak(amps);
 
 
+    if(detectDTMF(amps) == true){
+        cout << "entering full sound sampling" << endl;
+            _msDuration = 500;
+            msDuration = 500;
+
+            _cutoffLow = 600*msDuration/1000;
+
+            _cutoffHigh = 1800*msDuration/1000;
+
+            _FrequencyShift = 1100*msDuration/1000;
+
+
+        vector<complex<double>> data = recordData(msDuration);
+        vector<complex<double>> dataFreq = fft(data);
+        vector<double> amps = modulus(dataFreq);
+        return splitHighestPeak(amps);
+    }else{
+        return -1;
+    }
 
 
 }
@@ -44,7 +70,6 @@ vector<complex<double>> DtmfDecoder::recordData(int msDuration)
     _recorder.start();
 
     while(clock.getElapsedTime().asMilliseconds() < msDuration){}
-
     //usleep(1000000);
     _recorder.stop();
 
@@ -128,12 +153,10 @@ vector<double> DtmfDecoder::modulus(const vector<complex<double>>& data)
         }
         myfile2.close();
 
-        exit(3);
-
     return ampVector;
 }
 
-vector<double> DtmfDecoder::splitHighestPeak(const vector<double> &data)
+int DtmfDecoder::splitHighestPeak(const vector<double> &data)
 {
 
     double DistanceLow;
@@ -185,12 +208,35 @@ vector<double> DtmfDecoder::splitHighestPeak(const vector<double> &data)
 
     vector<double> Distances;
 
-    Distances.push_back(DistanceLow);
-    Distances.push_back(DistanceHigh);
-    Distances.push_back(lowIndex*4+HighIndex);
+    return lowIndex*4+HighIndex;
+}
+
+bool DtmfDecoder::detectDTMF(const vector<double> &data){
+    double DistanceLow;
+    double DistanceHigh;
 
 
-    return Distances;
+
+    //Decoding Low frequency
+    auto it = find(data.begin(), data.end(), *max_element(data.begin(), data.end()));
+
+    int index = it - data.begin();
+
+    if(data.at(index) > 10000){
+        if((index == 6 || index == 7 || index == 8)){
+         dtmf_Detection++;
+         if(dtmf_Detection >= 3){
+             dtmf_Detection = 0;
+             return true;
+         }
+        }else{
+            dtmf_Detection = 0;
+            return false;
+        }
+    }
+
+
+
 }
 
 void DtmfDecoder::dumpDataToFile(vector<double>& data, string path, string fileName)

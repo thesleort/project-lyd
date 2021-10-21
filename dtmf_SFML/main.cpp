@@ -198,43 +198,33 @@ int main()
 
 
 
-for(int tone = 0; tone < 16; tone++){
-    for(int ms = 1000; ms >= 200; ms -= 100){
+//for(int tone = 0; tone < 10; tone++){
 
-        int DistanceLowFrequency = 0;
-        int DistanceHighFrequency = 0;
+//        vector<double> data;
 
-        vector<double> data;
+//        for(int i = 0; i < 20; i++){
+//            while(generator.getStatus() == sf::Sound::Status::Playing){
 
-        for(int i = 0; i < 20; i++){
-            while(generator.getStatus() == sf::Sound::Status::Playing){
+//            }
+//            generator.playDtmfTone(14);
+//            sleep(1);
 
-            }
-            generator.playDualTone(2019, 3627);
-            sleep(1);
+//            data = DecodeObj.doSample(10);
 
-            data = DecodeObj.doSample(ms);
+//    }
 
-            DistanceLowFrequency += data.at(0);
-            DistanceHighFrequency += data.at(1);
+//}
 
-        }
 
-        DistanceLowFrequency = DistanceLowFrequency/20;
-        DistanceHighFrequency = DistanceHighFrequency/20;
-        cout << "ms duration: " << ms << endl;
-        cout << "sound: " << data.at(2) << " Control: " << tone << endl;
-        cout << "distance from low theoretical: " << DistanceLowFrequency  << endl;
-        cout << "distance from HIGH theoretical: " << DistanceHighFrequency << endl;
-        cout << endl;
 
-    }
+for(int i = 0; i < 100000; i++){
+  int data = DecodeObj.doSample(30);
+
+  if (data != -1){
+      cout << data << endl;
+  }
 
 }
-
-
-
-
 
 
 

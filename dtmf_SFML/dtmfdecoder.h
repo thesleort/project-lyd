@@ -10,10 +10,14 @@ class DtmfDecoder
 {
 public:
     DtmfDecoder();
-    vector<double> doSample(int msDuration);
+    int doSample(int msDuration);
 
 
 private:
+
+    //Testing variable
+    int dtmf_Detection = 0;
+
     vector<double> _lowFreqs = {697, 770, 852, 941};
     vector<double> _highFreqs = {1209, 1336, 1477, 1633};
     int _cutoffLow = 600;
@@ -32,7 +36,9 @@ private:
     vector<double> modulus(const vector<complex<double>>& data);
 
     // Finds dtmf tone given list of amplitudes
-    vector<double>  splitHighestPeak(const vector<double>& data);
+    int  splitHighestPeak(const vector<double>& data);
+    bool detectDTMF(const vector<double>& data);
+
 
     // dumps a vector<double> to a textfile for debugging
     void dumpDataToFile(vector<double>& data, string path, string fileName);
