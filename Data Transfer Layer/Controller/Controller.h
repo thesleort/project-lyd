@@ -1,6 +1,9 @@
+#ifndef H_CONTROLLER
+
 #include "..\Cyclic\Cyclic.h"
 #include "..\Protocol\bytestuffer.h"
-//include "framegenerator", layer below,
+#include "..\FrameGenPlaceholder\framegen.h"
+
 #include <vector>
 
 class Controller{
@@ -23,16 +26,18 @@ public:
     //void autoACK();
 
 private:
-    vector<bool> * _TransmitMessageBuffer; //transmit buffer for msg
     vector<vector<bool>> * _ReceivedACKBuffer; //receive buffer for ACK
     vector<vector<vector<bool>>> * _ReceiveMessageBuffer; //receive buffer for msg
     vector<bool> _lastRecievedSeq={1,1};//sequence number of last received msg/last sent ACK 
     vector<bool> _currentSeq={0,0};
-    //FrameGenerator _FG();
     bool _ACKReceived=0;
+//modules
+    FrameGenerator * _FG =new FrameGenerator();
     Cyclic * _CRChecker =new Cyclic({1,0,1,1,1});
     bytestuffer * _Stuffer=new bytestuffer({1,1,1,1},{0,0,0,0});
-    vector<bool> _msgType ={1,0}; //type pattens
+   
+//type patterns
+    vector<bool> _msgType ={1,0}; 
     vector<bool> _ackType ={0,1};
 
 //buffers
@@ -46,3 +51,4 @@ private:
     //ACK: change bool
 
 
+#endif

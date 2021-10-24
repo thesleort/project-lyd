@@ -1,3 +1,4 @@
+#ifndef H_BYTESTUFFER
 #include <vector>
 using namespace std;
 
@@ -22,3 +23,5 @@ private:
     int _etcI; //etc as integer
     int _flagI; //flag as integer
 };
+
+#endif

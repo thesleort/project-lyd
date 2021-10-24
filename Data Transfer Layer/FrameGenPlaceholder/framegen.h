@@ -1,3 +1,4 @@
+#ifndef H_FRAMEGEN
 #include <vector>
 
 using namespace std;
@@ -8,8 +9,10 @@ public:
     FrameGenerator();
     vector<bool> generateFrame(vector<vector<bool>>);
     vector<bool> generateACKFrame(vector<vector<bool>>);
+
+
     
-    vector<vector<bool>> partFrame(vector<bool>);
+    vector<vector<bool>> splitFrame(vector<bool>);
 
 };
 
@@ -17,3 +20,5 @@ public:
 //type,seq,crc,data
 //VEKTOR FORMAT:
 //{data,type,seq,crc}
+
+#endif

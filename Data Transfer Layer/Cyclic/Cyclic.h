@@ -1,3 +1,4 @@
+#ifndef H_CYCLIC
 #include <vector>
 
 using namespace std;
@@ -20,5 +21,5 @@ private:
     int _length;
 };
 
-
+#endif
 

@@ -1,5 +1,6 @@
 #include "..\Cyclic\Cyclic.h"
 #include "..\Protocol\bytestuffer.h"
+#include "..\FrameGenPlaceholder\framegen.h"
 #include "Controller.h"
 #include <vector>
 #include <iostream>
@@ -10,7 +11,6 @@
 #define CRC 3
 //-------------Constructor/Deconstuctor-----------
 Controller::Controller(){
-    _TransmitMessageBuffer = new vector<bool>;
     _ReceiveMessageBuffer = new vector<vector<vector<bool>>>;
     _ReceivedACKBuffer = new vector<vector<bool>>;
  
@@ -20,7 +20,6 @@ Controller::Controller(){
 }
 
 Controller::~Controller(){
-    delete _TransmitMessageBuffer;
     delete _ReceiveMessageBuffer;
     delete _ReceivedACKBuffer;
     delete _CRChecker;
@@ -37,19 +36,29 @@ void Controller::addInput(vector<int>& in){
 _inputBuffer=&in;
 }
 
+//------------Transmission------------
 
 void Controller::Transmit(vector<bool> msg){
 vector<bool> crc=_CRChecker->Encode(msg);
 vector<bool> type={1,1};
 vector<bool> seq=_currentSeq; 
+vector<vector<bool>> parts={msg,type,seq,crc};
+vector<bool> frame=_FG->generateFrame(parts);//gen frame
 
-vector<bool> frame;//=generateFrame(datac,type,seq,crc)
-vector<int> intMsg=_Stuffer->stuff(frame);
-_outputBuffer->insert(_outputBuffer->begin(),intMsg);
+vector<int> intMsg=_Stuffer->stuff(frame); //stuff
+_outputBuffer->insert(_outputBuffer->begin(),intMsg.begin(),intMsg.end()); //insert on buffer
 
 //wait for any ack, can never recieve old ack since we dont send msg without getting an ack
 
 int k=10000;
+
+//--printoutbuffer--
+for(bool n : *_outputBuffer){
+    cout << n; 
+}
+    cout<< endl;
+//--printoutbuffer--
+
 while(k>0 && !_ACKReceived){//timeout 10s or ACKreceived->continue
 Sleep(0.001);
 k++;
@@ -68,7 +77,7 @@ if(!_ACKReceived){//if no ACK is received either the frame or ack was lost or an
 
 void Controller::Receive(vector<bool> in){
 //assumes: {data,type,seq,crc};
-vector<vector<bool>> msg; // = framesplitter(in)
+vector<vector<bool>> msg=_FG->splitFrame(in); 
 
 if(msg.at(TYPE)==_msgType){//if msg is a message, we do a CRC check
     if(_CRChecker->Decode(msg.at(DATA),msg.at(CRC))){//If crc returns no error, we check the sequencenumber
@@ -90,8 +99,10 @@ if(msg.at(TYPE)==_msgType){//if msg is a message, we do a CRC check
 
 
 void Controller::TransmitACK(vector<bool> seq){
-vector<bool> frame;//=generateACKFrame(seq,_ackType)
+vector<bool> decoydata={0,0,0,0};
+vector<vector<bool>> parts={decoydata,_ackType,seq};
+vector<bool> frame=_FG->generateACKFrame(parts);
 vector<int> intAck=_Stuffer->stuff(frame);
-_outputBuffer->insert(_outputBuffer->begin(),intAck);
+_outputBuffer->insert(_outputBuffer->begin(),intAck.begin(),intAck.end());
 
 }
