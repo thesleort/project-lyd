@@ -5,18 +5,21 @@
 
 class Controller{
 public:
-//stop and wait with sequencing
+//Constructor/deconstructor
     Controller();
     ~Controller();
 
-    void addMessage(vector<bool>); //data
-
+//setup
+    void addOutput(vector<int>&);
+    void addInput(vector<int>&);
+    
+//Transmission
     void Transmit(vector<bool>); //transmits message implement framegen and lower.
     void TransmitACK(vector<bool>); //Transmits ACK
     void Receive(vector<bool>);  //gets split message from splitter, from inputbuffer
 
-    void autoTransmit();
-    void autoReceive();
+    //  void autoTransmit();
+  //  void autoReceive();
     //void autoACK();
 
 private:
@@ -32,6 +35,10 @@ private:
     vector<bool> _msgType ={1,0}; //type pattens
     vector<bool> _ackType ={0,1};
 
+//buffers
+    vector<int> * _outputBuffer;
+    vector<int> * _inputBuffer;
+    
 };
 
 //transmit: transmit->timer, if ACK->good, if no ACK, retransmit

@@ -8,7 +8,7 @@
 #define TYPE 1
 #define SEQ 2
 #define CRC 3
-
+//-------------Constructor/Deconstuctor-----------
 Controller::Controller(){
     _TransmitMessageBuffer = new vector<bool>;
     _ReceiveMessageBuffer = new vector<vector<vector<bool>>>;
@@ -27,14 +27,25 @@ Controller::~Controller(){
     delete _Stuffer;
 }
 
+//-------------Setup---------
+void Controller::addOutput(vector<int>& out){
+_outputBuffer=&out;
+}
+
+
+void Controller::addInput(vector<int>& in){
+_inputBuffer=&in;
+}
+
+
 void Controller::Transmit(vector<bool> msg){
 vector<bool> crc=_CRChecker->Encode(msg);
-vector<bool> type={1,1};//Data
+vector<bool> type={1,1};
 vector<bool> seq=_currentSeq; 
 
 vector<bool> frame;//=generateFrame(datac,type,seq,crc)
 vector<int> intMsg=_Stuffer->stuff(frame);
-//intMsg -> outbuffer
+_outputBuffer->insert(_outputBuffer->begin(),intMsg);
 
 //wait for any ack, can never recieve old ack since we dont send msg without getting an ack
 
@@ -77,14 +88,10 @@ if(msg.at(TYPE)==_msgType){//if msg is a message, we do a CRC check
 }
 }
 
-void Controller::autoReceive(){
-//Receive(_Stuffer->unstuff(_Stuffer->split(DTMF_in_buf)));
-
-}
 
 void Controller::TransmitACK(vector<bool> seq){
 vector<bool> frame;//=generateACKFrame(seq,_ackType)
 vector<int> intAck=_Stuffer->stuff(frame);
-//intAck -> outbuffer
+_outputBuffer->insert(_outputBuffer->begin(),intAck);
 
 }

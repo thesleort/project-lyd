@@ -10,7 +10,6 @@ public:
     vector<bool> generateACKFrame(vector<vector<bool>>);
     
     vector<vector<bool>> partFrame(vector<bool>);
-private:
 
 };
 
