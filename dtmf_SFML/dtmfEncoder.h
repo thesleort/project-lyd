@@ -5,7 +5,7 @@
 using namespace std;
 using namespace sf;
 
-class DtmfSigurd
+class DtmfEncoder
 {
 private:
     const int _lowFreqs[4] = {697, 770, 852, 941};
@@ -20,7 +20,7 @@ private:
     int _sampleRate;
 
 public:
-    DtmfSigurd(int mSec, int sampleRate, int amplitude);
+    DtmfEncoder(int mSec, int sampleRate, int amplitude);
 
     int getStatus();
     void playDualTone(int freq1, int freq2);

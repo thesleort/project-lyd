@@ -30,12 +30,12 @@ project(dtmf_SFML)
 add_executable(
     dtmf_SFML
     main.cpp
-    dtmf.cpp
-    dtmf.h
     dtmfdecoder.cpp
     dtmfdecoder.h
-    dtmfSigurd.cpp
-    dtmfSigurd.h
+    dtmfEncoder.cpp
+    dtmfEncoder.h
+    physicallayer.cpp
+    physicallayer.h
     )
 
 find_package(SFML 2 REQUIRED network audio graphics window system)

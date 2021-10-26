@@ -1,21 +1,21 @@
-#include "dtmfSigurd.h"
+#include "dtmfEncoder.h"
 #include <cmath>
 #include <cassert>
 
-DtmfSigurd::DtmfSigurd(int mSec, int sampleRate, int amplitude)
+DtmfEncoder::DtmfEncoder(int mSec, int sampleRate, int amplitude)
 {
     _mSec = mSec;
     _sampleRate = sampleRate;
     _amplitude = amplitude;
 }
 
-int DtmfSigurd::getStatus()
+int DtmfEncoder::getStatus()
 {
     // Stopped, paused, playing
     return _sound.getStatus();
 }
 
-void DtmfSigurd::playDualTone(int freq1, int freq2)
+void DtmfEncoder::playDualTone(int freq1, int freq2)
 {
     double increment1 = ((double)freq1/_sampleRate) * _2PI;
     double increment2 = ((double)freq2/_sampleRate) * _2PI;
@@ -35,7 +35,7 @@ void DtmfSigurd::playDualTone(int freq1, int freq2)
     // while(_sound.getStatus() == 2){}
 }
 
-void DtmfSigurd::playDtmfTone(int tone)
+void DtmfEncoder::playDtmfTone(int tone)
 {
     assert(tone >= 0 && tone < 16);
 
