@@ -4,9 +4,16 @@
 #include <complex>
 #include <SFML/Audio.hpp>
 
+#include <SFML/Audio/Export.hpp>
+#include <SFML/Audio/AlResource.hpp>
+#include <SFML/System/Thread.hpp>
+#include <SFML/System/Time.hpp>
+
 using namespace std;
 
 class DtmfDecoder
+
+
 {
 public:
     DtmfDecoder();
@@ -16,7 +23,7 @@ public:
 private:
 
     //Testing variable
-    int dtmf_Detection = 0;
+    int _dtmf_Detection = 0;
 
     vector<double> _lowFreqs = {697, 770, 852, 941};
     vector<double> _highFreqs = {1209, 1336, 1477, 1633};

@@ -218,7 +218,7 @@ int main()
 
 
 for(int i = 0; i < 100000; i++){
-  int data = DecodeObj.doSample(30);
+  int data = DecodeObj.doSample(100);
 
   if (data != -1){
       cout << data << endl;

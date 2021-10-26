@@ -223,17 +223,12 @@ int DtmfDecoder::splitHighestPeak(const vector<double> &data)
 }
 
 bool DtmfDecoder::detectDTMF(const vector<double> &data){
-    double DistanceLow;
-    double DistanceHigh;
-
-
-
     //Decoding Low frequency
     auto it = find(data.begin(), data.end(), *max_element(data.begin(), data.end()));
 
     int index = it - data.begin();
 
-    if(data.at(index) > 10000){
+    if(data.at(index) > 10000){ // <- HARDCODED
         cout << index << " : AMPS : " << data.at(index) << endl;
 
         if(index == 7 || index == 8){
