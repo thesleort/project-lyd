@@ -1,3 +1,0 @@
-/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/CMakeFiles/rebuild_cache.dir
-/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/CMakeFiles/edit_cache.dir
-/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/CMakeFiles/dtmf_SFML.dir
