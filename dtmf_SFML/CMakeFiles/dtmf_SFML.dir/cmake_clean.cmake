@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/dtmf_SFML.dir/dtmf.cpp.o"
-  "CMakeFiles/dtmf_SFML.dir/dtmfSigurd.cpp.o"
+  "CMakeFiles/dtmf_SFML.dir/dtmfEncoder.cpp.o"
   "CMakeFiles/dtmf_SFML.dir/dtmfdecoder.cpp.o"
   "CMakeFiles/dtmf_SFML.dir/main.cpp.o"
+  "CMakeFiles/dtmf_SFML.dir/physicallayer.cpp.o"
   "dtmf_SFML"
   "dtmf_SFML.pdb"
 )

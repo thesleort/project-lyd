@@ -82,16 +82,10 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmf.cpp">
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfEncoder.cpp">
 			<Option target="dtmf_SFML"/>
 		</Unit>
-		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmf.h">
-			<Option target="dtmf_SFML"/>
-		</Unit>
-		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfSigurd.cpp">
-			<Option target="dtmf_SFML"/>
-		</Unit>
-		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfSigurd.h">
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfEncoder.h">
 			<Option target="dtmf_SFML"/>
 		</Unit>
 		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfdecoder.cpp">
@@ -101,6 +95,12 @@
 			<Option target="dtmf_SFML"/>
 		</Unit>
 		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/main.cpp">
+			<Option target="dtmf_SFML"/>
+		</Unit>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/physicallayer.cpp">
+			<Option target="dtmf_SFML"/>
+		</Unit>
+		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/physicallayer.h">
 			<Option target="dtmf_SFML"/>
 		</Unit>
 		<Unit filename="/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/CMakeLists.txt">

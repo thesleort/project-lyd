@@ -4,10 +4,10 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmf.cpp" "/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/CMakeFiles/dtmf_SFML.dir/dtmf.cpp.o"
-  "/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfSigurd.cpp" "/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/CMakeFiles/dtmf_SFML.dir/dtmfSigurd.cpp.o"
+  "/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfEncoder.cpp" "/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/CMakeFiles/dtmf_SFML.dir/dtmfEncoder.cpp.o"
   "/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfdecoder.cpp" "/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/CMakeFiles/dtmf_SFML.dir/dtmfdecoder.cpp.o"
   "/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/main.cpp" "/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/CMakeFiles/dtmf_SFML.dir/main.cpp.o"
+  "/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/physicallayer.cpp" "/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/CMakeFiles/dtmf_SFML.dir/physicallayer.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

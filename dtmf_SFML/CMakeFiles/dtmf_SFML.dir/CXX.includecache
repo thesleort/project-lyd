@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfSigurd.h
+/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfEncoder.h
 SFML/Audio.hpp
 -
 vector
@@ -15,8 +15,8 @@ vector
 /home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfdecoder.cpp
 dtmfdecoder.h
 /home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfdecoder.h
-dtmfSigurd.h
-/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfSigurd.h
+dtmfEncoder.h
+/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfEncoder.h
 complex
 -
 SFML/Audio.hpp
@@ -38,5 +38,27 @@ vector
 complex
 -
 SFML/Audio.hpp
+-
+
+/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/main.cpp
+iostream
+-
+SFML/Audio.hpp
+-
+cmath
+-
+dtmfEncoder.h
+/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfEncoder.h
+vector
+-
+complex
+-
+string
+-
+fstream
+-
+dtmfdecoder.h
+/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfdecoder.h
+unistd.h
 -
 

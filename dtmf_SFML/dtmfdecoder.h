@@ -11,7 +11,6 @@ class DtmfDecoder
 public:
     DtmfDecoder(double sampleTime);
     int identifyDTMF(sf::Int16* data, int count);
-    
 
 private:
     struct signal {

@@ -15,7 +15,20 @@ DtmfDecoder::DtmfDecoder(double sampleTime) : sampleTime(sampleTime){
 
 }
 
-vector<complex<double> > DtmfDecoder::realToComplexVector(Int16* reals, int count)
+int DtmfDecoder::identifyDTMF(Int16 *data, int count)
+{
+
+   vector<complex<double>> complexSoundBuffer = realToComplexVector(data,count);
+
+   complexSoundBuffer = fft(complexSoundBuffer);
+
+   vector<DtmfDecoder::signal> frequencyData = sequenceToSignals(complexSoundBuffer);
+
+   return signalsToDtmf(frequencyData);
+
+}
+
+vector<complex<double>> DtmfDecoder::realToComplexVector(Int16* reals, int count)
 {
     vector<complex<double>> complexes;
 
@@ -71,7 +84,7 @@ vector<complex<double>> DtmfDecoder::fft(vector<complex<double> > &a)
     return y;
 }
 
-vector<DtmfDecoder::signal> DtmfDecoder::sequenceToSignals(vector<complex<double> > &sequence)
+vector<DtmfDecoder::signal> DtmfDecoder::sequenceToSignals(vector<complex<double>> &sequence)
 {
     vector<signal> sigs;
     for (int i = _cutoffLow * sampleTime; i < _cutoffHigh * sampleTime; i++){
@@ -115,7 +128,7 @@ int DtmfDecoder::signalsToDtmf(const vector<signal> & signaldata){
     }
     peakFreqs.push_back(highestFreq);
 
-    return frequencyToDtmf(peakFreqs.at(0), peakFreqs.at(1), 0.01);
+    return frequencyToDtmf(peakFreqs.at(0), peakFreqs.at(1), 0.01); // Error decimal
 
 }
 

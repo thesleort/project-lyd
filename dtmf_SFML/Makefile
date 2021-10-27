@@ -123,59 +123,32 @@ dtmf_SFML/fast:
 	$(MAKE) -f CMakeFiles/dtmf_SFML.dir/build.make CMakeFiles/dtmf_SFML.dir/build
 .PHONY : dtmf_SFML/fast
 
-dtmf.o: dtmf.cpp.o
+dtmfEncoder.o: dtmfEncoder.cpp.o
 
-.PHONY : dtmf.o
-
-# target to build an object file
-dtmf.cpp.o:
-	$(MAKE) -f CMakeFiles/dtmf_SFML.dir/build.make CMakeFiles/dtmf_SFML.dir/dtmf.cpp.o
-.PHONY : dtmf.cpp.o
-
-dtmf.i: dtmf.cpp.i
-
-.PHONY : dtmf.i
-
-# target to preprocess a source file
-dtmf.cpp.i:
-	$(MAKE) -f CMakeFiles/dtmf_SFML.dir/build.make CMakeFiles/dtmf_SFML.dir/dtmf.cpp.i
-.PHONY : dtmf.cpp.i
-
-dtmf.s: dtmf.cpp.s
-
-.PHONY : dtmf.s
-
-# target to generate assembly for a file
-dtmf.cpp.s:
-	$(MAKE) -f CMakeFiles/dtmf_SFML.dir/build.make CMakeFiles/dtmf_SFML.dir/dtmf.cpp.s
-.PHONY : dtmf.cpp.s
-
-dtmfSigurd.o: dtmfSigurd.cpp.o
-
-.PHONY : dtmfSigurd.o
+.PHONY : dtmfEncoder.o
 
 # target to build an object file
-dtmfSigurd.cpp.o:
-	$(MAKE) -f CMakeFiles/dtmf_SFML.dir/build.make CMakeFiles/dtmf_SFML.dir/dtmfSigurd.cpp.o
-.PHONY : dtmfSigurd.cpp.o
+dtmfEncoder.cpp.o:
+	$(MAKE) -f CMakeFiles/dtmf_SFML.dir/build.make CMakeFiles/dtmf_SFML.dir/dtmfEncoder.cpp.o
+.PHONY : dtmfEncoder.cpp.o
 
-dtmfSigurd.i: dtmfSigurd.cpp.i
+dtmfEncoder.i: dtmfEncoder.cpp.i
 
-.PHONY : dtmfSigurd.i
+.PHONY : dtmfEncoder.i
 
 # target to preprocess a source file
-dtmfSigurd.cpp.i:
-	$(MAKE) -f CMakeFiles/dtmf_SFML.dir/build.make CMakeFiles/dtmf_SFML.dir/dtmfSigurd.cpp.i
-.PHONY : dtmfSigurd.cpp.i
+dtmfEncoder.cpp.i:
+	$(MAKE) -f CMakeFiles/dtmf_SFML.dir/build.make CMakeFiles/dtmf_SFML.dir/dtmfEncoder.cpp.i
+.PHONY : dtmfEncoder.cpp.i
 
-dtmfSigurd.s: dtmfSigurd.cpp.s
+dtmfEncoder.s: dtmfEncoder.cpp.s
 
-.PHONY : dtmfSigurd.s
+.PHONY : dtmfEncoder.s
 
 # target to generate assembly for a file
-dtmfSigurd.cpp.s:
-	$(MAKE) -f CMakeFiles/dtmf_SFML.dir/build.make CMakeFiles/dtmf_SFML.dir/dtmfSigurd.cpp.s
-.PHONY : dtmfSigurd.cpp.s
+dtmfEncoder.cpp.s:
+	$(MAKE) -f CMakeFiles/dtmf_SFML.dir/build.make CMakeFiles/dtmf_SFML.dir/dtmfEncoder.cpp.s
+.PHONY : dtmfEncoder.cpp.s
 
 dtmfdecoder.o: dtmfdecoder.cpp.o
 
@@ -231,6 +204,33 @@ main.cpp.s:
 	$(MAKE) -f CMakeFiles/dtmf_SFML.dir/build.make CMakeFiles/dtmf_SFML.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+physicallayer.o: physicallayer.cpp.o
+
+.PHONY : physicallayer.o
+
+# target to build an object file
+physicallayer.cpp.o:
+	$(MAKE) -f CMakeFiles/dtmf_SFML.dir/build.make CMakeFiles/dtmf_SFML.dir/physicallayer.cpp.o
+.PHONY : physicallayer.cpp.o
+
+physicallayer.i: physicallayer.cpp.i
+
+.PHONY : physicallayer.i
+
+# target to preprocess a source file
+physicallayer.cpp.i:
+	$(MAKE) -f CMakeFiles/dtmf_SFML.dir/build.make CMakeFiles/dtmf_SFML.dir/physicallayer.cpp.i
+.PHONY : physicallayer.cpp.i
+
+physicallayer.s: physicallayer.cpp.s
+
+.PHONY : physicallayer.s
+
+# target to generate assembly for a file
+physicallayer.cpp.s:
+	$(MAKE) -f CMakeFiles/dtmf_SFML.dir/build.make CMakeFiles/dtmf_SFML.dir/physicallayer.cpp.s
+.PHONY : physicallayer.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -240,18 +240,18 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... dtmf_SFML"
-	@echo "... dtmf.o"
-	@echo "... dtmf.i"
-	@echo "... dtmf.s"
-	@echo "... dtmfSigurd.o"
-	@echo "... dtmfSigurd.i"
-	@echo "... dtmfSigurd.s"
+	@echo "... dtmfEncoder.o"
+	@echo "... dtmfEncoder.i"
+	@echo "... dtmfEncoder.s"
 	@echo "... dtmfdecoder.o"
 	@echo "... dtmfdecoder.i"
 	@echo "... dtmfdecoder.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... physicallayer.o"
+	@echo "... physicallayer.i"
+	@echo "... physicallayer.s"
 .PHONY : help
 
 

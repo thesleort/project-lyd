@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
+<<<<<<< Updated upstream
 <!-- Written by QtCreator 4.11.0, 2021-10-26T14:06:42. -->
+=======
+<!-- Written by QtCreator 4.11.0, 2021-10-27T12:24:30. -->
+>>>>>>> Stashed changes
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -119,7 +123,11 @@
      <value type="QString">CMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}</value>
      <value type="QString">QT_QMAKE_EXECUTABLE:STRING=%{Qt:qmakeExecutable}</value>
     </valuelist>
+<<<<<<< Updated upstream
     <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/home/sigurd/Dev/semester3/project-lyd/build-dtmf_SFML-Desktop-Release</value>
+=======
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/CMakeFiles</value>
+>>>>>>> Stashed changes
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="QString" key="CMakeProjectManager.MakeStep.AdditionalArguments"></value>
