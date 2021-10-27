@@ -18,6 +18,9 @@ public:
     vector<bool> unstuff(vector<int>); //removes 1 etc and skips what is behind it(requires etc stuffing into other etcs)
     vector<int> splitbuffer(vector<int>&); //creates a frame from the buffer(and deletes what is taken(still needs implementing))
 
+    int getEtc();
+    int getFlag();
+
 private:
     vector<bool> _flag; //flag as bits
     vector<bool> _etc; //etc as bits

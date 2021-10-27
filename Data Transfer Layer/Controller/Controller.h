@@ -20,11 +20,16 @@ public:
 //Transmission
     void Transmit(vector<bool>); //transmits message implement framegen and lower.
     void TransmitACK(vector<bool>); //Transmits ACK
-    void Receive(vector<bool>);  //gets split message from splitter, from inputbuffer
+    void Receive(vector<int>);  //gets split message from splitter, from inputbuffer
 
-    //  void autoTransmit();
-  //  void autoReceive();
-    //void autoACK();
+    void testTransmit();
+    
+    void autoTransmit();
+    void autoReceive();
+
+    void SplitBuffer();
+    void autoSplitInput();
+    
 
 private:
     vector<vector<bool>> * _ReceivedACKBuffer; //receive buffer for ACK
@@ -42,14 +47,19 @@ private:
     vector<bool> _ackType ={0,1};
 
 //buffers
-    vector<int> * _outputBuffer;
-    vector<int> * _inputBuffer;
+    vector<int> * _outputBuffer; //for outgoing transmissions
+    vector<int> * _inputBuffer; //for incoming transmissions NEEDS TO BE "PUSHED BACK" FROM DTMF CODE(APPEND TO END)
+    vector<vector<int>> * _incomingFrames; //stack with split frames from receivebuffer
+    vector<vector<bool>> * _outgoingMessages; //stack with messages for outputbuffer, ACKs are added directly to outbuffer 
     
 };
 
 //transmit: transmit->timer, if ACK->good, if no ACK, retransmit
 //Receive: msg: CRC check, send ACK if CRC yields no issue
     //ACK: change bool
+
+
+//INPUT BUFFER OUTPUTBUFFER -> VECTOR<VECTOR.. TRANSMIT+RECIEVE FROM VECTOR<VECTOR->ERASE, 
 
 
 #endif

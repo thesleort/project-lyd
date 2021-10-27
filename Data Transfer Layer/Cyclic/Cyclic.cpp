@@ -28,6 +28,7 @@ void Cyclic::addDivisor(vector<bool> div){
 }
 
 vector<bool> Cyclic::remainder(vector<bool> dataword,vector<bool> tail){
+
 for(int i=0;i<tail.size();i++){ //divisor -1 length tail added to in based on bool. 0 to encode
     dataword.push_back(tail.at(i));
 }
@@ -42,10 +43,10 @@ for(int i=0; i<=divL;i++){//following operation is repeated untill the correctly
         longdivisor=zerodiv;
     }
     //error detection:
-    //cout << "Iteration; "<< i<<" in: ";
-    // for(bool l: in){
-    //     cout << l;
-    // }
+   // cout << "Iteration; "<< i<<" in: ";
+     //for(bool l: dataword){
+       //  cout << l;
+     //}
     // cout << endl;
     //------
 
@@ -68,15 +69,17 @@ for(int i=0; i<=divL;i++){//following operation is repeated untill the correctly
     }
     if(!newword.at(0)){//if the first bool in newword =0, we erase the front and dataword gets set to newword, which will be used for the next iteration
         newword.erase(newword.begin());
+        
     }
     dataword=newword;
+    
 
     //ED
-    for(bool l:dataword){
-        cout<<l;
-     }
-    cout << endl;
-    //----
+    //for(bool l:dataword){
+    //    cout<<l;
+    // }
+    //cout << endl;
+   // ----
 }
 
 //after "divL" operations, dataword will be the remainder
@@ -89,11 +92,13 @@ return remain;
 }
 
 bool Cyclic::Decode(vector<bool> dataword,vector<bool> tail){
+    cout << "decode start" << endl;
 vector<bool> remains=remainder(dataword,tail); //remainder is dataword with tail from encoding
 for(bool i:remains){
     if(i){
         return 0; //if remainder is 1 at any point there has been an error
     }
 }
+cout << "decode succesful" << endl;
 return 1;
 }
