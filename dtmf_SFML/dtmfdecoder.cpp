@@ -87,6 +87,9 @@ vector<complex<double>> DtmfDecoder::fft(vector<complex<double> > &a)
 vector<DtmfDecoder::signal> DtmfDecoder::sequenceToSignals(const vector<complex<double>> &sequence)
 {
     vector<signal> sigs;
+    vector<double> testsigs;
+
+
     for (int i = _cutoffLow * _sampleTime; i < _cutoffHigh * _sampleTime; i++){
         double real = sequence.at(i).real();
         double imag = sequence.at(i).imag();
@@ -94,6 +97,7 @@ vector<DtmfDecoder::signal> DtmfDecoder::sequenceToSignals(const vector<complex<
         double freq = i / _sampleTime;
         signal sig(amp, freq);
         sigs.push_back(sig);
+        testsigs.push_back(amp);
     }
 
     return sigs;
