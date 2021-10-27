@@ -1,4 +1,5 @@
 #ifndef H_CYCLIC
+#define H_CYCLIC
 #include <vector>
 
 using namespace std;

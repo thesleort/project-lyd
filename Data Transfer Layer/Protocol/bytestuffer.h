@@ -1,4 +1,5 @@
 #ifndef H_BYTESTUFFER
+#define H_BYTESTUFFER
 #include <vector>
 using namespace std;
 

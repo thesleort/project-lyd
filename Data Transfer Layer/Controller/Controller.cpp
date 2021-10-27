@@ -61,7 +61,7 @@ for(bool n : *_outputBuffer){
 
 while(k>0 && !_ACKReceived){//timeout 10s or ACKreceived->continue
 Sleep(0.001);
-k++;
+k--;
 }
 if(!_ACKReceived){//if no ACK is received either the frame or ack was lost or an error occured 
          Transmit(msg); 

@@ -1,4 +1,5 @@
 #ifndef H_FRAMEGEN
+#define H_FRAMEGEN
 #include <vector>
 
 using namespace std;
