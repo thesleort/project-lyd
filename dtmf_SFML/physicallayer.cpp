@@ -1,6 +1,6 @@
 #include "physicallayer.h"
 
-PhysicalLayer::PhysicalLayer()
+PhysicalLayer::PhysicalLayer(double duration, double spacing)
 {
 
 }

@@ -1,5 +1,5 @@
 #include "dtmfdecoder.h"
-#include "dtmfSigurd.h"
+#include "dtmfEncoder.h"
 #include <complex>
 #include <SFML/Audio.hpp>
 #include <cmath>
@@ -149,61 +149,14 @@ int DtmfDecoder::frequencyToDtmf(double lowfreq, double highfreq, int errordecim
 
 
     return lowIndex*4+highIndex;
-
 }
 
-
-
-
-
-//int DtmfDecoder::splitHighestPeak(const vector<double> &data)
-//{
-//    // En anden måde at splitte en vektor i 2, syntes syntax her er mere clean
-//    // std::vector<int> v = { 1, 2, 3, 4, 5 };
-//    //
-//    // std::vector<int> left(v.begin(), v.begin() + v.size() / 2);
-//    // std::vector<int> right(v.begin() + v.size() / 2, v.end());
-
-//    auto it = find(data.begin(), data.begin()+450, *max_element(data.begin(), data.begin()+450));
-
-//    int index = it - data.begin();
-
-//    vector<double> sampletesting;
-
-//    for(int i = 0; i < 4; i++){
-//        sampletesting.push_back(abs(_lowFreqs[i]-(index+_cutoffLow)));
-//    }
-
-//    auto lowF = find(sampletesting.begin(), sampletesting.end(), *min_element(sampletesting.begin(), sampletesting.end()));
-
-//    int lowIndex = lowF - sampletesting.begin();
-
-//    //Decoding high frequency
-//    int frequencyShift = 500;
-
-//    it = find(data.begin()+frequencyShift, data.end(), *max_element(data.begin()+frequencyShift, data.end()));
-
-//    index = it - data.begin();
-
-//    sampletesting.clear();
-
-//    for(int i = 0; i < 4; i++){
-//        sampletesting.push_back(abs(_highFreqs[i]-(index+_cutoffLow)));
-//    }
-
-//    auto HighF = find(sampletesting.begin(), sampletesting.end(), *min_element(sampletesting.begin(), sampletesting.end()));
-
-//    int HighIndex = HighF - sampletesting.begin();
-
-//    return lowIndex*4+HighIndex;
-//}
-
-//void DtmfDecoder::dumpDataToFile(vector<double>& data, string path, string fileName)
-//{
-//    ofstream myfile;
-//    myfile.open (path + "/" + fileName + ".txt", std::ofstream::trunc);
-//    for (unsigned long i = 0; i < data.size(); i++){
-//        myfile << to_string(data.at(i)) << " ";
-//    }
-//    myfile.close();
-//}
+void DtmfDecoder::dumpDataToFile(vector<double>& data, string path, string fileName)
+{
+    ofstream myfile;
+    myfile.open (path + "/" + fileName + ".txt", std::ofstream::trunc);
+    for (unsigned long i = 0; i < data.size(); i++){
+        myfile << to_string(data.at(i)) << " ";
+    }
+    myfile.close();
+}
