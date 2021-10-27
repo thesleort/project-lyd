@@ -12,26 +12,6 @@ SFML/Audio.hpp
 vector
 -
 
-/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfdecoder.cpp
-dtmfdecoder.h
-/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfdecoder.h
-dtmfEncoder.h
-/home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfEncoder.h
-complex
--
-SFML/Audio.hpp
--
-cmath
--
-iostream
--
-math.h
--
-fstream
--
-unistd.h
--
-
 /home/peter/QTFiles/3.SemesterProjekt/project-lyd/dtmf_SFML/dtmfdecoder.h
 vector
 -

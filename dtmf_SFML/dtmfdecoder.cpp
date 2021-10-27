@@ -20,6 +20,14 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count)
 
    vector<complex<double>> complexSoundBuffer = realToComplexVector(data,count);
 
+   vector<double> testPrioriFFT;
+
+   for (int i = 0; i < count; i++){
+       testPrioriFFT.push_back(data[i]);
+   }
+
+   dumpDataToFile(testPrioriFFT, "/home/peter/Desktop", "PrioriFFT");
+
    complexSoundBuffer = fft(complexSoundBuffer);
 
    vector<DtmfDecoder::signal> frequencyData = sequenceToSignals(complexSoundBuffer);
@@ -32,7 +40,7 @@ vector<complex<double>> DtmfDecoder::realToComplexVector(const Int16* reals, int
 {
     vector<complex<double>> complexes;
 
-    for (int i = 0; i < count; i++){
+    for (int i = count-1; i >= 0; i--){
         complex<double> number;
         number.real((double)reals[i]);
         complexes.push_back(number);
@@ -99,6 +107,8 @@ vector<DtmfDecoder::signal> DtmfDecoder::sequenceToSignals(const vector<complex<
         sigs.push_back(sig);
         testsigs.push_back(amp);
     }
+
+
 
     return sigs;
 }
