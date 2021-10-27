@@ -84,7 +84,7 @@ vector<complex<double>> DtmfDecoder::fft(vector<complex<double> > &a)
     return y;
 }
 
-vector<DtmfDecoder::signal> DtmfDecoder::sequenceToSignals(vector<complex<double>> &sequence)
+vector<DtmfDecoder::signal> DtmfDecoder::sequenceToSignals(const vector<complex<double>> &sequence)
 {
     vector<signal> sigs;
     for (int i = _cutoffLow * _sampleTime; i < _cutoffHigh * _sampleTime; i++){
@@ -103,7 +103,7 @@ double DtmfDecoder::error(double val, double ref){
     return (val - ref) / ref;
 }
 
-int DtmfDecoder::signalsToDtmf(vector<signal> signaldata){
+int DtmfDecoder::signalsToDtmf(const vector<signal> & signaldata){
 
     double middleFreq = (_lowFreqs.at(_lowFreqs.size()-1)+_highFreqs.at(0))/2;
 
@@ -114,10 +114,7 @@ int DtmfDecoder::signalsToDtmf(vector<signal> signaldata){
 
     bool searchLowFreq = true;
 
-    //for(signal i : signaldata){
-    for(int p = 0; p < signaldata.size(); p++){
-
-        signal i = signaldata.at(p);
+    for(signal i : signaldata){
         if(i.frequency-middleFreq > 0 && searchLowFreq){
             searchLowFreq = false;
 
@@ -133,7 +130,7 @@ int DtmfDecoder::signalsToDtmf(vector<signal> signaldata){
     }
     peakFreqs.push_back(highestFreq);
 
-    return frequencyToDtmf(peakFreqs.at(0), peakFreqs.at(1), 0.01); // Error decimal
+    return frequencyToDtmf(peakFreqs.at(0), peakFreqs.at(1), 1); // Error decimal
 
 }
 

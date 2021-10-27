@@ -20,58 +20,66 @@ int main()
 
     SoundBufferRecorder recorder;
     sf::Clock clock;
+    int sampletime = 1000;
+    cout << "record start" << endl;
+    usleep(100);
     recorder.start();
-    sleep(1);
 
-    DtmfEncoder generator(1000, 44100, 3000);
-    generator.playDtmfTone(9);
-    while(generator.getStatus() == 2){};
-
-    sleep(2);
+    while(clock.getElapsedTime().asMilliseconds() <=  500){}
     recorder.stop();
 
     const sf::SoundBuffer& buffer = recorder.getBuffer();
 
     const sf::Int16* samples = buffer.getSamples();
+
     const long count = buffer.getSampleCount();
 
-    ofstream myfile;
-    myfile.open ("/media/sf_VirBox_Shared/raw.txt", std::ofstream::trunc);
-    for (long i = 0; i < count; i++){
-        myfile << to_string(samples[i]) << " ";
-    }
-    myfile.close();
+    DtmfDecoder testSampling(sampletime);
 
-    double mean = 0;
-    for(int i = 0; i < count; i++){
-        mean += abs((double)samples[i]) / (double)count;
-    }
-    cout << "mean: " << mean << endl;
+    cout << samples << endl;
+    cout << testSampling.identifyDTMF(samples, count) << endl;
 
-    double average = 0;
 
-    double lastAverage;
 
-    double koef = 0.00005;
 
-    // remove short loud sounds by removing data that is some % above mean.
 
-    vector<double> avgVec;
-    for (int i = 0; i < count; i++){
-        lastAverage = average;
-        average = abs(samples[i]) * koef + (1.0f-koef) * abs(lastAverage);
-        if (abs(samples[i]) > mean*5){
-            average = avgVec.at(i-1);
-        }
-        avgVec.push_back(average);
-    }
+//    ofstream myfile;
+//    myfile.open ("/media/sf_VirBox_Shared/raw.txt", std::ofstream::trunc);
+//    for (long i = 0; i < count; i++){
+//        myfile << to_string(samples[i]) << " ";
+//    }
+//    myfile.close();
 
-    ofstream myfileOther;
-    myfile.open ("/media/sf_VirBox_Shared/avg.txt", std::ofstream::trunc);
-    for (unsigned long i = 0; i < avgVec.size(); i++){
-        myfile << to_string(avgVec.at(i)) << " ";
-    }
-    myfile.close();
+//    double mean = 0;
+//    for(int i = 0; i < count; i++){
+//        mean += abs((double)samples[i]) / (double)count;
+//    }
+//    cout << "mean: " << mean << endl;
+
+//    double average = 0;
+
+//    double lastAverage;
+
+//    double koef = 0.00005;
+
+//    // remove short loud sounds by removing data that is some % above mean.
+
+//    vector<double> avgVec;
+//    for (int i = 0; i < count; i++){
+//        lastAverage = average;
+//        average = abs(samples[i]) * koef + (1.0f-koef) * abs(lastAverage);
+//        if (abs(samples[i]) > mean*5){
+//            average = avgVec.at(i-1);
+//        }
+//        avgVec.push_back(average);
+//    }
+
+//    ofstream myfileOther;
+//    myfile.open ("/media/sf_VirBox_Shared/avg.txt", std::ofstream::trunc);
+//    for (unsigned long i = 0; i < avgVec.size(); i++){
+//        myfile << to_string(avgVec.at(i)) << " ";
+//    }
+//    myfile.close();
 
     return 0;
 }

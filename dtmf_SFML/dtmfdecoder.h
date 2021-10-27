@@ -31,13 +31,13 @@ private:
 
     vector<complex<double>> fft(vector<complex<double>>& data);
 
-    vector<signal> sequenceToSignals(vector<complex<double>>& sequence);
+    vector<signal> sequenceToSignals(const vector<complex<double>>& sequence);
 
     double error(double val, double ref);
 
     double intervalMaxAmp(vector<signal>& signals);
 
-    int signalsToDtmf( vector<signal> signals);
+    int signalsToDtmf(const vector<signal> & signals);
     int frequencyToDtmf(double lowfreq, double highfreq, int error);
 
     // dumps a vector<double> to a textfile for debugging
