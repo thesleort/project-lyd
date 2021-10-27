@@ -11,11 +11,11 @@
 
 using namespace std;
 
-DtmfDecoder::DtmfDecoder(double sampleTime) : sampleTime(sampleTime){
+DtmfDecoder::DtmfDecoder(double sampleTime) : _sampleTime(sampleTime/1000.0){
 
 }
 
-int DtmfDecoder::identifyDTMF(Int16 *data, int count)
+int DtmfDecoder::identifyDTMF(const Int16 *data, int count)
 {
 
    vector<complex<double>> complexSoundBuffer = realToComplexVector(data,count);
@@ -28,7 +28,7 @@ int DtmfDecoder::identifyDTMF(Int16 *data, int count)
 
 }
 
-vector<complex<double>> DtmfDecoder::realToComplexVector(Int16* reals, int count)
+vector<complex<double>> DtmfDecoder::realToComplexVector(const Int16* reals, int count)
 {
     vector<complex<double>> complexes;
 
@@ -87,21 +87,23 @@ vector<complex<double>> DtmfDecoder::fft(vector<complex<double> > &a)
 vector<DtmfDecoder::signal> DtmfDecoder::sequenceToSignals(vector<complex<double>> &sequence)
 {
     vector<signal> sigs;
-    for (int i = _cutoffLow * sampleTime; i < _cutoffHigh * sampleTime; i++){
+    for (int i = _cutoffLow * _sampleTime; i < _cutoffHigh * _sampleTime; i++){
         double real = sequence.at(i).real();
         double imag = sequence.at(i).imag();
         double amp = sqrt(real*real + imag*imag); // possible optimization by not taking square root
-        double freq = i / sampleTime;
+        double freq = i / _sampleTime;
         signal sig(amp, freq);
         sigs.push_back(sig);
     }
+
+    return sigs;
 }
 
 double DtmfDecoder::error(double val, double ref){
     return (val - ref) / ref;
 }
 
-int DtmfDecoder::signalsToDtmf(const vector<signal> & signaldata){
+int DtmfDecoder::signalsToDtmf(vector<signal> signaldata){
 
     double middleFreq = (_lowFreqs.at(_lowFreqs.size()-1)+_highFreqs.at(0))/2;
 
@@ -112,7 +114,10 @@ int DtmfDecoder::signalsToDtmf(const vector<signal> & signaldata){
 
     bool searchLowFreq = true;
 
-    for(signal i : signaldata){
+    //for(signal i : signaldata){
+    for(int p = 0; p < signaldata.size(); p++){
+
+        signal i = signaldata.at(p);
         if(i.frequency-middleFreq > 0 && searchLowFreq){
             searchLowFreq = false;
 

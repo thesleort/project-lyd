@@ -10,7 +10,7 @@ class DtmfDecoder
 {
 public:
     DtmfDecoder(double sampleTime);
-    int identifyDTMF(sf::Int16* data, int count);
+    int identifyDTMF(const sf::Int16* data, int count);
 
 private:
     struct signal {
@@ -22,12 +22,12 @@ private:
     vector<int> _highFreqs = {1209, 1336, 1477, 1633};
     const int _cutoffLow = 600;
     const int _cutoffHigh = 1800;
-    const int sampleTime;
+    const double _sampleTime;
 
-    int frequenceToSequence(double freq){return freq * sampleTime; };
-    double sequenceToFrequence(int seq){return seq / sampleTime; };
+    int frequenceToSequence(double freq){return freq * _sampleTime; };
+    double sequenceToFrequence(int seq){return seq / _sampleTime; };
 
-    vector<complex<double>> realToComplexVector(sf::Int16* reals, int count);
+    vector<complex<double>> realToComplexVector(const sf::Int16* reals, int count);
 
     vector<complex<double>> fft(vector<complex<double>>& data);
 
@@ -37,7 +37,7 @@ private:
 
     double intervalMaxAmp(vector<signal>& signals);
 
-    int signalsToDtmf(const vector<signal>& signals);
+    int signalsToDtmf( vector<signal> signals);
     int frequencyToDtmf(double lowfreq, double highfreq, int error);
 
     // dumps a vector<double> to a textfile for debugging
