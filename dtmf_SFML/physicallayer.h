@@ -8,13 +8,13 @@ using namespace std;
 class PhysicalLayer
 {
 public:
-    PhysicalLayer(double duration);
+    PhysicalLayer(int duration);
     bool readInBuffer(int& dtmf);
     bool writeOutBuffer(int dtmf);
 
 private:
     vector<int> _outBuffer, _inBuffer;
-    double _duration;
+    int _duration;
 
     sem_t _inBufferMutex, _outBufferMutex;
 
