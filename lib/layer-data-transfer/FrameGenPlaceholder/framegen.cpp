@@ -1,11 +1,7 @@
 #include <iostream>
 
+#include "data-transfer-config.h"
 #include "framegen.h"
-
-#define DATA 0
-#define TYPE 1
-#define SEQ 2
-#define CRC 3
 
 using namespace std;
 FrameGenerator::FrameGenerator(){};

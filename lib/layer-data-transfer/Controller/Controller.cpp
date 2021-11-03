@@ -1,15 +1,11 @@
 #include <vector>
 #include <iostream>
 
+#include "data-transfer-config.h"
 #include "Cyclic.h"
 #include "bytestuffer.h"
 #include "framegen.h"
 #include "Controller.h"
-
-#define DATA 0
-#define TYPE 1
-#define SEQ 2
-#define CRC 3
 
 //-------------Constructor/Deconstuctor-----------
 Controller::Controller() {
