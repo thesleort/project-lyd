@@ -29,4 +29,4 @@ include_directories(libdtmf
 
 set_target_properties(libdtmf PROPERTIES SOVERSION 1)
 
-set_target_properties(mylib PROPERTIES PUBLIC_HEADER libdtmf/libdtmf.h)
+set_target_properties(libdtmf PROPERTIES PUBLIC_HEADER libdtmf/libdtmf.h)
