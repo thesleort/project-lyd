@@ -11,5 +11,8 @@
         "iostream": "cpp",
         "ostream": "cpp",
         "thread": "cpp"
-    }
+    },
+    "cSpell.words": [
+      "DTMF"
+    ]
 }
