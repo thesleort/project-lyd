@@ -4,7 +4,10 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/Data Transfer Layer/Cyclic"
+                "${workspaceRoot}/lib/layer-data-transfer/Controller",
+                "${workspaceRoot}/lib/layer-data-transfer/Cyclic",
+                "${workspaceRoot}/lib/layer-data-transfer/FrameGenPlaceholder",
+                "${workspaceRoot}/lib/layer-data-transfer/Protocol"
             ],
             "defines": [
                 "_DEBUG",
@@ -41,7 +44,7 @@
               "/usr/include/x86_64-linux-gnu/qt5/QtDesigner",
               "/usr/include/x86_64-linux-gnu/qt5/QtSql",
               "/usr/include/x86_64-linux-gnu/qt5",
-              "/usr/include/mysql-cppconn-8",
+              "/usr/include/mysql-cppconn-8"
           ],
           "defines": [],
           "intelliSenseMode": "clang-x64",

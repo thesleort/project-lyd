@@ -53,7 +53,7 @@ void Controller::Transmit(vector<bool> msg) {
   cout << endl;
   _outputBuffer->insert(_outputBuffer->begin(), intMsg.begin(), intMsg.end()); //insert on buffer
 
-  //wait for any ack, can never recieve old ack since we dont send msg without getting an ack
+  // wait for any ack, can never receive old ack since we dont send msg without getting an ack
 
   int k = 10000000;
 
@@ -65,7 +65,7 @@ void Controller::Transmit(vector<bool> msg) {
     // Sleep(0.03);
     k--;
   }
-  if (!_ACKReceived) { //if no ACK is received either the frame or ack was lost or an error occured
+  if (!_ACKReceived) { //if no ACK is received either the frame or ack was lost or an error occurred
     Transmit(msg);
   } else { //if an ACK has been received, we flip the _currentSeq, which means the next msg we send has a new seqnr
     _currentSeq.flip();
@@ -97,7 +97,7 @@ void Controller::Receive(vector<int> in) {
         _ReceiveMessageBuffer->push_back(msg); //msg->buffer
         cout << "ACK transmitted" << endl;
       }
-    } //if a crc error has occured we just wait for the msg to be resent
+    } //if a crc error has occurred we just wait for the msg to be resent
   } else if (msg.at(TYPE) == _ackType) {
     cout << "ACK received" << endl;
     _ReceivedACKBuffer->push_back(msg.at(SEQ)); //is actually useless, since we look for any ACK
