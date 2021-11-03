@@ -3,6 +3,9 @@
 
 #include <vector>
 
+#include <thread>
+#include <mutex>
+
 #include "Controller.h"
 
 struct DTMFFrame {
@@ -12,15 +15,18 @@ struct DTMFFrame {
 class DTMFProtocol {
   public:
     DTMFProtocol();
+    ~DTMFProtocol();
 
     void send();
 
+    const DTMFFrame getMessage();
     const std::vector<DTMFFrame>* getReceivedMessagesBuffer();
 
   private:
     Controller m_controller;
 
-    const std::vector<DTMFFrame> *m_receivedBuffer;
+    std::mutex m_messagesBufferLock;
+    std::vector<DTMFFrame> *m_receivedMessagesBuffer;
 };
 
 #endif
