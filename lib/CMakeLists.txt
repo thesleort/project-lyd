@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_BUILD_TYPE Debug)
 
-project(libdtmf VERSION 0.1 DESCRIPTION "DTMF Communication Interface")
+project(dtmf VERSION 0.1 DESCRIPTION "DTMF Communication Interface")
 
-add_library(libdtmf SHARED
+add_library(dtmf SHARED
   # Main library interface file
   libdtmf/libdtmf.cpp
 
@@ -21,7 +21,7 @@ add_library(libdtmf SHARED
   layer-data-transfer/
 )
 
-include_directories(libdtmf
+include_directories(dtmf
   layer-dtmf
   layer-data-transfer/Controller
   layer-data-transfer/Cyclic
@@ -29,6 +29,6 @@ include_directories(libdtmf
   layer-data-transfer/Protocol
 )
 
-set_target_properties(libdtmf PROPERTIES SOVERSION 1)
+set_target_properties(dtmf PROPERTIES SOVERSION 1)
 
-set_target_properties(libdtmf PROPERTIES PUBLIC_HEADER libdtmf/libdtmf.h)
+set_target_properties(dtmf PROPERTIES PUBLIC_HEADER libdtmf/libdtmf.h)
