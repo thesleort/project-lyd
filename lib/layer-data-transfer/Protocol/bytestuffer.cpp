@@ -78,10 +78,10 @@ vector<int> bytestuffer::stuff(vector<bool> in) {
 }
 
 vector<bool> bytestuffer::unstuff(vector<int> in) {
-  for (int n : in) {
-    cout << n;
+  if (in.size() < 3) { //if empty vector is unstuffed(2 flags: size<3) we return a vector that is too small, which will be handled by framesplitter
+    vector<bool> z = {0};
+    return z;
   }
-  cout << endl;
 
   for (int i = 0; i < in.size(); i++) {
     if (in.at(i) == _etcI) {
