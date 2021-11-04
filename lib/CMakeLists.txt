@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_BUILD_TYPE Debug)
+
 project(libdtmf VERSION 0.1 DESCRIPTION "DTMF Communication Interface")
 
 add_library(libdtmf SHARED

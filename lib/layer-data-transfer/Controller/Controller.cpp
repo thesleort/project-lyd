@@ -7,7 +7,7 @@
 #include "framegen.h"
 #include "Controller.h"
 
-//-------------Constructor/Deconstuctor-----------
+//-------------Constructor/Deconstructor-----------
 Controller::Controller() {
   _ReceiveMessageBuffer = new vector<vector<vector<bool>>>;
   _ReceivedACKBuffer = new vector<vector<bool>>;
