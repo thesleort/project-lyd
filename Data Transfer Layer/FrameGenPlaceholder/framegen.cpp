@@ -39,27 +39,28 @@ return frame;
 }
 
 vector<vector<bool>> FrameGenerator::splitFrame(vector<bool> frame){
-if(frame.size()<4){//if frame is too small a mistake has happened,we give the frame dead type which means receive does nothing
-vector<vector<bool>> parts;
-cout<< "Short frame detected, dead type assigned" << endl;
-parts.at(0).push_back(0);
-parts.at(1).push_back(1); //type {1,1} means Receive() does nothing and msg is deleted by autoReceive()
-parts.at(1).push_back(1);
+    //incomingframe is unstuffed bool frame
+
+    vector<vector<bool>> parts;
+
+if(frame.size()<4){
+    parts={{0},{1,1},{0,0},{0}};//if frame is too small we set a type that discards the message
+    return parts;
 }
 vector<bool> type={frame.at(0),frame.at(1)};
 vector<bool> _msgType={1,0};
-vector<vector<bool>> parts;
+vector<bool> _ackType={0,1};
 if(type==_msgType){
+
     vector<bool> seq={frame.at(2),frame.at(3)};
     vector<bool> crc={frame.at(4),frame.at(5),frame.at(6),frame.at(7)};
     vector<bool> data;
     for(int i=8;i<frame.size();i++){
         data.push_back(frame.at(i));
     }
-
     parts={data,type,seq,crc};
 
-} else {
+} else if(type==_ackType){
     vector<bool> seq={frame.at(2),frame.at(3)};
     parts={{0},type,seq,{0}};    
 

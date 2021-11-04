@@ -55,7 +55,10 @@ for(int n : intMsg){
     cout<< endl;
 
 cout << "--------------" << endl;
-_outputBuffer->insert(_outputBuffer->begin(),intMsg.begin(),intMsg.end()); //insert on buffer
+for(int n : intMsg){
+    _outputBuffer->push_back(n); //values inserted in order on end of buffer, buffer is read from index 0 on split
+}
+//_outputBuffer->insert(_outputBuffer->begin(),intMsg.begin(),intMsg.end()); //insert on buffer
 
 //wait for any ack, can never recieve old ack since we dont send msg without getting an ack
 
@@ -129,7 +132,11 @@ for(int n:intAck){
 cout << endl;
 cout << "---------" << endl;
 
-_outputBuffer->insert(_outputBuffer->begin(),intAck.begin(),intAck.end());
+for(int n:intAck){
+    _outputBuffer->push_back(n);
+}
+
+//_outputBuffer->insert(_outputBuffer->begin(),intAck.begin(),intAck.end());
 
 }
 
@@ -157,7 +164,7 @@ void Controller::autoReceive(){
 
 void Controller::autoSplitInput(){
     while(1){
-        while(_inputBuffer->size()>0){
+        while(_inputBuffer->size()>2){
             SplitBuffer();
         }
     }
@@ -167,26 +174,50 @@ void Controller::autoSplitInput(){
 void Controller::SplitBuffer(){
 int _flagI=_Stuffer->getFlag();
 int _etcI=_Stuffer->getEtc();
+int size= _inputBuffer->size();
 vector<int> frame;
 int frameStart=-1; //starting flag position
-for(int i =0;i<_inputBuffer->size();i++){
+try{
+for(int i=0;i<size-1;i++){//look at size -1 values since we check i+1 to determine flag
     if(_inputBuffer->at(i)==_flagI){//if flag is found it might be a starting flag
-        if(i==0){ //if it is the buffer beginning, it is a flag
-            frameStart=0;
+        if(i==0&&(_inputBuffer->at(i+1)==4||_inputBuffer->at(i+1)==7||_inputBuffer->at(i+1)==8||_inputBuffer->at(i+1)==11)){ 
+            frameStart=0;//if it is the buffer beginning, it is a flag if the next value is a combination of type + seq
             break;
-        } else if(_inputBuffer->at(i-1)!=_etcI){//if previous int is not etc, it a flag
-            frameStart=i;
-            break;
+        } else if(_inputBuffer->at(i-1)!=_etcI){//else if previous int is not etc,
+            if(_inputBuffer->at(i+1)==4||_inputBuffer->at(i+1)==7||_inputBuffer->at(i+1)==8||_inputBuffer->at(i+1)==11){
+                frameStart=i;//we have a starting flag if the next int is a valid type+seq
+                break;
+            }
         } //if not we keep looking (if frame can naturally consist of etc->flag, this will break)
     }
+}} 
+catch(const exception& e){
+    cout << "Framestart error" << e.what()  << endl;
+        cout << "size: " << size <<"actual size: " << _inputBuffer->size() << endl;
+    for(int i:*_inputBuffer){
+        cout << i;
+    }
+    exit(0);
 }
 int frameStop=-1;
-for(int i=frameStart+1;i<_inputBuffer->size();i++){//Starts at +1 since we do not want the starting flag
+try{
+   // cout << "Framestart +1 - size: " << frameStart+1 - size << endl;
+for(int i=frameStart+1;i<size;i++){//Starts at +1 since we do not want the starting flag
     if(_inputBuffer->at(i)==_flagI&&_inputBuffer->at(i-1)!=_etcI){//the next flag we find without an etc will be the stop
             frameStop=i;
             break;
-        }
     }
+}
+} catch(const exception& e){
+    cout << "Framestop error" << e.what();
+    cout << "size: " << size <<"actual size: " << _inputBuffer->size() << endl;
+    for(int i:*_inputBuffer){
+        cout << i;
+    }
+    cout << endl;
+
+}
+
 if(frameStart!=-1&&frameStop!=-1){
     cout << "start: " << frameStart << "stop: "<< frameStop << endl;
 for(int i=frameStart;i<=frameStop;i++){

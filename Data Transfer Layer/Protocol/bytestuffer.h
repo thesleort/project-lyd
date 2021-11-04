@@ -15,7 +15,7 @@ public:
 
     vector<int> stuff(vector<bool>); //stuffs boolean vector with etcs ahead of flags and etcs, adds flags
     
-    vector<bool> unstuff(vector<int>); //removes 1 etc and skips what is behind it(requires etc stuffing into other etcs)
+    vector<bool> unstuff(vector<int>); //removes flags, removes 1 etc and skips what is behind it(requires etc stuffing into other etcs)
     vector<int> splitbuffer(vector<int>&); //creates a frame from the buffer(and deletes what is taken(still needs implementing))
 
     int getEtc();
