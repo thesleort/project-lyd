@@ -26,9 +26,23 @@ private:
     const int _middlefreq = 1100;
     double _sampleTime;
 
+
+    //Normal sampling: 50 ms, 10 Repeat padding, downsample factor 10, amp threshold 5000, Errormargin = 2
+
+    //Speed sampling 10 ms, 60 repeat padding, downsample factor 10, amp threshold 5000, ErrorMargin = 4
+
+    double _errorMargin = 4.0;
+    int _repeatPadding = 60;
+    int _downSampling  = 10;
+    int _ampthreshhold = 10000;
+
+
+
+
+
     double sequenceToFrequence(int seq){return seq / _sampleTime; };
 
-    vector<complex<double>> realToComplexVector(const sf::Int16* reals, int count, int resMultiplier);
+    vector<complex<double>> realToComplexVector(const sf::Int16* reals, int count);
 
     vector<complex<double>> fft(vector<complex<double>>& data);
 
