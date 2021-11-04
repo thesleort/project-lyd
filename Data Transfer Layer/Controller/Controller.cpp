@@ -16,8 +16,7 @@ Controller::Controller(){
     _incomingFrames = new vector<vector<int>>;
     _outgoingMessages = new vector<vector<bool>>; 
 
-    //autoTransmit();
-    //autoACK();
+ 
 }
 
 Controller::~Controller(){
@@ -49,11 +48,13 @@ vector<vector<bool>> parts={msg,type,seq,crc};
 vector<bool> frame=_FG->generateFrame(parts);//gen frame
 
 vector<int> intMsg=_Stuffer->stuff(frame); //stuff
-
+cout << "sent msg in integers" << endl;
 for(int n : intMsg){
     cout << n << " "; 
 }
     cout<< endl;
+
+cout << "--------------" << endl;
 _outputBuffer->insert(_outputBuffer->begin(),intMsg.begin(),intMsg.end()); //insert on buffer
 
 //wait for any ack, can never recieve old ack since we dont send msg without getting an ack
@@ -72,21 +73,22 @@ if(!_ACKReceived){//if no ACK is received either the frame or ack was lost or an
         Transmit(msg); 
 } else { //if an ACK has been received, we flip the _currentSeq, which means the next msg we send has a new seqnr
         _currentSeq.flip();
-        cout << "ack received!" << endl;
+        cout << "ack receive registrered by transmit" << endl;
         _ACKReceived=0; //resets ack receive so we dont break anything
 }
-    
-
 
 }
 
 
 void Controller::Receive(vector<int> in){
 //assumes: {data,type,seq,crc};
+cout << "Received() message:" << endl;
 for(int n:in){
     cout <<n;
 }
 cout << endl;
+cout << "--------------"<<endl;
+ 
 vector<vector<bool>> msg=_FG->splitFrame(_Stuffer->unstuff(in)); 
 
 if(msg.at(TYPE)==_msgType){//if msg is a message, we do a CRC check
@@ -96,19 +98,21 @@ if(msg.at(TYPE)==_msgType){//if msg is a message, we do a CRC check
         if(msg.at(SEQ)==_lastRecievedSeq){
         //if seq of msg is same as last message, and CRC shows no error, the last ACK has been lost and we "resend" the ack
             TransmitACK(_lastRecievedSeq);
-            cout << "ACK transmitted" <<endl;
+            cout << "ACK Retransmitted" <<endl;
             } else {
             //if seq number is "new" we transmit an ack and place msg into buffer
             TransmitACK(msg.at(SEQ)); //since we check for any ack and handle redundancy on _lRS  check, ack seqnr is useless(might be usefull later)
             _lastRecievedSeq=msg.at(SEQ);
+            cout << "new ACK transmitted" <<endl;
             _ReceiveMessageBuffer->push_back(msg);//msg->buffer
-            cout << "ACK transmitted" <<endl;
+            
             } 
         }  //if a crc error has occured we just wait for the msg to be resent
     } else if(msg.at(TYPE)==_ackType){
     cout << "ACK received" << endl;
     _ReceivedACKBuffer->push_back(msg.at(SEQ));//is actually useless, since we look for any ACK
     _ACKReceived=1;
+    cout << "-----------" << endl;
 }
 }
 
@@ -123,6 +127,8 @@ for(int n:intAck){
     cout << n;
 } 
 cout << endl;
+cout << "---------" << endl;
+
 _outputBuffer->insert(_outputBuffer->begin(),intAck.begin(),intAck.end());
 
 }
@@ -182,12 +188,13 @@ for(int i=frameStart+1;i<_inputBuffer->size();i++){//Starts at +1 since we do no
         }
     }
 if(frameStart!=-1&&frameStop!=-1){
+    cout << "start: " << frameStart << "stop: "<< frameStop << endl;
 for(int i=frameStart;i<=frameStop;i++){
+    
     frame.push_back(_inputBuffer->at(i)); //frame is created based on start and stop values
 }
 _incomingFrames->push_back(frame);
-_inputBuffer->erase(_inputBuffer->begin(),_inputBuffer->begin()+frameStop); 
-
+_inputBuffer->erase(_inputBuffer->begin(),_inputBuffer->begin()+frameStop+1);  //fixes program. in erase range with begin(), the amount of erased elements is equal to It_last-It_first(so if framestop without +1 is used and framestop index is 2, only 2 elements are deleted from input)
 
 }
 }

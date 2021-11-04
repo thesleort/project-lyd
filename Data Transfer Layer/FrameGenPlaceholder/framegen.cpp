@@ -22,12 +22,12 @@ vector<bool> frame;
     for(int j=0;j<parts.at(DATA).size();j++){
         frame.push_back(parts.at(DATA).at(j));
     }
-
+cout << "generated frame" << endl;
 for(bool n : frame){
     std::cout << n;
 }
     std::cout << endl;
-
+cout << endl << " ------------" << endl;
 
 return frame;
 }
@@ -39,6 +39,13 @@ return frame;
 }
 
 vector<vector<bool>> FrameGenerator::splitFrame(vector<bool> frame){
+if(frame.size()<4){//if frame is too small a mistake has happened,we give the frame dead type which means receive does nothing
+vector<vector<bool>> parts;
+cout<< "Short frame detected, dead type assigned" << endl;
+parts.at(0).push_back(0);
+parts.at(1).push_back(1); //type {1,1} means Receive() does nothing and msg is deleted by autoReceive()
+parts.at(1).push_back(1);
+}
 vector<bool> type={frame.at(0),frame.at(1)};
 vector<bool> _msgType={1,0};
 vector<vector<bool>> parts;
