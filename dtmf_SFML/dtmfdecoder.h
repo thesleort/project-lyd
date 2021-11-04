@@ -42,7 +42,7 @@ private:
     void dumpDataToFile(vector<double>& data, string path, string fileName);
 
     //Synchronisation protocol function
-    bool isDTMF0(double lowfreq, double highfreq);
+    bool isDTMF_N(double lowfreq, double highfreq, int lowFreqIndex, int highFreqIndex);
 };
 
 #endif // DTMFDECODER_H

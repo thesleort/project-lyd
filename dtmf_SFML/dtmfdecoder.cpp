@@ -20,38 +20,50 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count)
 
 //    cout << "amount of samples: " << count << endl;
 
-   vector<complex<double>> complexSoundBuffer = realToComplexVector(data,count,20); //Sample is looped 30 times for precision
+   vector<complex<double>> complexSoundBuffer = realToComplexVector(data,count,10); //Sample is looped 30 times for precision
 
-   vector<double> testPrioriFFT;
+//   vector<double> testPrioriFFT;
 
-   for (int i = 0; i < count; i++){
-       testPrioriFFT.push_back(data[i]);
-   }
+//   for (int i = 0; i < count; i++){
+//       testPrioriFFT.push_back(data[i]);
+//   }
 
-   dumpDataToFile(testPrioriFFT, "/home/peter/Desktop", "PrioriFFT");
+//   dumpDataToFile(testPrioriFFT, "/home/peter/Desktop", "PrioriFFT");
 
+   sf::Clock clock;
    complexSoundBuffer = fft(complexSoundBuffer);
+    cout << "FFT Time: " <<clock.getElapsedTime().asMilliseconds() << endl;
 
    vector<DtmfDecoder::signal> frequencyData = sequenceToSignals(complexSoundBuffer);
 
    vector<double> testPosterior;
 
-   for(int i= 0; i < frequencyData.size(); i++){
-       testPosterior.push_back(frequencyData.at(i).amplitude);
-   }
+//   for(int i= 0; i < frequencyData.size(); i++){
+//       testPosterior.push_back(frequencyData.at(i).amplitude);
+//   }
 
-   dumpDataToFile(testPosterior, "/home/peter/Desktop", "PosteriorFFT");
+//   dumpDataToFile(testPosterior, "/media/sf_Ubuntu_Shared_Folder", "PosteriorFFT");
+
 
    vector<double> peaks = findSignalPeaks(frequencyData);
 
-   return frequencyToDtmf(peaks[0], peaks[1]);
+
+   int tone;
+
+   if(peaks[0] != -1){
+   tone = frequencyToDtmf(peaks[0], peaks[1]);
+    }else{
+       return -1;
+   }
+
+   return tone;
 
 }
 
 bool DtmfDecoder::detectDTMFTone0(const sf::Int16* data, int count)
 {
 
-    vector<complex<double>> complexSoundBuffer = realToComplexVector(data,count,20); //Sample is looped n times for precision
+    vector<complex<double>> complexSoundBuffer = realToComplexVector(data,count,2); //Repeat Padding
 
     complexSoundBuffer = fft(complexSoundBuffer);
 
@@ -59,7 +71,7 @@ bool DtmfDecoder::detectDTMFTone0(const sf::Int16* data, int count)
 
     vector<double> peaks = findSignalPeaks(frequencyData);
 
-    return isDTMF0(peaks[0], peaks [1]);
+    //return isDTMF_N(peaks[0], peaks [1], );
 
 
 
@@ -71,14 +83,17 @@ vector<complex<double>> DtmfDecoder::realToComplexVector(const Int16* reals, int
     vector<complex<double>> complexes;
 
    for(int p = 0; p < resMultiplier; p++){
-       for (int i = 0; i < count; i++){
+       for (int i = 0; i < count; i += 10){
            complex<double> number;
            number.real((double)reals[i]);
            complexes.push_back(number);
        }
    }
 
-   _sampleTime = _sampleTime*resMultiplier;
+
+
+       _sampleTime = _sampleTime*resMultiplier;
+
 
     return complexes;
 }
@@ -154,6 +169,7 @@ vector<double> DtmfDecoder::findSignalPeaks(const vector<signal> & signaldata, d
     double highestAmp = 0;
     double highestFreq;
     vector<double> peakFreqs;
+    vector<double> peakAmp;
     vector<int> dtmf_Tone;
 
     bool searchLowFreq = true;
@@ -163,6 +179,7 @@ vector<double> DtmfDecoder::findSignalPeaks(const vector<signal> & signaldata, d
             searchLowFreq = false;
 
             peakFreqs.push_back(highestFreq);
+            peakAmp.push_back(highestAmp);
 
             highestAmp = 0;
         }
@@ -173,6 +190,13 @@ vector<double> DtmfDecoder::findSignalPeaks(const vector<signal> & signaldata, d
         }
     }
     peakFreqs.push_back(highestFreq);
+    peakAmp.push_back(highestAmp);
+
+    //Hurtig fix til amp begrænsning
+
+    if(peakAmp.at(0) < 5000 || peakAmp.at(1) < 5000){
+        peakFreqs[0] = -1;
+    }
 
     return peakFreqs; // Error decimal
 
@@ -189,7 +213,8 @@ int DtmfDecoder::frequencyToDtmf(double lowfreq, double highfreq){
     for(int i = 0; i < 4; i++){
         if(lowshortestDistance > abs(_lowFreqs[i]-lowfreq)){
             lowshortestDistance = abs(_lowFreqs[i]-lowfreq);
-            lowIndex = i;
+            lowIndex = i;            
+
         }
 
         if(highshortestDistance > abs(_highFreqs[i]-highfreq)){
@@ -198,20 +223,25 @@ int DtmfDecoder::frequencyToDtmf(double lowfreq, double highfreq){
         }
     }
 
-
-
-    return lowIndex*4+highIndex;
+    //isDTMF_N(lowfreq,highfreq,lowIndex*4+highIndex)
+    if(isDTMF_N(lowfreq,highfreq,lowIndex,highIndex)){
+        return lowIndex*4+highIndex;
+    }else{
+        return -1;
+    }
 }
 
-bool DtmfDecoder::isDTMF0(double lowfreq, double highfreq)
+bool DtmfDecoder::isDTMF_N(double lowfreq, double highfreq, int lowFreqIndex, int highFreqIndex)
 {
-    double errorPercentage = 3.6;
+    double errorPercentage = 1.5;
 
-    if((abs(lowfreq-_lowFreqs[0])/_lowFreqs[0])*100.0 > errorPercentage){ //If error is greater than 2.5%
+    //cout << "ERROR Percentage: " << (lowfreq-_lowFreqs[lowFreqIndex])/_lowFreqs[lowFreqIndex]*100.0 << endl;
+
+    if((abs(lowfreq-_lowFreqs[lowFreqIndex])/_lowFreqs[lowFreqIndex])*100.0 > errorPercentage){ //If error is greater than 2.5%
         return false;
     }
 
-    if((abs(highfreq-_highFreqs[0])/_highFreqs[0])*100.0 > errorPercentage){ //If error is greater than 2.5%
+    if((abs(highfreq-_highFreqs[highFreqIndex])/_highFreqs[highFreqIndex])*100.0 > errorPercentage){ //If error is greater than 2.5%
         return false;
     }
 
