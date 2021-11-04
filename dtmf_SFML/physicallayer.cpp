@@ -10,13 +10,21 @@
 
 using namespace std;
 
-PhysicalLayer::PhysicalLayer(int duration)
+PhysicalLayer::PhysicalLayer(int duration, int sampleTime)
 {
     _duration = duration;
+    _sampleTime = sampleTime;
+    setProcessingInterval(sf::milliseconds(sampleTime));
     sem_init(&_inBufferMutex, 0, 1);
     sem_init(&_outBufferMutex, 0, 1);
     new thread(&PhysicalLayer::encoding, this);
     new thread(&PhysicalLayer::decoding, this);
+    start();
+}
+
+PhysicalLayer::~PhysicalLayer()
+{
+    stop();
 }
 
 bool PhysicalLayer::readInBuffer(int& dtmf)
@@ -66,6 +74,7 @@ void PhysicalLayer::decoding()
 {
     int i = 0;
     while(true){
+
         sem_wait(&_inBufferMutex);
 
         _inBuffer.push_back(i);
@@ -77,4 +86,14 @@ void PhysicalLayer::decoding()
         sleep(1);
     }
     return;
+}
+
+bool PhysicalLayer::onProcessSamples(const Int16* samples, std::size_t sampleCount)
+{
+    cout << "SAMPLE COUNT: " << sampleCount << endl;
+    //for(int i = 0; i < sampleCount; i++){
+    //    cout << *(samples+i) << " ";
+    //}
+    //cout << endl;
+    return true;
 }
