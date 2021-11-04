@@ -46,15 +46,13 @@ bool PhysicalLayer::writeOutBuffer(int dtmf)
 
 void PhysicalLayer::encoding()
 {
-    cout << "ecoding called" << endl;
-
-    DtmfEncoder encoder(_duration, 10000, 3000);
+    DtmfEncoder encoder(_duration, 44100, 3000);
     while(true){
         if (_outBuffer.size() > 0){
             sem_wait(&_outBufferMutex);
 
             encoder.playDtmfTone(_outBuffer.at(0));
-            cout << _outBuffer.at(0) << endl;
+            //cout << _outBuffer.at(0) << endl;
             _outBuffer.erase(_outBuffer.begin());
 
             sem_post(&_outBufferMutex);
@@ -66,8 +64,6 @@ void PhysicalLayer::encoding()
 
 void PhysicalLayer::decoding()
 {
-    cout << "decoding called" << endl;
-
     int i = 0;
     while(true){
         sem_wait(&_inBufferMutex);

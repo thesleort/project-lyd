@@ -1,9 +1,12 @@
 #include "dtmfEncoder.h"
 #include <cmath>
 #include <cassert>
+#include <chrono>
+#include <iostream>
 
 DtmfEncoder::DtmfEncoder(int mSec, int sampleRate, int amplitude)
 {
+    _sound.setBuffer(_buffer);
     _mSec = mSec;
     _sampleRate = sampleRate;
     _amplitude = amplitude;
@@ -30,7 +33,6 @@ void DtmfEncoder::playDualTone(int freq1, int freq2)
         y += incrementY;
     }
     _buffer.loadFromSamples(samples, nSamples, 1, _sampleRate);
-    _sound.setBuffer(_buffer);
     _sound.play();
     // while(_sound.getStatus() == 2){}
 }
