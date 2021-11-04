@@ -17,8 +17,8 @@ int DtmfEncoder::getStatus()
 
 void DtmfEncoder::playDualTone(int freq1, int freq2)
 {
-    double increment1 = ((double)freq1/_sampleRate) * _2PI;
-    double increment2 = ((double)freq2/_sampleRate) * _2PI;
+    double incrementX = ((double)freq1/_sampleRate) * _2PI;
+    double incrementY = ((double)freq2/_sampleRate) * _2PI;
 
     int nSamples = (_sampleRate/1000) * _mSec;
     Int16 samples[nSamples];
@@ -26,8 +26,8 @@ void DtmfEncoder::playDualTone(int freq1, int freq2)
     double x = 0, y = 0;
     for (int i = 0; i < nSamples; i++) {
         samples[i] = _amplitude * (sin(x) + sin(y));
-        x += increment1;
-        y += increment2;
+        x += incrementX;
+        y += incrementY;
     }
     _buffer.loadFromSamples(samples, nSamples, 1, _sampleRate);
     _sound.setBuffer(_buffer);
