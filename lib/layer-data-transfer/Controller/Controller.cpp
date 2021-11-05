@@ -61,7 +61,7 @@ void Controller::Transmit(vector<bool> msg) {
   }
   //_outputBuffer->insert(_outputBuffer->begin(),intMsg.begin(),intMsg.end()); //insert on buffer
 
-  //wait for any ack, can never recieve old ack since we dont send msg without getting an ack
+  //wait for any ack, can never receive old ack since we dont send msg without getting an ack
 
   int k = 10000000;
 
