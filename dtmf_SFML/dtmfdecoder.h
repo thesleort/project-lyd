@@ -11,6 +11,7 @@ class DtmfDecoder
 public:
     DtmfDecoder(double sampleTime);
     int identifyDTMF(const sf::Int16* data, int count);
+    bool detectDTMFTone0(const sf::Int16* data, int count);
 
 private:
     struct signal {
@@ -18,13 +19,27 @@ private:
         double amplitude;
         double frequency;
     };
-    vector<int> _lowFreqs = {697, 770, 852, 941};
-    vector<int> _highFreqs = {1209, 1336, 1477, 1633};
+    vector<double> _lowFreqs = {697.0, 770.0, 852.0, 941.0};
+    vector<double> _highFreqs = {1209.0, 1336.0, 1477.0, 1633.0};
     const int _cutoffLow = 600;
     const int _cutoffHigh = 1800;
-    const double _sampleTime;
+    const int _middlefreq = 1100;
+    double _sampleTime;
 
-    int frequenceToSequence(double freq){return freq * _sampleTime; };
+
+    //Normal sampling: 50 ms, 10 Repeat padding, downsample factor 10, amp threshold 5000, Errormargin = 2
+
+    //Speed sampling 10 ms, 60 repeat padding, downsample factor 10, amp threshold 5000, ErrorMargin = 4
+
+    double _errorMargin = 4.0;
+    int _repeatPadding = 60;
+    int _downSampling  = 10;
+    int _ampthreshhold = 10000;
+
+
+
+
+
     double sequenceToFrequence(int seq){return seq / _sampleTime; };
 
     vector<complex<double>> realToComplexVector(const sf::Int16* reals, int count);
@@ -33,15 +48,15 @@ private:
 
     vector<signal> sequenceToSignals(const vector<complex<double>>& sequence);
 
-    double error(double val, double ref);
+    vector<double> findSignalPeaks(const vector<signal> & signals, double error = 1);
 
-    double intervalMaxAmp(vector<signal>& signals);
-
-    int signalsToDtmf(const vector<signal> & signals);
-    int frequencyToDtmf(double lowfreq, double highfreq, int error);
+    int frequencyToDtmf(double lowfreq, double highfreq);
 
     // dumps a vector<double> to a textfile for debugging
     void dumpDataToFile(vector<double>& data, string path, string fileName);
+
+    //Synchronisation protocol function
+    bool isDTMF_N(double lowfreq, double highfreq, int lowFreqIndex, int highFreqIndex);
 };
 
 #endif // DTMFDECODER_H
