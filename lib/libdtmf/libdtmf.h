@@ -9,24 +9,24 @@
 #include "Controller.h"
 
 struct DTMFFrame {
-
+  uint16_t sizeBytes;
 };
 
-class DTMFProtocol {
+class DTMF {
   public:
-    DTMFProtocol();
-    ~DTMFProtocol();
+    DTMF();
+    ~DTMF();
 
-    void send();
+    void transmit(DTMFFrame &frame, bool blocking);
 
-    const DTMFFrame getMessage();
-    const std::vector<DTMFFrame>* getReceivedMessagesBuffer();
-
+    const uint16_t receive(DTMFFrame &frame, bool blocking);
   private:
     Controller m_controller;
 
-    std::mutex m_messagesBufferLock;
-    std::vector<DTMFFrame> *m_receivedMessagesBuffer;
+    std::mutex m_messagesBufferMutex;
+    std::mutex m_transmitBufferMutex;
+    std::vector<DTMFFrame> *m_transmitBuffer;
+    std::vector<DTMFFrame> *m_receiveBuffer;
 };
 
 #endif
