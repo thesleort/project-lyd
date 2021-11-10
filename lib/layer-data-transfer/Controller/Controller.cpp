@@ -1,10 +1,11 @@
 #include <vector>
 #include <iostream>
+#include <mutex>
 
-#include "data-transfer-config.h"
-#include "Cyclic.h"
-#include "bytestuffer.h"
-#include "framegen.h"
+#include "..\config\data-transfer-config.h"
+#include "..\Cyclic\Cyclic.h"
+#include "..\Protocol\bytestuffer.h"
+#include "..\FrameGenPlaceholder\framegen.h"
 #include "Controller.h"
 
 #ifdef _WIN32
@@ -19,6 +20,9 @@ Controller::Controller() {
   _ReceivedACKBuffer = new vector<vector<bool>>;
   _incomingFrames = new vector<vector<int>>;
   _outgoingMessages = new vector<vector<bool>>;
+  
+
+
 }
 
 Controller::~Controller() {
@@ -28,6 +32,9 @@ Controller::~Controller() {
   delete _Stuffer;
   delete _incomingFrames;
   delete _outgoingMessages;
+
+  
+
 }
 
 //-------------Setup---------
@@ -59,6 +66,7 @@ void Controller::Transmit(vector<bool> msg) {
   for (int n : intMsg) {
     _outputBuffer->push_back(n); //values inserted in order on end of buffer, buffer is read from index 0 on split
   }
+
   //_outputBuffer->insert(_outputBuffer->begin(),intMsg.begin(),intMsg.end()); //insert on buffer
 
   //wait for any ack, can never recieve old ack since we dont send msg without getting an ack
@@ -100,7 +108,7 @@ void Controller::Receive(vector<int> in) {
   if (msg.at(TYPE) == _msgType) { //if msg is a message, we do a CRC check
     cout << "msg received" << endl;
 
-    if (_CRChecker->Decode(msg.at(DATA), msg.at(CRC))) { //If crc returns no error, we check the sequencenumber
+    if (_CRChecker->Decode(msg.at(DATA), msg.at(CRCC))) { //If crc returns no error, we check the sequencenumber
       if (msg.at(SEQ) == _lastReceivedSeq) {
         //if seq of msg is same as last message, and CRC shows no error, the last ACK has been lost and we "resend" the ack
         TransmitACK(_lastReceivedSeq);
@@ -162,7 +170,7 @@ void Controller::autoReceive() {
 
 void Controller::autoSplitInput() {
   while (1) {
-    while (_inputBuffer->size() > 2) {
+    while (_inputBuffer->size() > 3) {
       SplitBuffer();
     }
   }
@@ -177,9 +185,11 @@ void Controller::SplitBuffer() {
   try {
     for (int i = 0; i < size - 1; i++) {   //look at size -1 values since we check i+1 to determine flag
       if (_inputBuffer->at(i) == _flagI) { //if flag is found it might be a starting flag
-        if (i == 0 && (_inputBuffer->at(i + 1) == 4 || _inputBuffer->at(i + 1) == 7 || _inputBuffer->at(i + 1) == 8 || _inputBuffer->at(i + 1) == 11)) {
-          frameStart = 0; //if it is the buffer beginning, it is a flag if the next value is a combination of type + seq
-          break;
+        if (i == 0){//else/iffed on i=0 if value after 0 wasnt type+seq because of && statement, resulted in checking i-1 for i=0, fixed by taking else if to i=0 statment instead of i=0 && ....
+          if(_inputBuffer->at(i + 1) == 4 || _inputBuffer->at(i + 1) == 7 || _inputBuffer->at(i + 1) == 8 || _inputBuffer->at(i + 1) == 11){
+            frameStart = 0; //if it is the buffer beginning, it is a flag if the next value is a combination of type + seq
+            break;
+          }
         } else if (_inputBuffer->at(i - 1) != _etcI) { //else if previous int is not etc,
           if (_inputBuffer->at(i + 1) == 4 || _inputBuffer->at(i + 1) == 7 || _inputBuffer->at(i + 1) == 8 || _inputBuffer->at(i + 1) == 11) {
             frameStart = i; //we have a starting flag if the next int is a valid type+seq
@@ -198,11 +208,13 @@ void Controller::SplitBuffer() {
   }
   int frameStop = -1;
   try {
+    if(frameStart!=-1){ //only look for framestop if we have a defined start
     // cout << "Framestart +1 - size: " << frameStart+1 - size << endl;
-    for (int i = frameStart + 1; i < size; i++) {                              //Starts at +1 since we do not want the starting flag
-      if (_inputBuffer->at(i) == _flagI && _inputBuffer->at(i - 1) != _etcI) { //the next flag we find without an etc will be the stop
-        frameStop = i;
-        break;
+      for (int i = frameStart + 1; i < size; i++) {                              //Starts at +1 since we do not want the starting flag
+        if (_inputBuffer->at(i) == _flagI && _inputBuffer->at(i - 1) != _etcI) { //the next flag we find without an etc will be the stop
+          frameStop = i;
+          break;
+        }
       }
     }
   } catch (const exception &e) {
@@ -222,5 +234,6 @@ void Controller::SplitBuffer() {
     }
     _incomingFrames->push_back(frame);
     _inputBuffer->erase(_inputBuffer->begin(), _inputBuffer->begin() + frameStop + 1); //fixes program. in erase range with begin(), the amount of erased elements is equal to It_last-It_first(so if framestop without +1 is used and framestop index is 2, only 2 elements are deleted from input)
+  
   }
 }
