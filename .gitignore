@@ -22,3 +22,4 @@ CTestTestfile.cmake
 _deps
 settings.json
 *.exe
+libdtmf.so*
