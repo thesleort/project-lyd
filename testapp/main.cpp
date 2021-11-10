@@ -31,8 +31,20 @@ int main(int argc, char *argv[]) {
 
 void socket1(DTMF *dtmfClass) {
   std::cout << "Creating socket1" << std::endl;
+  DTMFFrame frame;
+  frame.sizeBytes = 10;
+  dtmfClass->transmit(frame);
+  frame.sizeBytes = 100;
+  dtmfClass->transmit(frame);
+  std::cout << "Socket 1: frame sent (" << frame.sizeBytes << ")" << std::endl;
 }
 
 void socket2(DTMF *dtmfClass) {
   std::cout << "Creating socket2" << std::endl;
+  DTMFFrame frame;
+  while (true) {
+    dtmfClass->receive(frame);
+
+    std::cout << "Socket 2: frame received (" << frame.sizeBytes << ")" << std::endl;
+  }
 }
