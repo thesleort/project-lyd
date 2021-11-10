@@ -4,6 +4,6 @@
 #define DATA 0
 #define TYPE 1
 #define SEQ 2
-#define CRC 3
+#define CRCC 3
 
 #endif
