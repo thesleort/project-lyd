@@ -24,9 +24,9 @@ class DTMF {
     DTMF(std::vector<DTMFFrame> *transmitBuffer, std::vector<DTMFFrame> *receiveBuffer);
     #endif
 
-    void transmit(DTMFFrame &frame, bool blocking);
+    void transmit(DTMFFrame frame, bool blocking = true);
 
-    const uint16_t receive(DTMFFrame &frame, bool blocking);
+    const uint16_t receive(DTMFFrame &frame, bool blocking = true);
 
 
   private:
