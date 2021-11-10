@@ -11,8 +11,8 @@ DTMF::DTMF() {
 
   m_stopFlag = false;
 
-  m_transmitThread = std::thread(&DTMF::transmitter, this, m_stopFlag);
-  m_receiveThread = std::thread(&DTMF::receive, this, m_stopFlag);
+  m_transmitThread = std::thread(&DTMF::transmitter, this, std::ref(m_stopFlag));
+  m_receiveThread = std::thread(&DTMF::receiver, this, std::ref(m_stopFlag));
 }
 
 /**
@@ -74,7 +74,7 @@ const uint16_t DTMF::receive(DTMFFrame &frame, bool blocking = true) {
  */
 void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
   while (!cancellation_token) {
-
+    
   }
 }
 
