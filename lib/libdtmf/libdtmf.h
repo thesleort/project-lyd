@@ -5,6 +5,7 @@
 
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 #include "Controller.h"
 
@@ -22,6 +23,14 @@ class DTMF {
     const uint16_t receive(DTMFFrame &frame, bool blocking);
   private:
     Controller m_controller;
+
+    std::thread m_transmitThread;
+    std::thread m_receiveThread;
+
+    void transmitter(std::atomic<bool> &cancellation_token);
+    void receiver(std::atomic<bool> &cancellation_token);
+
+    std::atomic<bool> m_stopFlag;
 
     std::mutex m_messagesBufferMutex;
     std::mutex m_transmitBufferMutex;

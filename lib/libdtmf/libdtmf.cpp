@@ -8,6 +8,11 @@
 DTMF::DTMF() {
   m_receiveBuffer = new std::vector<DTMFFrame>();
   m_transmitBuffer = new std::vector<DTMFFrame>();
+
+  m_stopFlag = false;
+
+  m_transmitThread = std::thread(&DTMF::transmitter, this, m_stopFlag);
+  m_receiveThread = std::thread(&DTMF::receive, this, m_stopFlag);
 }
 
 /**
@@ -15,6 +20,11 @@ DTMF::DTMF() {
  * 
  */
 DTMF::~DTMF() {
+  m_stopFlag = true;
+
+  m_transmitThread.join();
+  m_receiveThread.join();
+
   delete m_receiveBuffer;
   delete m_transmitBuffer;
 }
@@ -54,4 +64,28 @@ const uint16_t DTMF::receive(DTMFFrame &frame, bool blocking = true) {
     }
   } while (blocking);
   return frameSize;
+}
+
+/**
+ * @brief Thread that will send everything one-by-one in the m_transmitBuffer.
+ * To add to the transmit buffer simply use DTMF::transmit(...).
+ * 
+ * @param cancellation_token Stops transmit loop if set to true.
+ */
+void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
+  while (!cancellation_token) {
+
+  }
+}
+
+/**
+ * @brief Thread that will add received messages to the m_receiveBuffer.
+ * Too read what has been received use DTMF::receive(...).
+ * 
+ * @param cancellation_token Stop receive loop if set to true.
+ */
+void DTMF::receiver(std::atomic<bool> &cancellation_token) {
+  while (!cancellation_token) {
+
+  }
 }
