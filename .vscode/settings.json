@@ -52,7 +52,10 @@
       "streambuf": "cpp",
       "cinttypes": "cpp",
       "typeinfo": "cpp",
-      "bit": "cpp"
+      "bit": "cpp",
+      "condition_variable": "cpp",
+      "set": "cpp",
+      "mutex": "cpp"
     },
     "cSpell.words": [
       "DTMF"
