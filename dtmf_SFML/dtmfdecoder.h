@@ -10,9 +10,8 @@ class DtmfDecoder
 {
 public:
     DtmfDecoder(double sampleTime);
-    int identifyDTMF(const sf::Int16* data, int count);
+    int identifyDTMF(const sf::Int16* data, int count, double sampleTime);
     bool detectDTMFTone0(const sf::Int16* data, int count);
-    void setSampletime(double);
 
 private:
     struct signal {
@@ -20,8 +19,8 @@ private:
         double amplitude;
         double frequency;
     };
-    //Debugging Report:
-    //res: -1 Amp block, sound is to quiet
+    //Debugging Report:mp block, sound i
+    //res: -1 As to quiet
     //res: -2 Error margin is too great;
     vector<double> _lowFreqs = {697.0, 770.0, 852.0, 941.0};
     vector<double> _highFreqs = {1209.0, 1336.0, 1477.0, 1633.0};
@@ -35,9 +34,9 @@ private:
 
     //Speed sampling 10 ms, 60 repeat padding, downsample factor 10, amp threshold 5000, ErrorMargin = 4
 
-    double _errorMargin = 5.0;
-    int _repeatPadding = 20;
-    int _downSampling  = 13;
+    double _errorMargin = 4.0;
+    int _repeatPadding = 15;
+    int _downSampling  = 10;
     int _ampthreshhold = 5000;
 
 

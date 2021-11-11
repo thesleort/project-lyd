@@ -20,21 +20,22 @@ DtmfDecoder::DtmfDecoder(double sampleTime) : _sampleTime(sampleTime/1000.0){
 
 //Speed sampling 10 ms, 60 repeat padding, downsample factor 10, amp threshold 5000, ErrorMargin = 4
 
-int DtmfDecoder::identifyDTMF(const Int16 *data, int count)
+int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
 {
 
+    _sampleTime = sampletime/1000;
 //    cout << "amount of samples: " << count << endl;
 
 
    vector<complex<double>> complexSoundBuffer = realToComplexVector(data,count); //Sample is looped 30 times for precision
 
-   vector<double> testPrioriFFT;
+//   vector<double> testPrioriFFT;
 
-   for (int i = 0; i < complexSoundBuffer.size(); i++){
-       testPrioriFFT.push_back(complexSoundBuffer[i].real());
-   }
+//   for (int i = 0; i < complexSoundBuffer.size(); i++){
+//       testPrioriFFT.push_back(complexSoundBuffer[i].real());
+//   }
 
-   dumpDataToFile(testPrioriFFT, "/media/sf_Ubuntu_Shared_Folder", "PrioriFFT");
+//   dumpDataToFile(testPrioriFFT, "/media/sf_Ubuntu_Shared_Folder", "PrioriFFT");
 
 
 
@@ -42,13 +43,13 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count)
 
    vector<DtmfDecoder::signal> frequencyData = sequenceToSignals(complexSoundBuffer);
 
-   vector<double> testPosterior;
+//   vector<double> testPosterior;
 
-   for(int i= 0; i < frequencyData.size(); i++){
-       testPosterior.push_back(frequencyData.at(i).amplitude);
-   }
+//   for(int i= 0; i < frequencyData.size(); i++){
+//       testPosterior.push_back(frequencyData.at(i).amplitude);
+//   }
 
-   dumpDataToFile(testPosterior, "/media/sf_Ubuntu_Shared_Folder", "PosteriorFFT");
+//   dumpDataToFile(testPosterior, "/media/sf_Ubuntu_Shared_Folder", "PosteriorFFT");
 
 
 
@@ -82,12 +83,7 @@ bool DtmfDecoder::detectDTMFTone0(const sf::Int16* data, int count)
 
 }
 
-void DtmfDecoder::setSampletime(double sampletime)
-{
 
-    _sampleTime = sampletime/1000.0;
-
-}
 
 vector<complex<double>> DtmfDecoder::realToComplexVector(const Int16* reals, int count)
 {

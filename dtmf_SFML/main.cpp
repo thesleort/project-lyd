@@ -47,12 +47,12 @@ int main()
 
 
 
-    PhysicalLayer soundObj(50,10);
-
-    vector<int> mega{3, 7, 7, 6, 6, 5, 6, 7, 2, 2, 7, 7, 6, 6, 5, 6, 7, 1, 1, 7, 7, 6, 5, 6};
+    PhysicalLayer soundObj(60,10);
+    vector<int> mega{1,1,1};
         for (int i = 0; i < mega.size(); i++){
             soundObj.writeOutBuffer(mega.at(i));
         }
+
 
     while(true){
 
