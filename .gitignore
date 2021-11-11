@@ -25,3 +25,5 @@ settings.json
 libdtmf.so*
 *.dll
 testapp/libdtmf.h
+masterapp/libdtmf.h
+slaveapp/libdtmf.h
