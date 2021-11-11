@@ -4,7 +4,7 @@
 cd ../lib
 mkdir -p build
 cd build
-cmake ..
+cmake -DTEST_SUITE=OFF ..
 make -j$(nproc)
 cp libdtmf.so* ../../slaveapp
 cd ..
