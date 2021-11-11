@@ -105,16 +105,8 @@ void PhysicalLayer::decodingV2()
 
         sem_wait(&_inBufferMutex);
 
-        if(i >= 0 && i == _dtmfTone){
-            _dtmfComboCounter++;
-            if(_dtmfComboCounter == _comboMax){
-                cout << _dtmfTone << endl;
+        cout << i << endl;
 
-            }
-        }else{
-            _dtmfTone = i;
-            _dtmfComboCounter = 0;
-        }
         //            for(int i = 0; i < _soundbuffer.getSampleCount(); i++){
         //                cout << *(_soundbuffer.getSamples()+i) << endl;
         //            }
@@ -136,7 +128,7 @@ bool PhysicalLayer::onProcessSamples(const Int16* samples, std::size_t sampleCou
 
 bool PhysicalLayer::onStart()
 {
-    //return true;
+    return true;
 }
 
 void PhysicalLayer::onStop()

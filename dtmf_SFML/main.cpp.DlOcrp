@@ -1,0 +1,57 @@
+#include <iostream>
+#include <SFML/Audio.hpp>
+#include <cmath>
+#include "dtmfEncoder.h"
+#include <vector>
+#include <complex>
+#include <string>
+#include <fstream>
+#include "dtmfdecoder.h"
+
+#include <unistd.h>
+
+int main()
+{
+    //DtmfSigurd generator(1000, 44100, 3000);
+    //generator.playDtmfTone(0);
+    //DtmfDecoder decoder;
+    //cout << decoder.doSample(1000) << endl;
+    //while(generator.getStatus() == 2);
+
+
+  for(int i = 0 ; i < 1000; i++){
+      SoundBufferRecorder recorder;
+      sf::Clock clock;
+      double sampletime = 100.0;
+      usleep(100);
+
+      recorder.start();
+
+      while(clock.getElapsedTime().asMilliseconds() <=  sampletime){}
+      recorder.stop();
+
+
+      const sf::SoundBuffer& buffer = recorder.getBuffer();
+
+      const sf::Int16* samples = buffer.getSamples();
+
+      const long count = buffer.getSampleCount();
+
+      double subsampletime = 10.0;
+
+      double samplefraction = sampletime/subsampletime;
+        //theoretical time size: (count/(44100.0*samplefraction))*1000.0
+      DtmfDecoder testSampling((count/(44100.0*samplefraction))*1000.0);
+
+      if(testSampling.detectDTMFTone0(samples, count/samplefraction)){
+          cout << "dtmf sound heard!" << endl;
+      }
+
+
+
+  }
+
+
+
+    return 0;
+}

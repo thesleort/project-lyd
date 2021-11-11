@@ -25,26 +25,31 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count)
 
 //    cout << "amount of samples: " << count << endl;
 
+
    vector<complex<double>> complexSoundBuffer = realToComplexVector(data,count); //Sample is looped 30 times for precision
 
-//   vector<double> testPrioriFFT;
+   vector<double> testPrioriFFT;
 
-//   for (int i = 0; i < count; i++){
-//       testPrioriFFT.push_back(data[i]);
-//   }
+   for (int i = 0; i < complexSoundBuffer.size(); i++){
+       testPrioriFFT.push_back(complexSoundBuffer[i].real());
+   }
 
-//   dumpDataToFile(testPrioriFFT, "/home/peter/Desktop", "PrioriFFT");
+   dumpDataToFile(testPrioriFFT, "/media/sf_Ubuntu_Shared_Folder", "PrioriFFT");
+
+
+
    complexSoundBuffer = fft(complexSoundBuffer);
 
    vector<DtmfDecoder::signal> frequencyData = sequenceToSignals(complexSoundBuffer);
 
    vector<double> testPosterior;
 
-//   for(int i= 0; i < frequencyData.size(); i++){
-//       testPosterior.push_back(frequencyData.at(i).amplitude);
-//   }
+   for(int i= 0; i < frequencyData.size(); i++){
+       testPosterior.push_back(frequencyData.at(i).amplitude);
+   }
 
-//   dumpDataToFile(testPosterior, "/media/sf_Ubuntu_Shared_Folder", "PosteriorFFT");
+   dumpDataToFile(testPosterior, "/media/sf_Ubuntu_Shared_Folder", "PosteriorFFT");
+
 
 
    vector<double> peaks = findSignalPeaks(frequencyData);
@@ -77,17 +82,31 @@ bool DtmfDecoder::detectDTMFTone0(const sf::Int16* data, int count)
 
 }
 
+void DtmfDecoder::setSampletime(double sampletime)
+{
+
+    _sampleTime = sampletime/1000.0;
+
+}
+
 vector<complex<double>> DtmfDecoder::realToComplexVector(const Int16* reals, int count)
 {
     vector<complex<double>> complexes;
 
-   for(int p = 0; p < _repeatPadding; p++){
-       for (int i = 0; i < count; i += _downSampling){
-           complex<double> number;
-           number.real((double)reals[i]);
-           complexes.push_back(number);
-       }
-   }
+    //wave amping:
+
+
+
+    for(int p = 0; p < _repeatPadding; p++){
+        double sinusIncrement = 0;
+
+        for (int i = 0; i < count; i += _downSampling){
+            complex<double> number;
+            number.real((double)reals[i]*sin(sinusIncrement));
+            complexes.push_back(number);
+            sinusIncrement += (M_PI/(count))*_downSampling;
+        }
+    }
 
 
     return complexes;
@@ -142,7 +161,7 @@ vector<DtmfDecoder::signal> DtmfDecoder::sequenceToSignals(const vector<complex<
     vector<signal> sigs;
 
 
-    for (int i = _cutoffLow * _sampleTime*_repeatPadding; i < _cutoffHigh * _sampleTime*_repeatPadding; i++){
+    for (int i = _cutoffLow * (_sampleTime*_repeatPadding); i < _cutoffHigh * (_sampleTime*_repeatPadding); i++){
         double real = sequence.at(i).real();
         double imag = sequence.at(i).imag();
         double amp = sqrt(real*real + imag*imag); // possible optimization by not taking square root
@@ -190,7 +209,8 @@ vector<double> DtmfDecoder::findSignalPeaks(const vector<signal> & signaldata, d
     //Hurtig fix til amp begrænsning
 
     if(peakAmp.at(0) < 5000 || peakAmp.at(1) < 5000){
-        //cout << "Low Amp Block" << endl;
+        //cout << "Low Amp block: " << peakAmp.at(0) << "    :    HIGH    :    " << peakAmp.at(1) <<  endl;
+
         peakFreqs[0] = -1;
     }
 
@@ -223,7 +243,7 @@ int DtmfDecoder::frequencyToDtmf(double lowfreq, double highfreq){
     if(isDTMF_N(lowfreq,highfreq,lowIndex,highIndex)){
         return lowIndex*4+highIndex;
     }else{
-        return -1;
+        return -2;
     }
 }
 
@@ -233,11 +253,13 @@ bool DtmfDecoder::isDTMF_N(double lowfreq, double highfreq, int lowFreqIndex, in
 
     //cout << "ERROR Percentage: " << (lowfreq-_lowFreqs[lowFreqIndex])/_lowFreqs[lowFreqIndex]*100.0 << endl;
 
-    if((abs(lowfreq-_lowFreqs[lowFreqIndex])/_lowFreqs[lowFreqIndex])*100.0 > errorPercentage){ //If error is greater than 2.5%
+    if((abs(lowfreq-_lowFreqs[lowFreqIndex])/_lowFreqs[lowFreqIndex])*100.0 > errorPercentage){
+        //cout << "ERROR LOW Percentage: " << (lowfreq-_lowFreqs[lowFreqIndex])/_lowFreqs[lowFreqIndex]*100.0 << endl;
         return false;
     }
 
-    if((abs(highfreq-_highFreqs[highFreqIndex])/_highFreqs[highFreqIndex])*100.0 > errorPercentage){ //If error is greater than 2.5%
+    if((abs(highfreq-_highFreqs[highFreqIndex])/_highFreqs[highFreqIndex])*100.0 > errorPercentage){
+        //cout << "ERROR HIGH Percentage: " << (abs(highfreq-_highFreqs[highFreqIndex])/_highFreqs[highFreqIndex])*100.0 << endl;
         return false;
     }
 
