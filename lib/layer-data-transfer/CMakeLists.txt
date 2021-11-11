@@ -1,9 +1,11 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.11-3.18)
 
+project(layer-data-transfer VERSION 0.1 DESCRIPTION "DTMF Layer: Data transfer")
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_C_COMPILER gcc)
+set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_BUILD_TYPE Debug)
-project(layer-data-transfer VERSION 0.1 DESCRIPTION "DTMF Layer: Data transfer")
 
 add_executable(layer-data-transfer
   Controller/main.cpp
