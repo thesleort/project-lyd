@@ -22,3 +22,8 @@ CTestTestfile.cmake
 _deps
 settings.json
 *.exe
+libdtmf.so*
+*.dll
+testapp/libdtmf.h
+masterapp/libdtmf.h
+slaveapp/libdtmf.h

@@ -4,7 +4,10 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/Data Transfer Layer/Cyclic"
+                "${workspaceRoot}/lib/layer-data-transfer/Controller",
+                "${workspaceRoot}/lib/layer-data-transfer/Cyclic",
+                "${workspaceRoot}/lib/layer-data-transfer/FrameGenPlaceholder",
+                "${workspaceRoot}/lib/layer-data-transfer/Protocol"
             ],
             "defines": [
                 "_DEBUG",
@@ -15,7 +18,50 @@
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
             "intelliSenseMode": "windows-gcc-x64"
-        }
+        },
+        {
+          "name": "Linux",
+          "includePath": [
+              "${workspaceRoot}/lib",
+              "${workspaceRoot}/lib/layer-dtmf",
+              "${workspaceRoot}/lib/libdtmf",
+              "${workspaceRoot}/lib/layer-data-transfer/Controller",
+              "${workspaceRoot}/lib/layer-data-transfer/Cyclic",
+              "${workspaceRoot}/lib/layer-data-transfer/FrameGenPlaceholder",
+              "${workspaceRoot}/lib/layer-data-transfer/Protocol",
+
+              "/usr/local/include",
+              "/usr/include/x86_64-linux-gnu",
+              "/usr/include",
+              "/usr/include/CL/",
+              "${workspaceRoot}/kiosk/build/kiosk_autogen/include",
+              "/usr/include/glib-2.0",
+              "/usr/lib/x86_64-linux-gnu/glib-2.0/include/",
+              "/usr/include/x86_64-linux-gnu/qt5/QtCore",
+              "/usr/include/x86_64-linux-gnu/qt5/QtWidgets",
+              "/usr/include/x86_64-linux-gnu/qt5/QtGui",
+              "/usr/include/x86_64-linux-gnu/qt5/QtUiTools",
+              "/usr/include/x86_64-linux-gnu/qt5/QtDesigner",
+              "/usr/include/x86_64-linux-gnu/qt5/QtSql",
+              "/usr/include/x86_64-linux-gnu/qt5",
+              "/usr/include/mysql-cppconn-8"
+          ],
+          "defines": [],
+          "intelliSenseMode": "clang-x64",
+          "browse": {
+              "path": [
+                  "/usr/local/include",
+                  "/usr/include/x86_64-linux-gnu",
+                  "/usr/include",
+                  "${workspaceRoot}"
+              ],
+              "limitSymbolsToIncludedHeaders": true,
+              "databaseFilename": ""
+          },
+          "compilerPath": "/usr/bin/clang",
+          "cStandard": "c11",
+          "cppStandard": "c++17"
+      }
     ],
     "version": 4
 }
