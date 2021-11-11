@@ -5,28 +5,47 @@
 
 #include <thread>
 #include <mutex>
+#include <atomic>
 
+#ifndef TEST_SUITE
 #include "Controller.h"
+#endif
 
 struct DTMFFrame {
-
+  uint16_t sizeBytes;
 };
 
-class DTMFProtocol {
+class DTMF {
   public:
-    DTMFProtocol();
-    ~DTMFProtocol();
+    DTMF();
+    ~DTMF();
 
-    void send();
+    #ifdef TEST_SUITE
+    DTMF(std::vector<DTMFFrame> *transmitBuffer, std::vector<DTMFFrame> *receiveBuffer);
+    #endif
 
-    const DTMFFrame getMessage();
-    const std::vector<DTMFFrame>* getReceivedMessagesBuffer();
+    void transmit(DTMFFrame frame, bool blocking = true);
+
+    const uint16_t receive(DTMFFrame &frame, bool blocking = true);
+
 
   private:
+    #ifndef TEST_SUITE
     Controller m_controller;
+    #endif
 
-    std::mutex m_messagesBufferLock;
-    std::vector<DTMFFrame> *m_receivedMessagesBuffer;
+    std::thread *m_transmitThread;
+    std::thread *m_receiveThread;
+
+    void transmitter(std::atomic<bool> &cancellation_token);
+    void receiver(std::atomic<bool> &cancellation_token);
+
+    std::atomic<bool> m_stopFlag;
+
+    std::mutex m_transmitBufferMutex;
+    std::mutex m_receiveBufferMutex;
+    std::vector<DTMFFrame> *m_transmitBuffer;
+    std::vector<DTMFFrame> *m_receiveBuffer;
 };
 
 #endif
