@@ -24,14 +24,18 @@ class Controller {
   void TransmitACK(vector<bool>); //Transmits ACK
   void Receive(vector<int>);      //gets split message from splitter, from inputbuffer
 
-  void testTransmit();
+  //buffersplitting
+  void SplitBuffer();
 
+  //autosetup
   void autoTransmit();
   void autoReceive();
-
-  void SplitBuffer();
   void autoSplitInput();
 
+ 
+ //Testing
+  void testTransmit();
+  void printReceived();
   private:
   //Essentials
   bool _ACKReceived = 0;
