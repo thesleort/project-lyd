@@ -2,10 +2,10 @@
 #include <iostream>
 
 
-#include "..\config\data-transfer-config.h"
-#include "..\Cyclic\Cyclic.h"
-#include "..\Protocol\bytestuffer.h"
-#include "..\FrameGenPlaceholder\framegen.h"
+#include "data-transfer-config.h"
+#include "Cyclic.h"
+#include "bytestuffer.h"
+#include "framegen.h"
 #include "Controller.h"
 
 #ifdef _WIN32

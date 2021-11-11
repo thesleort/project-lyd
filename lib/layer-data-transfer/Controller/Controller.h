@@ -1,9 +1,9 @@
 #ifndef H_CONTROLLER
 #define H_CONTROLLER
 
-#include "..\Cyclic\Cyclic.h"
-#include "..\Protocol\bytestuffer.h"
-#include "..\FrameGenPlaceholder\framegen.h"
+#include "Cyclic.h"
+#include "bytestuffer.h"
+#include "framegen.h"
 
 #include <vector>
 #include <mutex>
