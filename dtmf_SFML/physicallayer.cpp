@@ -20,7 +20,7 @@ PhysicalLayer::PhysicalLayer(int duration, int sampleTime)
 
     sem_init(&_inBufferMutex, 0, 1);
     sem_init(&_outBufferMutex, 0, 1);
-    //new thread(&PhysicalLayer::encoding, this);
+    new thread(&PhysicalLayer::encoding, this);
     new thread(&PhysicalLayer::decodingV2, this);
 
 
@@ -99,26 +99,29 @@ void PhysicalLayer::decodingV2()
     while(true){
         while(_soundbuffer.getSampleCount() == 0){}
 
-        _decodeObj.setSampletime((_soundbuffer.getSampleCount()/44100.0)*1000.0);
+        //Hele indsættelsen af _soundbuffer skal være i en linje, for at undgå threading fejl.
+        int i = _decodeObj.identifyDTMF(_soundbuffer.getSamples(), _soundbuffer.getSampleCount(),(_soundbuffer.getSampleCount()/44100.0)*1000.0);
+        //cout << "clocktime: " << clock.getElapsedTime().asMilliseconds() << endl;
 
-        int i = _decodeObj.identifyDTMF(_soundbuffer.getSamples(), _soundbuffer.getSampleCount());
-
-        sem_wait(&_inBufferMutex);
+//        if(i >= 0){
+//            cout << i << endl;
+//        }
 
         if(i >= 0 && i == _dtmfTone){
             _dtmfComboCounter++;
             if(_dtmfComboCounter == _comboMax){
-                cout << _dtmfTone << endl;
-
+                cout << i << endl;
+                _dtmfComboCounter = 0;
             }
         }else{
             _dtmfTone = i;
             _dtmfComboCounter = 0;
         }
-        //            for(int i = 0; i < _soundbuffer.getSampleCount(); i++){
-        //                cout << *(_soundbuffer.getSamples()+i) << endl;
-        //            }
-        sem_post(&_inBufferMutex);
+
+//        _vectorSamples.clear();
+//        _soundbuffer = SoundBuffer();
+
+
 
     }
     return;
@@ -131,23 +134,7 @@ bool PhysicalLayer::onProcessSamples(const Int16* samples, std::size_t sampleCou
     _soundbuffer = SoundBuffer();
     std::copy(samples, samples + sampleCount, std::back_inserter(_vectorSamples));
     _soundbuffer.loadFromSamples(&_vectorSamples[0], _vectorSamples.size(), getChannelCount(), getSampleRate());
+
     return true;
-}
-
-bool PhysicalLayer::onStart()
-{
-    //return true;
-}
-
-void PhysicalLayer::onStop()
-{
-
-}
-
-
-
-int PhysicalLayer::decodeTesting()
-{
-
 }
 

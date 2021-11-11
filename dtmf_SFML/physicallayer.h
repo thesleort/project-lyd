@@ -18,16 +18,12 @@ public:
     bool readInBuffer(int& dtmf);
     bool writeOutBuffer(int dtmf);
     virtual bool onProcessSamples(const sf::Int16 *samples, std::size_t sampleCount) override; //Prototype
-    bool onStart() override;
-    void onStop() override;
-
-    int decodeTesting(); //Bruger jeg ikke men var til testning
 
 
 private:
     int _dtmfTone = 0;
     int _dtmfComboCounter = 0; //<- Find bedre navn
-    int _comboMax = 3;
+    int _comboMax = 1;
 
     sf::SoundBuffer _recordBuffer;
     const sf::Int16* _samples;
@@ -45,7 +41,6 @@ private:
 
     void decodingV2(); //Test version af Decoding koblet til prototype onProcessSamples
     DtmfDecoder _decodeObj;
-    sf::Clock clock; // for testing purposes;
     sf::SoundBuffer _soundbuffer;
 };
 
