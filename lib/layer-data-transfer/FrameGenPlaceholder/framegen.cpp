@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "..\config\data-transfer-config.h"
+#include "data-transfer-config.h"
 #include "framegen.h"
 
 using namespace std;
