@@ -39,6 +39,7 @@ void socket1(DTMF *dtmfClass, std::atomic<bool> &runFlag) {
   DTMFFrame frame;
   frame.sizeBytes = 10;
   dtmfClass->transmit(frame);
+  std::cout << "Socket 1: frame sent (" << frame.sizeBytes << ")" << std::endl;
   frame.sizeBytes = 100;
   dtmfClass->transmit(frame);
   std::cout << "Socket 1: frame sent (" << frame.sizeBytes << ")" << std::endl;
