@@ -50,17 +50,22 @@ int main(int argc, char const *argv[]) {
   sleep(5); // Linux sleep
 #endif
   thread t3thread(&Controller::Transmit, &controller1, msg2);
-  Receive1thread.join();
-  Receive2thread.join();
-  Split1thread.join();
-  Split2thread.join();
 
+  t3thread.join();
   tt2hread.join();
   tthread.join();
 
   t2thread.join();
 
-  t3thread.join();
+
+
+  controller1.printReceived();
+  
+  controller2.printReceived();
   /* code */
+    Receive1thread.join();
+  Receive2thread.join();
+  Split1thread.join();
+  Split2thread.join();
   return 0;
 }

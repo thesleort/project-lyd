@@ -1,6 +1,6 @@
 #include <vector>
 #include <iostream>
-#include <mutex>
+
 
 #include "..\config\data-transfer-config.h"
 #include "..\Cyclic\Cyclic.h"
@@ -76,7 +76,7 @@ void Controller::Transmit(vector<bool> msg) {
   //--printoutbuffer--
 
   //--printoutbuffer--
-
+  _ACKReceived=0; //resets ACK received bool to ensure that it doesnt trigger on an old ACK
   while (k > 0 && !_ACKReceived) { //timeout 10s or ACKreceived->continue
   #ifdef _WIN32 
   Sleep(0.03); // Windows sleep
@@ -89,7 +89,13 @@ void Controller::Transmit(vector<bool> msg) {
     Transmit(msg);
   } else { //if an ACK has been received, we flip the _currentSeq, which means the next msg we send has a new seqnr
     _currentSeq.flip();
-    cout << "ack receive registered by transmit" << endl;
+    cout << "ack receive registered by transmit, seq flipped now: "; 
+    for(bool n : _currentSeq){
+      cout << n;
+    }
+      cout << endl;
+
+
     _ACKReceived = 0; //resets ack receive so we dont break anything
   }
 }
@@ -236,4 +242,23 @@ void Controller::SplitBuffer() {
     _inputBuffer->erase(_inputBuffer->begin(), _inputBuffer->begin() + frameStop + 1); //fixes program. in erase range with begin(), the amount of erased elements is equal to It_last-It_first(so if framestop without +1 is used and framestop index is 2, only 2 elements are deleted from input)
   
   }
+}
+
+
+void Controller::printReceived(){
+cout << endl;
+cout << "Printing Receipt....";
+cout << endl;
+
+for(int i=0;i<_ReceiveMessageBuffer->size();i++){
+  cout << "Message " << i+1 << " :" << endl;
+  for(int j=0;j<_ReceiveMessageBuffer->at(i).size();j++){
+    for(int k=0;k<_ReceiveMessageBuffer->at(i).at(j).size();k++){
+      cout << _ReceiveMessageBuffer->at(i).at(j).at(k);
+    }
+    cout << " ";
+  }
+  cout << endl;
+}
+
 }
