@@ -16,14 +16,14 @@ struct DTMFFrame {
   uint8_t* data;
 };
 
-#define BIT_0 0x00000001
-#define BIT_1 0x00000010
-#define BIT_2 0x00000100
-#define BIT_3 0x00001000
-#define BIT_4 0x00010000
-#define BIT_5 0x00100000
-#define BIT_6 0x01000000
-#define BIT_7 0x10000000
+#define BIT_0 0b00000001
+#define BIT_1 0b00000010
+#define BIT_2 0b00000100
+#define BIT_3 0b00001000
+#define BIT_4 0b00010000
+#define BIT_5 0b00100000
+#define BIT_6 0b01000000
+#define BIT_7 0b10000000
 
 class DTMF {
   public:
