@@ -58,6 +58,7 @@ class DTMF {
     std::vector<DTMFFrame> *m_receiveBuffer;
 
     std::vector<bool> generateBooleanFrame(DTMFFrame &frame);
+    DTMFFrame convertBoolVectorToFrame(std::vector<bool> boolFrame);
 };
 
 #endif

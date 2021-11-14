@@ -75,8 +75,9 @@ const uint16_t DTMF::receive(DTMFFrame &frame, bool blocking) {
 void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
   while (!cancellation_token) {
     for (DTMFFrame frame: *m_transmitBuffer) {
-      m_transmitBufferMutex.lock();
       m_controller.Transmit(generateBooleanFrame(frame));
+      m_transmitBufferMutex.lock();
+      m_transmitBuffer->erase(m_transmitBuffer->begin());
       m_transmitBufferMutex.unlock();
     }
   }
@@ -90,7 +91,7 @@ void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
  */
 void DTMF::receiver(std::atomic<bool> &cancellation_token) {
   while (!cancellation_token) {
-
+    
   }
 }
 
@@ -98,7 +99,7 @@ std::vector<bool> DTMF::generateBooleanFrame(DTMFFrame &frame) {
   std::vector<bool> boolDataVector(frame.data_size * sizeof(uint8_t));
 
   for (unsigned i = 0; i < frame.data_size; i++) {
-    unsigned i8 = i * 8;
+    unsigned i8 = i * sizeof(uint8_t);
     boolDataVector.push_back(frame.data[i8 + 0] | BIT_7);
     boolDataVector.push_back(frame.data[i8 + 1] | BIT_6);
     boolDataVector.push_back(frame.data[i8 + 2] | BIT_5);
@@ -109,6 +110,21 @@ std::vector<bool> DTMF::generateBooleanFrame(DTMFFrame &frame) {
     boolDataVector.push_back(frame.data[i8 + 7] | BIT_0);
   }
   return boolDataVector;
+}
+
+DTMFFrame DTMF::convertBoolVectorToFrame(std::vector<bool> boolFrame) {
+  DTMFFrame frame;
+  frame.data_size  = boolFrame.size() / sizeof(uint8_t);
+  frame.data = new uint8_t[frame.data_size];
+  for (unsigned i = 0; i < frame.data_size; i++) {
+    frame.data[i] = 0;
+    for (unsigned bit = sizeof(uint8_t) - 1; bit >= 0; bit--) {
+      unsigned super_index = i * sizeof(uint8_t) + bit;
+      frame.data[i] |= short(boolFrame.at(super_index)) << bit;
+    }
+  }
+
+  return frame;
 }
 
 #ifdef TEST_SUITE
