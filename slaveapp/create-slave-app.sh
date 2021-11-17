@@ -10,7 +10,7 @@ cp libdtmf.so* ../../slaveapp
 cd ..
 cp */*/*.h ../slaveapp
 cp libdtmf/libdtmf.h ../slaveapp
-cd ../masterapp
+cd ../slaveapp
 
 # Compile slave application
 mkdir -p build
