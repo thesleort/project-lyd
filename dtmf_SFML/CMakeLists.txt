@@ -37,6 +37,8 @@ add_executable(
     dtmfEncoder.h
     physicallayer.cpp
     physicallayer.h
+    digitalfilter.cpp
+    digitalfilter.h
     )
 
 find_package(SFML 2 REQUIRED network audio graphics window system)
