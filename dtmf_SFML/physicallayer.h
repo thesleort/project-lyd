@@ -10,6 +10,8 @@
 
 #define OUTPUT_SAMPLERATE 44100.0
 
+#define SLIDEWINDOWSIZE 100
+
 
 using namespace std;
 
@@ -27,6 +29,13 @@ private:
     int _dtmfTone = 0;
     int _dtmfComboCounter = 0; //<- Find bedre navn
     int _comboMax = 1;
+
+    int slidingWindowIterator = 0; // Slide for inputing samples
+
+    int slidingDecodeIterator = 0; //Slide for decoding samples
+
+    sf::Clock clock;
+
 
     sf::SoundBuffer _recordBuffer;
     const sf::Int16* _samples;
@@ -50,6 +59,8 @@ private:
     void decodingV2(); //Test version af Decoding koblet til prototype onProcessSamples
     DtmfDecoder _decodeObj;
     sf::SoundBuffer _soundbuffer;
+
+    void inputSampleToBuffer(const sf::Int16 *samples, std::size_t sampleCount);
 };
 
 #endif // PHYSICALLAYER_H

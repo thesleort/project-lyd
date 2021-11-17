@@ -3,6 +3,7 @@
 #include <vector>
 #include <complex>
 #include <SFML/Audio.hpp>
+#include <fftw3.h>
 
 using namespace std;
 
@@ -12,6 +13,8 @@ public:
     DtmfDecoder(double sampleTime);
     int identifyDTMF(const sf::Int16* data, int count, double sampleTime);
     bool detectDTMFTone0(const sf::Int16* data, int count);
+
+    complex<double> Goertzel(const sf::Int16 *data, double frequency, int vectorCount);
 
 private:
     struct signal {
@@ -34,12 +37,16 @@ private:
 
     //Speed sampling 10 ms, 60 repeat padding, downsample factor 10, amp threshold 5000, ErrorMargin = 4
 
-    double _errorMargin = 4.0;
-    int _repeatPadding = 15;
-    int _downSampling  = 10;
+    double _errorMargin = 10.0;
+    int _repeatPadding = 9;
+    int _downSampling  = 11;
     int _ampthreshhold = 5000;
 
 
+
+    //jonas fft:
+    fftw_complex *fftin, *fftout;
+    fftw_plan my_plan;
 
 
 
@@ -48,6 +55,8 @@ private:
     vector<complex<double>> realToComplexVector(const sf::Int16* reals, int count);
 
     vector<complex<double>> fft(vector<complex<double>>& data);
+
+
 
     vector<signal> sequenceToSignals(const vector<complex<double>>& sequence);
 
