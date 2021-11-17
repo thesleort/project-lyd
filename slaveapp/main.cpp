@@ -1,6 +1,10 @@
 #include "libdtmf.h"
 #include "packet.h"
 
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
+
 int main(int argc, char *argv[]) {
   DTMF *dtmf = new DTMF();
   DTMFFrame frame;
