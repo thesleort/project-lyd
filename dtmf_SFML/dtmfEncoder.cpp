@@ -27,11 +27,32 @@ void DtmfEncoder::playDualTone(int freq1, int freq2)
     Int16 samples[nSamples];
 
     double x = 0, y = 0;
+
+
+    //Create trapez curve for sinus wave, with rise starting at 5%, and decrease starting at 95%
+    //It is both decreasing and increasing at 5% to 90% effectiely staying at a value of 1
+    double trapezPercent = 10.0;
+
+    double trapezAmpCurve = 0;
+    double trapezAmpIncrement = 1.0/((double(nSamples)/100.0)*trapezPercent);
+
+
     for (int i = 0; i < nSamples; i++) {
+
+        if(i < (nSamples/100.0)*(100.0-trapezPercent)){
+        trapezAmpCurve += trapezAmpIncrement;
+        }
+
+        if(i > (nSamples/100.0)*trapezPercent){
+        trapezAmpCurve -= trapezAmpIncrement;
+        }
+
         samples[i] = _amplitude * (sin(x) + sin(y));
         x += incrementX;
         y += incrementY;
+
     }
+
     _buffer.loadFromSamples(samples, nSamples, 1, _sampleRate);
     _sound.play();
     // while(_sound.getStatus() == 2){}

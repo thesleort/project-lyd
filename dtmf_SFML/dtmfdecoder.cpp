@@ -23,6 +23,8 @@ DtmfDecoder::DtmfDecoder(double sampleTime) : _sampleTime(sampleTime/1000.0){
 int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
 {
 
+
+
     _sampleTime = sampletime/1000;
 //    cout << "amount of samples: " << count << endl;
 
@@ -38,9 +40,13 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
 //   dumpDataToFile(testPrioriFFT, "/media/sf_Ubuntu_Shared_Folder", "PrioriFFT");
 
 
+    sf::Clock clock;
+
 
    complexSoundBuffer = fft(complexSoundBuffer);
 
+
+    cout << clock.getElapsedTime().asMilliseconds() << endl;
    vector<DtmfDecoder::signal> frequencyData = sequenceToSignals(complexSoundBuffer);
 
 //   vector<double> testPosterior;
@@ -83,6 +89,33 @@ bool DtmfDecoder::detectDTMFTone0(const sf::Int16* data, int count)
 
 }
 
+complex<double> DtmfDecoder::Goertzel(const sf::Int16 *data, double frequency, int vectorCount)
+{
+
+    double w,cw,sw,c;
+    double z1 = 0;
+    double z2 = 0;
+
+    w = 2*M_PI*frequency/vectorCount;
+    cw = cos(w); c = 2*cw;
+    sw = sin(w);
+    z1=0; z2=0;
+
+    for(int i = 0 ; i < vectorCount ; i++){
+       double z0 = data[i] + c*z1 - z2;
+       z2 = z1;
+       z1 = z0;
+
+    }
+    complex<double> result;
+
+    result.real(cw*z1 - z2);
+    result.imag(sw*z1);
+
+    return result;
+}
+
+
 
 
 vector<complex<double>> DtmfDecoder::realToComplexVector(const Int16* reals, int count)
@@ -94,12 +127,17 @@ vector<complex<double>> DtmfDecoder::realToComplexVector(const Int16* reals, int
 
 
     for(int p = 0; p < _repeatPadding; p++){
+        //Testing different window types - Linear window sucks
         double sinusIncrement = 0;
+
 
         for (int i = 0; i < count; i += _downSampling){
             complex<double> number;
-            number.real((double)reals[i]*sin(sinusIncrement));
+            number.real((double)reals[i]*sin(sinusIncrement)); //-> Sinusincrement
+
             complexes.push_back(number);
+
+
             sinusIncrement += (M_PI/(count))*_downSampling;
         }
     }
