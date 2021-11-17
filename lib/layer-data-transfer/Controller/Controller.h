@@ -66,16 +66,16 @@ private:
   vector<bool> _currentSeq = {0, 0};
 
   //IO channels
-  vector<int> *_outputBuffer;              //for outgoing transmissions
-  vector<int> *_inputBuffer;               //for incoming transmissions NEEDS TO BE "PUSHED BACK" FROM DTMF CODE(APPEND TO END)
+  vector<int> *_outputBuffer;              //Output to channel
+  vector<int> *_inputBuffer;               //Incoming channel NEEDS TO BE "PUSHED BACK" FROM DTMF CODE(APPEND TO END)
   
   //Stacks for internal use
   vector<vector<int>> *_incomingFrames;    //stack with split frames from receivebuffer
   vector<vector<bool>> *_ReceivedACKBuffer;      //stack with seqnr from receivebuffer ACKs
   
   //Processed message buffers
-  vector<vector<bool>> *_outgoingMessages; //stack with messages for outputbuffer, ACKs are added directly to outbuffer
-  vector<vector<vector<bool>>> *_ReceiveMessageBuffer; //receive buffer for msg
+  vector<vector<bool>> *_outgoingMessages; //stack with messages for outputbuffer, ACKs are added directly to outbuffer from receive
+  vector<vector<vector<bool>>> *_ReceiveMessageBuffer; //receive buffer for processed msg
   
   //threads
   thread *receiveThread;
