@@ -8,38 +8,50 @@
 #include <vector>
 #include <mutex>
 #include "semaphore.h"
-
+#include <string>
+#include <thread>
+//add IFNDEF on COUTs to define debugmode
 class Controller {
   public:
   //Constructor/deconstructor
-  Controller();
+  Controller(double);
   ~Controller();
 
-  //setup
+  //setup for physical layer
   void addOutput(vector<int> &);
   void addInput(vector<int> &);
 
-  //Transmission
-  void Transmit(vector<bool>);    //transmits message implement framegen and lower.
-  void TransmitACK(vector<bool>); //Transmits ACK
-  void Receive(vector<int>);      //gets split message from splitter, from inputbuffer
-
-  //buffersplitting
-  void SplitBuffer();
+  //Buffer Read/Write/Check
+  void write(vector<bool>);
+  vector<bool>read();
+  bool checkReceive();
 
   //autosetup
   void autoTransmit();
   void autoReceive();
   void autoSplitInput();
 
+
  
  //Testing
   void testTransmit();
   void printReceived();
-  private:
-  //Essentials
-  bool _ACKReceived = 0;
 
+private:
+  //Transmission
+  void TransmitACK(vector<bool>); //Transmits ACK
+  void Receive(vector<int>);      //gets split message from splitter, from inputbuffer
+  void Transmit(vector<bool>);    //transmits message implement framegen and lower.
+  int _timeout;
+  bool compareACK(vector<bool>);
+
+  //buffersplitting
+  void SplitBuffer();
+
+  //Variables
+  mutex _outbufferLock;
+  mutex _RMstackLock;
+  mutex _TMstackLock;
   //modules
   FrameGenerator *_FG = new FrameGenerator();
   Cyclic *_CRChecker = new Cyclic({1, 0, 1, 1, 1});
@@ -53,14 +65,23 @@ class Controller {
   vector<bool> _lastReceivedSeq = {1, 1};              //sequence number of last received msg/last sent ACK
   vector<bool> _currentSeq = {0, 0};
 
-  //buffers
+  //IO channels
   vector<int> *_outputBuffer;              //for outgoing transmissions
   vector<int> *_inputBuffer;               //for incoming transmissions NEEDS TO BE "PUSHED BACK" FROM DTMF CODE(APPEND TO END)
+  
+  //Stacks for internal use
   vector<vector<int>> *_incomingFrames;    //stack with split frames from receivebuffer
+  vector<vector<bool>> *_ReceivedACKBuffer;      //stack with seqnr from receivebuffer ACKs
+  
+  //Processed message buffers
   vector<vector<bool>> *_outgoingMessages; //stack with messages for outputbuffer, ACKs are added directly to outbuffer
   vector<vector<vector<bool>>> *_ReceiveMessageBuffer; //receive buffer for msg
-  vector<vector<bool>> *_ReceivedACKBuffer;            //receive buffer for ACK, useless
-
+  
+  //threads
+  thread *receiveThread;
+  thread *splitThread;
+  thread *transmitThread;
+  
 };
 
 //transmit: transmit->timer, if ACK->good, if no ACK, retransmit

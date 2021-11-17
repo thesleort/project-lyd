@@ -92,13 +92,11 @@ vector<bool> Cyclic::Encode(vector<bool> dataword) {
 }
 
 bool Cyclic::Decode(vector<bool> dataword, vector<bool> tail) {
-  cout << "decode start" << endl;
   vector<bool> remains = remainder(dataword, tail); //remainder is dataword with tail from encoding
   for (bool i : remains) {
     if (i) {
       return 0; //if remainder is 1 at any point there has been an error
     }
   }
-  cout << "decode succesful" << endl;
   return 1;
 }
