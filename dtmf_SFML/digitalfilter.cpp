@@ -2,8 +2,24 @@
 #include "SFML/Audio.hpp"
 #include <iostream>
 
-vector<int> DigitalFilter::simParallel(vector<int> x)
+DigitalFilter::DigitalFilter()
 {
+
+}
+
+vector<complex<double>> DigitalFilter::simParallel(vector<complex<double>> x_complex)
+{
+
+    vector<int> x;
+
+    vector<complex<double>> ysum_complex;
+
+    //Convert from complex array to vector int
+    for (int i = 0; i < x_complex.size(); i++){
+        x.push_back(x_complex.at(i).real());
+    }
+
+
     vector<int> ySum;
     vector<vector<int>> yList;
     for(unsigned long i = 0; i < filters.size(); i++){
@@ -16,10 +32,20 @@ vector<int> DigitalFilter::simParallel(vector<int> x)
         }
         ySum.push_back(sum);
     }
-    return ySum;
+
+    //Convert from int to complex array before output
+    for (int i = 0; i < x.size(); i++){
+
+        complex<double> number;
+        number.real(x.at(i));
+        ysum_complex.push_back(number);
+    }
+
+
+    return ysum_complex;
 }
 
-vector<int> DigitalFilter::simFilter(vector<int> x, DigitalFilter::filterCoefficients coeff)
+vector<int> DigitalFilter::simFilter(vector<int> x, filterCoefficients coeff)
 {
     vector<double> w(coeff.b.size(), 0.0);
     vector<int> y;

@@ -42,4 +42,4 @@ add_executable(
     )
 
 find_package(SFML 2 REQUIRED network audio graphics window system)
-target_link_libraries(dtmf_SFML sfml-graphics sfml-audio)
+target_link_libraries(dtmf_SFML sfml-graphics sfml-audio fftw3)

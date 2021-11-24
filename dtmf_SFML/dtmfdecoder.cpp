@@ -9,9 +9,29 @@
 
 #include <unistd.h>
 
+
 using namespace std;
 
-DtmfDecoder::DtmfDecoder(double sampleTime) : _sampleTime(sampleTime/1000.0){
+
+DtmfDecoder::DtmfDecoder(double sampleTime) : _sampleTime(sampleTime/1000.0)
+{
+
+    _digitalFilter = DigitalFilter();
+
+    vector<double> a1 = {0, -0.441023, -0.0717413};
+    vector<double> b1 = {-0.881973, 0.503572};
+    filterCoefficients filter1(a1, b1);
+
+    vector<double> a2 = {0, 0.728023, 0.600765};
+    vector<double> b2 = {0.394373, 0.216454};
+    filterCoefficients filter2(a2, b2);
+
+    _digitalFilter = DigitalFilter(vector<filterCoefficients>{filter1, filter2});
+
+    fftin = fftw_alloc_complex(SAMPLERATE/_downSampling);
+    fftout = fftw_alloc_complex(SAMPLERATE/_downSampling);
+
+
 
 }
 
@@ -22,14 +42,16 @@ DtmfDecoder::DtmfDecoder(double sampleTime) : _sampleTime(sampleTime/1000.0){
 
 int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
 {
-
-
-
     _sampleTime = sampletime/1000;
 //    cout << "amount of samples: " << count << endl;
 
 
+
+
    vector<complex<double>> complexSoundBuffer = realToComplexVector(data,count); //Sample is looped 30 times for precision
+
+   complexSoundBuffer = _digitalFilter.simParallel(complexSoundBuffer);
+
 
 //   vector<double> testPrioriFFT;
 
@@ -39,15 +61,13 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
 
 //   dumpDataToFile(testPrioriFFT, "/media/sf_Ubuntu_Shared_Folder", "PrioriFFT");
 
-
-    sf::Clock clock;
-
-
-   complexSoundBuffer = fft(complexSoundBuffer);
+   //complexSoundBuffer = fft(complexSoundBuffer);
 
 
-    cout << clock.getElapsedTime().asMilliseconds() << endl;
+   complexSoundBuffer = fftw3(complexSoundBuffer);
+
    vector<DtmfDecoder::signal> frequencyData = sequenceToSignals(complexSoundBuffer);
+
 
 //   vector<double> testPosterior;
 
@@ -190,6 +210,40 @@ vector<complex<double>> DtmfDecoder::fft(vector<complex<double> > &a)
     return y;
 }
 
+vector<complex<double> > DtmfDecoder::fftw3(vector<complex<double> > &data)
+{
+
+     int N = data.size();
+
+
+     // Zero out input array for fft
+     for (int i = 0; i<N; i++) {
+         fftin[i][0] = 0;
+         fftin[i][1] = 0;
+     }
+
+     // Setup forward fft
+     my_plan = fftw_plan_dft_1d(N, fftin, fftout, FFTW_FORWARD, FFTW_ESTIMATE);
+
+    for (int i = 0; i < data.size(); i++) {
+      fftin[i][0] = data[i].real();
+      fftin[i][1] = 0; // complex part of the array
+    }
+
+    fftw_execute(my_plan);
+
+    vector<complex<double>> result;
+
+    for (int i = 0; i < N; i++){
+        complex<double> complexObj;
+        complexObj.real(fftout[i][0]);
+        complexObj.imag(fftout[i][1]);
+        result.push_back(complexObj);
+    }
+
+    return result;
+}
+
 vector<DtmfDecoder::signal> DtmfDecoder::sequenceToSignals(const vector<complex<double>> &sequence)
 {
     vector<signal> sigs;
@@ -203,8 +257,6 @@ vector<DtmfDecoder::signal> DtmfDecoder::sequenceToSignals(const vector<complex<
         signal sig(amp, freq);
         sigs.push_back(sig);
     }
-
-
 
     return sigs;
 }
@@ -242,7 +294,7 @@ vector<double> DtmfDecoder::findSignalPeaks(const vector<signal> & signaldata, d
 
     //Hurtig fix til amp begrænsning
 
-    if(peakAmp.at(0) < 5000 || peakAmp.at(1) < 5000){
+    if(peakAmp.at(0) < _ampthreshhold || peakAmp.at(1) < _ampthreshhold){
         //cout << "Low Amp block: " << peakAmp.at(0) << "    :    HIGH    :    " << peakAmp.at(1) <<  endl;
 
         peakFreqs[0] = -1;
@@ -260,7 +312,7 @@ int DtmfDecoder::frequencyToDtmf(double lowfreq, double highfreq){
     double highshortestDistance = abs(_highFreqs[0]-highfreq);
     int highIndex = 0;
 
-    for(int i = 0; i < 4; i++){
+    for(int i = 1; i < 4; i++){
         if(lowshortestDistance > abs(_lowFreqs[i]-lowfreq)){
             lowshortestDistance = abs(_lowFreqs[i]-lowfreq);
             lowIndex = i;            

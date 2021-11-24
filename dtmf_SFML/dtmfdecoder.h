@@ -1,9 +1,13 @@
 #ifndef DTMFDECODER_H
 #define DTMFDECODER_H
+#define SAMPLERATE 44100
 #include <vector>
 #include <complex>
 #include <SFML/Audio.hpp>
 #include <fftw3.h>
+
+#include "digitalfilter.h"
+
 
 using namespace std;
 
@@ -23,7 +27,7 @@ private:
         double frequency;
     };
     //Debugging Report:mp block, sound i
-    //res: -1 As to quiet
+    //res: -1 sound to quiet
     //res: -2 Error margin is too great;
     vector<double> _lowFreqs = {697.0, 770.0, 852.0, 941.0};
     vector<double> _highFreqs = {1209.0, 1336.0, 1477.0, 1633.0};
@@ -37,9 +41,9 @@ private:
 
     //Speed sampling 10 ms, 60 repeat padding, downsample factor 10, amp threshold 5000, ErrorMargin = 4
 
-    double _errorMargin = 10.0;
-    int _repeatPadding = 9;
-    int _downSampling  = 11;
+    double _errorMargin = 8.0;
+    int _repeatPadding = 5;
+    int _downSampling  = 2;
     int _ampthreshhold = 5000;
 
 
@@ -47,6 +51,9 @@ private:
     //jonas fft:
     fftw_complex *fftin, *fftout;
     fftw_plan my_plan;
+
+    //Bandpass filter
+    DigitalFilter _digitalFilter;
 
 
 
@@ -56,6 +63,8 @@ private:
 
     vector<complex<double>> fft(vector<complex<double>>& data);
 
+
+    vector<complex<double>> fftw3(vector<complex<double>>& data);
 
 
     vector<signal> sequenceToSignals(const vector<complex<double>>& sequence);

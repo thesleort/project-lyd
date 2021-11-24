@@ -3,19 +3,29 @@
 
 #include <vector>
 
+//For at kunne gøre brug af sf objekter
+#include <SFML/Audio.hpp>
+#include <complex>
+
 using namespace std;
+
+
+struct filterCoefficients{
+    filterCoefficients(vector<double> a, vector<double> b) : a(a), b(b) {}
+    vector<double> a;
+    vector<double> b;
+};
+
 
 class DigitalFilter
 {
 public:
-    struct filterCoefficients{
-        filterCoefficients(vector<double> a, vector<double> b) : a(a), b(b) {}
-        vector<double> a;
-        vector<double> b;
-    };
+
+    DigitalFilter();
     DigitalFilter(vector<filterCoefficients> filters) : filters(filters) {};
-    vector<int> simParallel(vector<int> x);
-private:
+    vector<complex<double>> simParallel(vector<complex<double>> x_complex);
+
+ private:
     vector<filterCoefficients> filters;
     vector<int> simFilter(vector<int> x, filterCoefficients coeff);
 };

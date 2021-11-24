@@ -8,7 +8,7 @@
 
 #define RECORD_SAMPLERATE 44100.0
 
-#define OUTPUT_SAMPLERATE 44100.0
+#define OUTPUT_SAMPLERATE 48000.0
 
 #define SLIDEWINDOWSIZE 100
 
@@ -18,7 +18,7 @@ using namespace std;
 class PhysicalLayer : public sf::SoundRecorder
 {
 public:
-    PhysicalLayer(int duration, int sampletime);
+    PhysicalLayer(int durationSound, int durationRecord, int sampletime);
     ~PhysicalLayer();
     bool readInBuffer(int& dtmf);
     bool writeOutBuffer(int dtmf);
@@ -26,9 +26,9 @@ public:
 
 
 private:
-    int _dtmfTone = 0;
-    int _dtmfComboCounter = 0; //<- Find bedre navn
-    int _comboMax = 1;
+    int _dtmfTone = -1;
+    int _dtmfComboCounter = 0;
+    int _comboMax = 3; //Ikke nul indekseret
 
     int slidingWindowIterator = 0; // Slide for inputing samples
 
@@ -46,6 +46,7 @@ private:
     int _sampleCount;
 
     vector<int> _outBuffer, _inBuffer;
+    double _durationRecorded;
     int _duration;
     int _sampleTime;
 
@@ -54,6 +55,8 @@ private:
     sem_t _soundVectorMutex;//Testing purposes
 
     void encoding();
+    //Initiation of encoding object
+
     void decoding();
 
     void decodingV2(); //Test version af Decoding koblet til prototype onProcessSamples
