@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
       }
       jsonMessage = {
         { "linear", {{"x", 0.0}, {"y", 0.0}, {"z", 0}}},
-        { "angular", {}}
+        { "angular", {{"x", 0.0}, {"y", 0.0}, {"z", 0}}}
       };
       roscom.publish_message(jsonMessage);
     }
