@@ -41,7 +41,7 @@ class DTMF {
 
   private:
     #ifndef TEST_SUITE
-    Controller m_controller;
+    Controller *m_controller;
     #endif
 
     std::thread *m_transmitThread;
