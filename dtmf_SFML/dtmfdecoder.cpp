@@ -47,7 +47,7 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
 
 
 
-
+   //Vil give fejl indtil filteret er lavet.
    vector<complex<double>> complexSoundBuffer = realToComplexVector(data,count); //Sample is looped 30 times for precision
 
    complexSoundBuffer = _digitalFilter.simParallel(complexSoundBuffer);
@@ -94,51 +94,9 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
 
 }
 
-bool DtmfDecoder::detectDTMFTone0(const sf::Int16* data, int count)
-{
-
-    vector<complex<double>> complexSoundBuffer = realToComplexVector(data,count);
-
-    complexSoundBuffer = fft(complexSoundBuffer);
-
-    vector<DtmfDecoder::signal> frequencyData = sequenceToSignals(complexSoundBuffer);
-
-    vector<double> peaks = findSignalPeaks(frequencyData);
-
-    //return isDTMF_N(peaks[0], peaks [1], );
-
-}
-
-complex<double> DtmfDecoder::Goertzel(const sf::Int16 *data, double frequency, int vectorCount)
-{
-
-    double w,cw,sw,c;
-    double z1 = 0;
-    double z2 = 0;
-
-    w = 2*M_PI*frequency/vectorCount;
-    cw = cos(w); c = 2*cw;
-    sw = sin(w);
-    z1=0; z2=0;
-
-    for(int i = 0 ; i < vectorCount ; i++){
-       double z0 = data[i] + c*z1 - z2;
-       z2 = z1;
-       z1 = z0;
-
-    }
-    complex<double> result;
-
-    result.real(cw*z1 - z2);
-    result.imag(sw*z1);
-
-    return result;
-}
 
 
-
-
-vector<complex<double>> DtmfDecoder::realToComplexVector(const Int16* reals, int count)
+vector<complex<double>> DtmfDecoder::realToComplexVector(vector<double> reals, int count)
 {
     vector<complex<double>> complexes;
 
@@ -166,49 +124,6 @@ vector<complex<double>> DtmfDecoder::realToComplexVector(const Int16* reals, int
     return complexes;
 }
 
-vector<complex<double>> DtmfDecoder::fft(vector<complex<double> > &a)
-{
-    // https://www.geeksforgeeks.org/fast-fourier-transformation-poynomial-multiplication/
-
-    using cd = complex<double>;
-    int n = a.size();
-
-    // if input contains just one element
-    if (n == 1)
-        return vector<cd>(1, a[0]);
-
-    // For storing n complex nth roots of unity
-    vector<cd> w(n);
-    for (int i = 0; i < n; i++) {
-        double alpha = -2 * M_PI * i / n;
-        w[i] = cd(cos(alpha), sin(alpha));
-    }
-
-    vector<cd> A0(n / 2), A1(n / 2);
-    for (int i = 0; i < n / 2; i++) {
-
-        // even indexed coefficients
-        A0[i] = a[i * 2];
-
-        // odd indexed coefficients
-        A1[i] = a[i * 2 + 1];
-    }
-
-    // Recursive call for even indexed coefficients
-    vector<cd> y0 = fft(A0);
-
-    // Recursive call for odd indexed coefficients
-    vector<cd> y1 = fft(A1);
-
-    // for storing values of y0, y1, y2, ..., yn-1.
-    vector<cd> y(n);
-
-    for (int k = 0; k < n / 2; k++) {
-        y[k] = y0[k] + w[k] * y1[k];
-        y[k + n / 2] = y0[k] - w[k] * y1[k];
-    }
-    return y;
-}
 
 vector<complex<double> > DtmfDecoder::fftw3(vector<complex<double> > &data)
 {

@@ -16,9 +16,7 @@ class DtmfDecoder
 public:
     DtmfDecoder(double sampleTime);
     int identifyDTMF(const sf::Int16* data, int count, double sampleTime);
-    bool detectDTMFTone0(const sf::Int16* data, int count);
 
-    complex<double> Goertzel(const sf::Int16 *data, double frequency, int vectorCount);
 
 private:
     struct signal {
@@ -47,7 +45,6 @@ private:
     int _ampthreshhold = 5000;
 
 
-
     //jonas fft:
     fftw_complex *fftin, *fftout;
     fftw_plan my_plan;
@@ -56,16 +53,9 @@ private:
     DigitalFilter _digitalFilter;
 
 
-
-    double sequenceToFrequence(int seq){return seq / _sampleTime; };
-
-    vector<complex<double>> realToComplexVector(const sf::Int16* reals, int count);
-
-    vector<complex<double>> fft(vector<complex<double>>& data);
-
+    vector<complex<double>> realToComplexVector(vector<double>, int count);
 
     vector<complex<double>> fftw3(vector<complex<double>>& data);
-
 
     vector<signal> sequenceToSignals(const vector<complex<double>>& sequence);
 
