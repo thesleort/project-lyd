@@ -9,6 +9,8 @@ DTMF::DTMF() {
   m_receiveBuffer = new std::vector<DTMFFrame>();
   m_transmitBuffer = new std::vector<DTMFFrame>();
 
+  m_controller = new Controller(2); // 2 is number of seconds to wait
+
   m_stopFlag = false;
 
   m_transmitThread = new std::thread(&DTMF::transmitter, this, std::ref(m_stopFlag));
@@ -75,7 +77,7 @@ const uint16_t DTMF::receive(DTMFFrame &frame, bool blocking) {
 void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
   while (!cancellation_token) {
     for (DTMFFrame frame: *m_transmitBuffer) {
-      m_controller.Transmit(generateBooleanFrame(frame));
+      m_controller->write(generateBooleanFrame(frame));
       m_transmitBufferMutex.lock();
       m_transmitBuffer->erase(m_transmitBuffer->begin());
       m_transmitBufferMutex.unlock();

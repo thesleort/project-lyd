@@ -15,19 +15,12 @@ vector<bool> FrameGenerator::generateFrame(vector<vector<bool>> parts) {
   for (int j = 0; j < parts.at(SEQ).size(); j++) {
     frame.push_back(parts.at(SEQ).at(j));
   }
-  for (int j = 0; j < parts.at(CRC).size(); j++) {
-    frame.push_back(parts.at(CRC).at(j));
+  for (int j = 0; j < parts.at(CRCC).size(); j++) {
+    frame.push_back(parts.at(CRCC).at(j));
   }
   for (int j = 0; j < parts.at(DATA).size(); j++) {
     frame.push_back(parts.at(DATA).at(j));
   }
-  cout << "generated frame" << endl;
-  for (bool n : frame) {
-    std::cout << n;
-  }
-  std::cout << endl;
-  cout << endl
-       << " ------------" << endl;
 
   return frame;
 }
