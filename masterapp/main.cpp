@@ -2,92 +2,68 @@
 #include "libdtmf.h"
 
 #include <iostream>
-#include <curses.h>
+#include <ncurses.h>
 #include <unistd.h>
 
-int main(void)
-{
+int main(void) {
+  // std::cout << "Starting" << std::endl;
   DTMF *dtmf = new DTMF();
   DTMFFrame frame;
-
+  // std::cout << "DTMF started" << std::endl;
   frame.data_size = 1;
   frame.data = new uint8_t[frame.data_size];
 
-    initscr();
+  initscr();
 
-    cbreak();
-    noecho();
+  cbreak();
+  noecho();
     // nodelay(stdscr, TRUE);
-    scrollok(stdscr, TRUE);
+  scrollok(stdscr, TRUE);
 
-    // string Svalue;
-    // std::cin>>Svalue;
-    // std::cout << Svalue;
+  int flag;
 
-    // if (Svalue.compare("1"))
-    // {
-      while (true) {
-                switch (getch()) {
-                  case 119: 
-                    frame.data[0] = DATATYPE_MOVE | MOVE_FORWARD;
-                    std::cout <<"w"<<std::endl;
-                    break;
-                  case 115:
-                    frame.data[0] = DATATYPE_MOVE | MOVE_BACKWARDS;
-                    std::cout <<"s"<<std::endl;
-                    break;
-                  case 97:
-                    frame.data[0] = DATATYPE_MOVE | MOVE_LEFT90;
-                    std::cout <<"a"<<std::endl;
-                    break;
-                  case 100:
-                    frame.data[0] = DATATYPE_MOVE | MOVE_RIGHT90;
-                    std::cout <<"d"<<std::endl;
-                    break;
-                  case 32:
-                    frame.data[0] = DATATYPE_MOVE | MOVE_STOP;
-                    std::cout <<"spacebar"<<std::endl;
-                    break;
-                  default:
-                    break;
-                };
-                dtmf->transmit(frame);
-                
-        }
-    // }else if (Svalue.compare("2"))
-    // {
-    //   std::cout<<"ending program"<< std::endl;
+  std::cout << "Press any key to start" << std::endl;
+  flag = std::cin.get();
 
-    // }else if(false)
-    // {
-    //   std::cout<<"did not compute"<< std::endl;
+  bool inputLoop = true;
+  while (inputLoop) {
 
-    // }
     
+    int c = getch();
+    clear();
     
-    
-      return 0;
+    switch (c) {
+    case 119:
+      frame.data[0] = DATATYPE_MOVE | MOVE_FORWARD;
+      printw("w");
+      break;
+    case 115:
+      frame.data[0] = DATATYPE_MOVE | MOVE_BACKWARDS;
+      printw("s");
+      break;
+    case 97:
+      frame.data[0] = DATATYPE_MOVE | MOVE_LEFT90;
+      printw("a");
+      break;
+    case 100:
+      frame.data[0] = DATATYPE_MOVE | MOVE_RIGHT90;
+      printw("d");
+      break;
+    case 32:
+      frame.data[0] = DATATYPE_MOVE | MOVE_STOP;
+      printw("spacebar");
+      break;
+    case 27:
+      inputLoop = false;
+      endwin();
+      std::cout << "Program ended";
+      break;
+    default:
+      break;
+    };
+
+    dtmf->transmit(frame);
+  }
+
+  return 0;
 }
-
-// int main(int argc, char *argv[]) {
-
-  
-  // if (/*Forward*/) {
-  //   frame.data[0] = DATATYPE_MOVE | MOVE_FORWARD;
-
-  // }else if(/*Backwards*/){
-  //   frame.data[0] = DATATYPE_MOVE | MOVE_BACKWARDS;
-
-  // }else if(/*Right 90 degrees*/){
-  //   frame.data[0] = DATATYPE_MOVE | MOVE_RIGHT90;
-
-  // }else if(/*Left 90 degrees*/){
-  //   frame.data[0] = DATATYPE_MOVE | MOVE_LEFT90;
-
-  // }else if(/*Stop*/){
-  //   frame.data[0] = DATATYPE_MOVE | MOVE_STOP;
-
-  // }
-  // dtmf->transmit(frame);
-
-//}
