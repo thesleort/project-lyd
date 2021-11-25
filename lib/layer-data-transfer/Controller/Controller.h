@@ -6,6 +6,8 @@
 #include "framegen.h"
 
 #include <vector>
+#include <mutex>
+#include "semaphore.h"
 
 class Controller {
   public:
@@ -22,20 +24,22 @@ class Controller {
   void TransmitACK(vector<bool>); //Transmits ACK
   void Receive(vector<int>);      //gets split message from splitter, from inputbuffer
 
-  void testTransmit();
+  //buffersplitting
+  void SplitBuffer();
 
+  //autosetup
   void autoTransmit();
   void autoReceive();
-
-  void SplitBuffer();
   void autoSplitInput();
 
+ 
+ //Testing
+  void testTransmit();
+  void printReceived();
   private:
-  vector<vector<bool>> *_ReceivedACKBuffer;            //receive buffer for ACK
-  vector<vector<vector<bool>>> *_ReceiveMessageBuffer; //receive buffer for msg
-  vector<bool> _lastReceivedSeq = {1, 1};              //sequence number of last received msg/last sent ACK
-  vector<bool> _currentSeq = {0, 0};
+  //Essentials
   bool _ACKReceived = 0;
+
   //modules
   FrameGenerator *_FG = new FrameGenerator();
   Cyclic *_CRChecker = new Cyclic({1, 0, 1, 1, 1});
@@ -45,11 +49,18 @@ class Controller {
   vector<bool> _msgType = {1, 0};
   vector<bool> _ackType = {0, 1};
 
+  //SEQ controllers
+  vector<bool> _lastReceivedSeq = {1, 1};              //sequence number of last received msg/last sent ACK
+  vector<bool> _currentSeq = {0, 0};
+
   //buffers
   vector<int> *_outputBuffer;              //for outgoing transmissions
   vector<int> *_inputBuffer;               //for incoming transmissions NEEDS TO BE "PUSHED BACK" FROM DTMF CODE(APPEND TO END)
   vector<vector<int>> *_incomingFrames;    //stack with split frames from receivebuffer
   vector<vector<bool>> *_outgoingMessages; //stack with messages for outputbuffer, ACKs are added directly to outbuffer
+  vector<vector<vector<bool>>> *_ReceiveMessageBuffer; //receive buffer for msg
+  vector<vector<bool>> *_ReceivedACKBuffer;            //receive buffer for ACK, useless
+
 };
 
 //transmit: transmit->timer, if ACK->good, if no ACK, retransmit
