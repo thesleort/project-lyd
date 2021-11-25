@@ -10,10 +10,10 @@ mkdir -p build
 cd build
 cmake -DTEST_SUITE=OFF ..
 make -j$(nproc)
-cp libdtmf.so* ../../masterapp
+cp libdtmf.so* ../../masterapp/lib
 cd ..
-cp */*/*.h ../masterapp
-cp libdtmf/libdtmf.h ../masterapp
+cp */*/*.h ../masterapp/include
+cp libdtmf/libdtmf.h ../masterapp/include
 cd ../masterapp
 
 # Compile master application

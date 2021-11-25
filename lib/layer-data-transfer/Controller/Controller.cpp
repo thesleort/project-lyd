@@ -22,9 +22,9 @@ Controller::Controller(double s) {
   
   _timeout=(s/0.00002);//implicit typecast :3
   //sem_init(&_outbufferLock,0,1);
-  receiveThread = new thread(&Controller::autoReceive, this);
-  splitThread= new thread(&Controller::autoSplitInput, this);
-  transmitThread = new thread(&Controller::autoTransmit, this);
+  // receiveThread = new thread(&Controller::autoReceive, this);
+  // splitThread= new thread(&Controller::autoSplitInput, this);
+  // transmitThread = new thread(&Controller::autoTransmit, this);
 
 }
 
