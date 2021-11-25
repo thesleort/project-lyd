@@ -10,8 +10,14 @@ project(masterapp VERSION 0.1 DESCRIPTION "Master application")
 add_executable(masterapp
   main.cpp
 )
+
+
+find_package(Curses REQUIRED)
+include_directories(${CURSES_INCLUDE_DIR})
 set_target_properties(masterapp PROPERTIES PUBLIC_HEADER libdtmf.h)
 
 target_link_libraries(masterapp ${CMAKE_SOURCE_DIR}/libdtmf.so)
+
+target_link_libraries(masterapp ${CURSES_LIBRARIES})
 
 
