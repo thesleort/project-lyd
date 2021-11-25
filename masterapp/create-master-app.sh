@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Create directories for generated files
+mkdir -p include
+mkdir -p lib
+
 # Prepare libdtmf library
 cd ../lib
 mkdir -p build

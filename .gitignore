@@ -26,9 +26,8 @@ libdtmf.so*
 *.dll
 testapp/libdtmf.h
 masterapp/libdtmf.h
+masterapp/include
+masterapp/lib
 slaveapp/libdtmf.h
-*/framegen.h
-*/data-transfer-config.h
-*/Cyclic.h
-*/Controller.h
-*/bytestuffer.h
+slaveapp/include
+slaveapp/lib

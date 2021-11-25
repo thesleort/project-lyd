@@ -29,6 +29,11 @@
               "${workspaceRoot}/lib/layer-data-transfer/Cyclic",
               "${workspaceRoot}/lib/layer-data-transfer/FrameGenPlaceholder",
               "${workspaceRoot}/lib/layer-data-transfer/Protocol",
+              
+              "${workspaceRoot}/masterapp",
+              "${workspaceRoot}/masterapp/include",
+              "${workspaceRoot}/slaveapp",
+              "${workspaceRoot}/slaveapp/include",
 
               "/usr/local/include",
               "/usr/include/x86_64-linux-gnu",

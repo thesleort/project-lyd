@@ -14,11 +14,18 @@
 #endif
 
 //-------------Constructor/Deconstructor-----------
-Controller::Controller() {
+Controller::Controller(double s) {
   _ReceiveMessageBuffer = new vector<vector<vector<bool>>>;
   _ReceivedACKBuffer = new vector<vector<bool>>;
   _incomingFrames = new vector<vector<int>>;
   _outgoingMessages = new vector<vector<bool>>;
+  
+  _timeout=(s/0.00002);//implicit typecast :3
+  //sem_init(&_outbufferLock,0,1);
+  receiveThread = new thread(&Controller::autoReceive, this);
+  splitThread= new thread(&Controller::autoSplitInput, this);
+  transmitThread = new thread(&Controller::autoTransmit, this);
+
 }
 
 Controller::~Controller() {
@@ -28,6 +35,11 @@ Controller::~Controller() {
   delete _Stuffer;
   delete _incomingFrames;
   delete _outgoingMessages;
+
+  //sem_destroy(&_outbufferLock);
+  receiveThread->join();
+  transmitThread->join();
+  splitThread->join();
 }
 
 //-------------Setup---------
@@ -39,7 +51,50 @@ void Controller::addInput(vector<int> &in) {
   _inputBuffer = &in;
 }
 
+//------------Public Acces-----------
+
+void Controller::write(vector<bool> msg){
+  _TMstackLock.lock();
+  _outgoingMessages->push_back(msg);
+  _TMstackLock.unlock();
+}
+
+bool Controller::checkReceive(){
+bool element=_ReceiveMessageBuffer->size()>0;
+return element;
+}
+
+vector<bool> Controller::read(){
+if(!checkReceive()){
+  return {};
+} else {
+  _RMstackLock.lock();
+  vector<bool> msg=_ReceiveMessageBuffer->at(0).at(DATA);
+  _ReceiveMessageBuffer->erase(_ReceiveMessageBuffer->begin());
+  _RMstackLock.unlock();
+}
+
+
+}
+
 //------------Transmission------------
+
+bool Controller::compareACK(vector<bool> in){
+bool ACKcorrect=0;
+  if(_ReceivedACKBuffer->size()<1){
+  } else {
+    if(in==_ReceivedACKBuffer->at(0)){
+      ACKcorrect=1;
+      _ReceivedACKBuffer->erase(_ReceivedACKBuffer->begin()); //if seq is same as ACK seq, set bool, erase vect
+    } else {
+      _ReceivedACKBuffer->erase(_ReceivedACKBuffer->begin()); //if not, seq is deleted and ignored so we dont get stuck
+      #ifdef DEBUG_PRINT
+      cout << "ACK deleted thrown out" << endl;
+      #endif
+    }
+  }
+return ACKcorrect;
+}
 
 void Controller::Transmit(vector<bool> msg) {
   vector<bool> crc = _CRChecker->Encode(msg);
@@ -49,75 +104,91 @@ void Controller::Transmit(vector<bool> msg) {
   vector<bool> frame = _FG->generateFrame(parts); //gen frame
 
   vector<int> intMsg = _Stuffer->stuff(frame); //stuff
-  cout << "sent msg in integers" << endl;
+  #ifdef DEBUG_PRINT
+  cout <<"sent msg in integers" << endl;
   for (int n : intMsg) {
     cout << n << " ";
   }
   cout << endl;
 
   cout << "--------------" << endl;
+  #endif
+  _outbufferLock.lock();
   for (int n : intMsg) {
     _outputBuffer->push_back(n); //values inserted in order on end of buffer, buffer is read from index 0 on split
   }
+  _outbufferLock.unlock();
+
   //_outputBuffer->insert(_outputBuffer->begin(),intMsg.begin(),intMsg.end()); //insert on buffer
 
   //wait for any ack, can never receive old ack since we dont send msg without getting an ack
 
-  int k = 10000000;
+  int k = _timeout;
 
-  //--printoutbuffer--
-
-  //--printoutbuffer--
-
-  while (k > 0 && !_ACKReceived) { //timeout 10s or ACKreceived->continue
+  bool ACK=compareACK(seq);
+  while (k > 0 && !ACK) { //timeout 10s or ACKreceived->continue
   #ifdef _WIN32 
-  Sleep(0.03); // Windows sleep
+  Sleep(0.02); // Windows sleep
   #else
   usleep(3000); // Linux sleep
   #endif
+    ACK=compareACK(seq);
     k--;
   }
-  if (!_ACKReceived) { //if no ACK is received either the frame or ack was lost or an error occurred
+  if (!ACK) { //if no ACK is received either the frame or ack was lost or an error occurred
     Transmit(msg);
   } else { //if an ACK has been received, we flip the _currentSeq, which means the next msg we send has a new seqnr
     _currentSeq.flip();
-    cout << "ack receive registered by transmit" << endl;
-    _ACKReceived = 0; //resets ack receive so we dont break anything
+    #ifdef DEBUG_PRINT
+    cout << Name << "ack receive registered by transmit, seq flipped now: "; 
+    for(bool n : _currentSeq){
+      cout << n;
+    }
+      cout << endl;
+    #endif
+    ACK=0;
   }
 }
 
 void Controller::Receive(vector<int> in) {
   //assumes: {data,type,seq,crc};
+  #ifdef DEBUG_PRINT
   cout << "Received() message:" << endl;
   for (int n : in) {
     cout << n;
   }
   cout << endl;
   cout << "--------------" << endl;
+  #endif
 
   vector<vector<bool>> msg = _FG->splitFrame(_Stuffer->unstuff(in));
 
   if (msg.at(TYPE) == _msgType) { //if msg is a message, we do a CRC check
-    cout << "msg received" << endl;
 
-    if (_CRChecker->Decode(msg.at(DATA), msg.at(CRC))) { //If crc returns no error, we check the sequencenumber
+    if (_CRChecker->Decode(msg.at(DATA), msg.at(CRCC))) { //If crc returns no error, we check the sequencenumber
       if (msg.at(SEQ) == _lastReceivedSeq) {
         //if seq of msg is same as last message, and CRC shows no error, the last ACK has been lost and we "resend" the ack
         TransmitACK(_lastReceivedSeq);
+        #ifdef DEBUG_PRINT
         cout << "ACK Retransmitted" << endl;
+        #endif
       } else {
         //if seq number is "new" we transmit an ack and place msg into buffer
         TransmitACK(msg.at(SEQ)); //since we check for any ack and handle redundancy on _lRS  check, ack seqnr is useless(might be usefull later)
         _lastReceivedSeq = msg.at(SEQ);
+        #ifdef DEBUG_PRINT
         cout << "new ACK transmitted" << endl;
+        #endif
+        _RMstackLock.lock();
         _ReceiveMessageBuffer->push_back(msg); //msg->buffer
+        _RMstackLock.unlock();
       }
     } //if a crc error has occurred we just wait for the msg to be resent
   } else if (msg.at(TYPE) == _ackType) {
-    cout << "ACK received" << endl;
     _ReceivedACKBuffer->push_back(msg.at(SEQ)); //is actually useless, since we look for any ACK
-    _ACKReceived = 1;
+    #ifdef DEBUG_PRINT
     cout << "-----------" << endl;
+    #endif
   }
 }
 
@@ -126,25 +197,21 @@ void Controller::TransmitACK(vector<bool> seq) {
   vector<vector<bool>> parts = {decoydata, _ackType, seq};
   vector<bool> frame = _FG->generateACKFrame(parts);
   vector<int> intAck = _Stuffer->stuff(frame);
-  cout << "ACK frame stuffed: " << endl;
-  for (int n : intAck) {
-    cout << n;
-  }
-  cout << endl;
-  cout << "---------" << endl;
-
+  _outbufferLock.lock();
   for (int n : intAck) {
     _outputBuffer->push_back(n);
   }
-
+  _outbufferLock.unlock();
   //_outputBuffer->insert(_outputBuffer->begin(),intAck.begin(),intAck.end());
 }
 
 void Controller::autoTransmit() {
   while (1) {
     while (_outgoingMessages->size() > 0) {
+      _TMstackLock.lock();
       vector<bool> msg = _outgoingMessages->at(0);          //first element on outgoing frames is msg
       _outgoingMessages->erase(_outgoingMessages->begin()); //first msg on stack is
+      _TMstackLock.unlock();
       Transmit(msg);
     }
   }
@@ -177,9 +244,11 @@ void Controller::SplitBuffer() {
   try {
     for (int i = 0; i < size - 1; i++) {   //look at size -1 values since we check i+1 to determine flag
       if (_inputBuffer->at(i) == _flagI) { //if flag is found it might be a starting flag
-        if (i == 0 && (_inputBuffer->at(i + 1) == 4 || _inputBuffer->at(i + 1) == 7 || _inputBuffer->at(i + 1) == 8 || _inputBuffer->at(i + 1) == 11)) {
-          frameStart = 0; //if it is the buffer beginning, it is a flag if the next value is a combination of type + seq
-          break;
+        if (i == 0){//else/iffed on i=0 if value after 0 wasnt type+seq because of && statement, resulted in checking i-1 for i=0, fixed by taking else if to i=0 statment instead of i=0 && ....
+          if(_inputBuffer->at(i + 1) == 4 || _inputBuffer->at(i + 1) == 7 || _inputBuffer->at(i + 1) == 8 || _inputBuffer->at(i + 1) == 11){
+            frameStart = 0; //if it is the buffer beginning, it is a flag if the next value is a combination of type + seq
+            break;
+          }
         } else if (_inputBuffer->at(i - 1) != _etcI) { //else if previous int is not etc,
           if (_inputBuffer->at(i + 1) == 4 || _inputBuffer->at(i + 1) == 7 || _inputBuffer->at(i + 1) == 8 || _inputBuffer->at(i + 1) == 11) {
             frameStart = i; //we have a starting flag if the next int is a valid type+seq
@@ -198,11 +267,13 @@ void Controller::SplitBuffer() {
   }
   int frameStop = -1;
   try {
+    if(frameStart!=-1){ //only look for framestop if we have a defined start
     // cout << "Framestart +1 - size: " << frameStart+1 - size << endl;
-    for (int i = frameStart + 1; i < size; i++) {                              //Starts at +1 since we do not want the starting flag
-      if (_inputBuffer->at(i) == _flagI && _inputBuffer->at(i - 1) != _etcI) { //the next flag we find without an etc will be the stop
-        frameStop = i;
-        break;
+      for (int i = frameStart + 1; i < size; i++) {                              //Starts at +1 since we do not want the starting flag
+        if (_inputBuffer->at(i) == _flagI && _inputBuffer->at(i - 1) != _etcI) { //the next flag we find without an etc will be the stop
+          frameStop = i;
+          break;
+        }
       }
     }
   } catch (const exception &e) {
@@ -215,12 +286,33 @@ void Controller::SplitBuffer() {
   }
 
   if (frameStart != -1 && frameStop != -1) {
-    cout << "start: " << frameStart << "stop: " << frameStop << endl;
     for (int i = frameStart; i <= frameStop; i++) {
 
       frame.push_back(_inputBuffer->at(i)); //frame is created based on start and stop values
     }
     _incomingFrames->push_back(frame);
     _inputBuffer->erase(_inputBuffer->begin(), _inputBuffer->begin() + frameStop + 1); //fixes program. in erase range with begin(), the amount of erased elements is equal to It_last-It_first(so if framestop without +1 is used and framestop index is 2, only 2 elements are deleted from input)
+  
   }
+}
+
+
+void Controller::printReceived(){
+
+cout << endl;
+cout << "Printing Receipt.... Length: " << _ReceiveMessageBuffer->size();
+cout << endl;
+_RMstackLock.lock();
+for(int i=0;i<_ReceiveMessageBuffer->size();i++){
+  cout << "Message " << i+1 << " :" << endl;
+  for(int j=0;j<_ReceiveMessageBuffer->at(i).size();j++){
+    for(int k=0;k<_ReceiveMessageBuffer->at(i).at(j).size();k++){
+      cout << _ReceiveMessageBuffer->at(i).at(j).at(k);
+    }
+    cout << " ";
+  }
+  cout << endl;
+}
+_RMstackLock.unlock();
+
 }

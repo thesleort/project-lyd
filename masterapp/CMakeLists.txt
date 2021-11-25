@@ -21,3 +21,4 @@ target_link_libraries(masterapp ${CMAKE_SOURCE_DIR}/libdtmf.so)
 target_link_libraries(masterapp ${CURSES_LIBRARIES})
 
 
+target_link_libraries(masterapp ${CMAKE_SOURCE_DIR}/lib/libdtmf.so)

@@ -1,16 +1,20 @@
 #!/bin/bash
 
+# Create directories for generated files
+mkdir -p include
+mkdir -p lib
+
 # Prepare libdtmf library
 cd ../lib
 mkdir -p build
 cd build
 cmake -DTEST_SUITE=OFF ..
 make -j$(nproc)
-cp libdtmf.so* ../../slaveapp
+cp libdtmf.so* ../../slaveapp/lib
 cd ..
-cp */*/*.h ../slaveapp
-cp libdtmf/libdtmf.h ../slaveapp
-cd ../masterapp
+cp */*/*.h ../slaveapp/include
+cp libdtmf/libdtmf.h ../slaveapp/include
+cd ../slaveapp
 
 # Compile slave application
 mkdir -p build

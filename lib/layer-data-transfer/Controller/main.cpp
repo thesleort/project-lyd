@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <thread>
+#include <string>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -11,11 +12,15 @@
 
 #include "Controller.h"
 int main(int argc, char const *argv[]) {
-  Controller controller1;
-  Controller controller2;
-  vector<int> outbuf = {0, 15, 12, 14, 15, 15, 15, 15, 15, 15};
+  Controller controller1(1);
+  Controller controller2(1);
+  vector<int> outbuf= {15,15,2,4,5,6,15,15};
 
-  vector<int> inbuf = {15};
+  vector<int> inbuf= {15,7,2,15,15,15,15,7,8,2,1};
+
+  string c1="Controller 1 ";
+  string c2="Controller 2 ";
+
 
   controller1.addInput(outbuf);
   controller1.addOutput(inbuf);
@@ -24,43 +29,34 @@ int main(int argc, char const *argv[]) {
 
   vector<bool> msg = {1, 1, 1, 0, 1, 1, 1, 1};
 
-  thread tthread(&Controller::Transmit, &controller2, msg);
+  controller2.write(msg);
 
 #ifdef _WIN32
   Sleep(1000); // Windows sleep
 #else
   sleep(10); // Linux sleep
 #endif
-  thread tt2hread(&Controller::Transmit, &controller2, msg); //simulates lost ACK, works
-  thread Receive1thread(&Controller::autoReceive, &controller1);
-  thread Receive2thread(&Controller::autoReceive, &controller2);
-  thread Split1thread(&Controller::autoSplitInput, &controller1);
-  thread Split2thread(&Controller::autoSplitInput, &controller2);
+  controller2.write(msg);
 
 #ifdef _WIN32
-  Sleep(5000); // Windows sleep
+  Sleep(1000); // Windows sleep
 #else
   sleep(5); // Linux sleep
 #endif
   vector<bool> msg2 = {1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1};
-  thread t2thread(&Controller::Transmit, &controller1, msg2);
+  controller1.write(msg2);
 #ifdef _WIN32
-  Sleep(5000); // Windows sleep
+  Sleep(1000); // Windows sleep
 #else
   sleep(5); // Linux sleep
 #endif
-  thread t3thread(&Controller::Transmit, &controller1, msg2);
-  Receive1thread.join();
-  Receive2thread.join();
-  Split1thread.join();
-  Split2thread.join();
+  controller1.write(msg2);
+Sleep(5000);
 
-  tt2hread.join();
-  tthread.join();
-
-  t2thread.join();
-
-  t3thread.join();
+  controller1.printReceived();
+  
+  controller2.printReceived();
   /* code */
+
   return 0;
 }
