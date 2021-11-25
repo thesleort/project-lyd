@@ -7,6 +7,7 @@
 #include <fftw3.h>
 
 #include "digitalfilter.h"
+#include "firfilter.h"
 
 
 using namespace std;
@@ -39,7 +40,7 @@ private:
 
     //Speed sampling 10 ms, 60 repeat padding, downsample factor 10, amp threshold 5000, ErrorMargin = 4
 
-    double _errorMargin = 8.0;
+    double _errorMargin = 4.0;
     int _repeatPadding = 5;
     int _downSampling  = 2;
     int _ampthreshhold = 5000;
@@ -50,7 +51,7 @@ private:
     fftw_plan my_plan;
 
     //Bandpass filter
-    DigitalFilter _digitalFilter;
+    FIRfilter _bandpass;
 
 
     vector<complex<double>> realToComplexVector(vector<double>, int count);
