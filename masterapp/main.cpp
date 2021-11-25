@@ -56,7 +56,7 @@ int main(void) {
     case 27:
       inputLoop = false;
       endwin();
-      std::cout << "Program ended";
+      std::cout << "Program ended"<< std::endl;
       break;
     default:
       break;
