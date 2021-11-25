@@ -9,6 +9,7 @@ using namespace std;
 class FIRfilter
 {
 public:
+    FIRfilter();
     FIRfilter(vector<double> coeff) : _coeff(coeff) {};
     vector<double> sim(vector<int> samples);
 private:
