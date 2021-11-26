@@ -91,16 +91,44 @@ int main()
 
 //    }
 
+    srand((unsigned)time(0));
+    PhysicalLayer soundObj(60,60,15);
+    vector<int> mega;
 
-    PhysicalLayer soundObj(80,80,20);
-    vector<int> mega{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+    for(int i = 0; i < 100; i++){
+        mega.push_back(rand()%15);
+    }
 
     for (int i = 0; i < mega.size(); i++){
 
         soundObj.writeOutBuffer(mega.at(i));
     }
 
+    int tone;
+    vector<int> tones;
+
     while(true){
+
+
+        if(soundObj.readInBuffer(tone)){
+            tones.push_back(tone);
+            cout << "tones vector size: " << tones.size() << endl;
+
+            if(tones.size() == mega.size()){
+
+                if(tones == mega){
+                    cout << "very gut" << endl;
+                }else{
+                    cout << "ERROR: two vectors not the same" << endl;
+                }
+
+               for(int i = 0; i < tones.size(); i++){
+                   cout << "played tone:Decoded tone  :   " << mega.at(i) << " : " << tones.at(i) << endl;
+               }
+
+            }
+        }
+
 
     }
 

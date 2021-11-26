@@ -99,13 +99,12 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
 
 
    if(tailingErrorCheck(tone) == -3){
-       cout << "Tailing Tone: " << tone << endl;
+       //cout << "Tailing Tone: " << tone << endl;
        return -3;
    }
 
 
    return tone;
-
 
 }
 
