@@ -39,6 +39,9 @@ add_executable(
     physicallayer.h
     digitalfilter.cpp
     digitalfilter.h
+    firfilter.cpp
+    firfilter.h
+
     )
 
 find_package(SFML 2 REQUIRED network audio graphics window system)

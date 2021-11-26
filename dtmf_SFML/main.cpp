@@ -15,8 +15,32 @@
 #include <unistd.h>
 
 
+
+
 int main()
 {
+
+
+//    vector<double> data;
+//    ifstream in("Sigurd.txt");
+//      double data1;
+//      while(in >> data1)
+//      {
+//          data.push_back(data1);
+//      }
+//      in.close();
+//      cout << "eh" <<endl;
+
+
+//      ofstream myfile;
+//      myfile.open ("SigurdV2.txt");
+//      for (unsigned long i = 0; i < data.size(); i++){
+//          myfile << to_string(data.at(i)) << ",";
+//      }
+//      myfile.close();
+
+//      return 0;
+
 
 
 //    for(int i = 0; i< 1000; i++){
@@ -42,6 +66,24 @@ int main()
 
 
 
+
+    //Testning af encoder
+
+    //    DtmfEncoder encoder(70, OUTPUT_SAMPLERATE, 10000);
+
+
+
+
+    //    for(int i = 0;i < 16; i++){
+    //        encoder.playDtmfTone(i);
+    //    }
+
+
+    //    return 0;
+
+
+
+
 //       DtmfDecoder testSampling((count/(44100.0*timefraction))*1000.0);
 //       int tone = testSampling.identifyDTMF(samples, count/timefraction);
 
@@ -50,16 +92,17 @@ int main()
 //    }
 
 
-    PhysicalLayer soundObj(70,80,20);
-    vector<int> mega{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-        for (int i = 0; i < mega.size(); i++){
+    PhysicalLayer soundObj(80,80,20);
+    vector<int> mega{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 
-            soundObj.writeOutBuffer(mega.at(i));
-        }
+    for (int i = 0; i < mega.size(); i++){
 
-        while(true){
+        soundObj.writeOutBuffer(mega.at(i));
+    }
 
-        }
+    while(true){
+
+    }
 
     return 0;
 }

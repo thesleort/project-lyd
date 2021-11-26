@@ -1,5 +1,10 @@
 #include "firfilter.h"
 
+FIRfilter::FIRfilter()
+{
+
+}
+
 vector<double> FIRfilter::sim(vector<int> samples)
 {
     vector<double> output;

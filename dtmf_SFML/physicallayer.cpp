@@ -74,14 +74,17 @@ void PhysicalLayer::encoding()
 
     while(true){
         if (_outBuffer.size() > 0){
+
+            while(encoder.getStatus() == 2){}
             sem_wait(&_outBufferMutex);
 
             encoder.playDtmfTone(_outBuffer.at(0));
+
             //cout << _outBuffer.at(0) << endl;
             _outBuffer.erase(_outBuffer.begin());
 
             sem_post(&_outBufferMutex);
-            while(encoder.getStatus() == 2){};
+
         }
     }
     return;
@@ -114,19 +117,22 @@ void PhysicalLayer::decodingV2()
 
         //Hele indsættelsen af _soundbuffer skal være i en linje, for at undgå threading fejl.
 
+        //cout << "decode samplesize: " <<_vectorRecordedBuffers[slidingDecodeIterator].getSampleCount() << endl;
 
-        int i = _decodeObj.identifyDTMF(_vectorRecordedBuffers[slidingDecodeIterator].getSamples(), _vectorRecordedBuffers[slidingDecodeIterator].getSampleCount(),(_vectorRecordedBuffers[slidingDecodeIterator].getSampleCount()/RECORD_SAMPLERATE)*1000.0);
+        int i = _decodeObj.identifyDTMF(_vectorRecordedBuffers.at(slidingDecodeIterator).getSamples(), _vectorRecordedBuffers.at(slidingDecodeIterator).getSampleCount(),(_vectorRecordedBuffers.at(slidingDecodeIterator).getSampleCount()/RECORD_SAMPLERATE)*1000.0);
+
+
 
         //cout << clock.getElapsedTime().asMilliseconds() << endl;
 
-        if(i != -1){
-            cout << "DTMF TONE: " << i << endl;
-        }
+
+        cout << "DTMF TONE: " << i << endl;
+
 
         if(i >= 0 && i == _dtmfTone){
             _dtmfComboCounter++;
             if(_dtmfComboCounter == _comboMax){
-                cout << "COMBO BREAKER: " << _dtmfTone << endl;
+                cout << "       COMBO BREAKER: " << _dtmfTone << endl;
                 _dtmfComboCounter = 0;
             }
         }else{
@@ -134,7 +140,9 @@ void PhysicalLayer::decodingV2()
             _dtmfComboCounter = 1;
         }
 
-        _vectorRecordedBuffers[slidingDecodeIterator] = SoundBuffer();
+        _vectorRecordedBuffers.at(slidingDecodeIterator) = SoundBuffer();
+
+        //cout << "Decoded: " <<slidingDecodeIterator << endl;
 
         switch(slidingDecodeIterator){
         case SLIDEWINDOWSIZE:
@@ -163,6 +171,7 @@ void PhysicalLayer::inputSampleToBuffer(const Int16 *samples, size_t sampleCount
 
     _vectorSamples.clear();
 
+
     //cout <<  "sampletime Mikroseconds: " << clock.getElapsedTime().asMicroseconds() <<  "   : <3"  <<  endl;
 
     std::copy(samples, samples + sampleCount, std::back_inserter(_vectorSamples));
@@ -173,6 +182,8 @@ void PhysicalLayer::inputSampleToBuffer(const Int16 *samples, size_t sampleCount
         _soundbuffer = SoundBuffer();
         _soundbuffer.loadFromSamples(&_vectorSamples[(_vectorSamples.size()/splitNum)*i], _vectorSamples.size()/splitNum, getChannelCount(), getSampleRate());
         _vectorRecordedBuffers[slidingWindowIterator] = _soundbuffer;
+
+       //cout << "Inserted sample count: " <<  slidingWindowIterator << endl;
 
         switch(slidingWindowIterator){
         case SLIDEWINDOWSIZE:
@@ -194,6 +205,7 @@ bool PhysicalLayer::onProcessSamples(const Int16* samples, std::size_t sampleCou
 {
 
    new thread(&PhysicalLayer::inputSampleToBuffer, this, samples, sampleCount);
+
 
    return true;
 }

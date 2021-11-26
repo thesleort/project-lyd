@@ -28,7 +28,7 @@ void DtmfEncoder::setupDTMF()
 
             //Create trapez curve for sinus wave, with rise starting at 5%, and decrease starting at 95%
             //It is both decreasing and increasing at 5% to 90% effectiely staying at a value of 1
-            double trapezPercent = 15.0;
+            double trapezPercent = 2.0;
 
             double trapezAmpCurve = 0;
             double trapezAmpIncrement = 1.0/((double(nSamples)/100.0)*trapezPercent);
@@ -39,6 +39,7 @@ void DtmfEncoder::setupDTMF()
                 if(i < (nSamples/100.0)*(100.0-trapezPercent)){
                     trapezAmpCurve += trapezAmpIncrement;
                 }
+
 
                 if(i > (nSamples/100.0)*trapezPercent){
                     trapezAmpCurve -= trapezAmpIncrement;
@@ -113,18 +114,14 @@ void DtmfEncoder::playDtmfTone(int tone)
 //    int highTone = tone % 4;
 //    playDualTone(_lowFreqs[lowTone], _highFreqs[highTone]);
 
-    if(tone == 16){
-        sf::Clock clock;
-        while(clock.getElapsedTime().asMilliseconds() < _mSec){}
-        return;
-    }
 
+
+    while(_sound.getStatus() == 2){}
     _sound.setBuffer(_bufferVector[tone]);
 
     //_clock.restart();
-    while(_sound.getStatus() == 2){
-    }
     _sound.play();
+
 
 
 

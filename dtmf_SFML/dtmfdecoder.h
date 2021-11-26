@@ -40,10 +40,19 @@ private:
 
     //Speed sampling 10 ms, 60 repeat padding, downsample factor 10, amp threshold 5000, ErrorMargin = 4
 
-    double _errorMargin = 4.0;
-    int _repeatPadding = 5;
-    int _downSampling  = 2;
-    int _ampthreshhold = 5000;
+    double _errorMargin = 7.0;
+    int _repeatPadding = 1;
+    int _downSampling  = 1;
+    int _ampthreshhold = 20000;
+
+
+
+    //Taling error check and variables
+    int tailingErrorCheck(int tone);
+    vector<double> _prevAmp; //Amplitude from previous sampling
+    int _prevTone = -1;
+    vector<double> _CurrentAmp;
+    double _tailingErrorMargin =  0.5;
 
 
     //jonas fft:

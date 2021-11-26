@@ -26,6 +26,9 @@ public:
 
 
 private:
+    int testIterator = 0; //KIS
+    int testInterator2 = 0; //KIS
+
     int _dtmfTone = -1;
     int _dtmfComboCounter = 0;
     int _comboMax = 3; //Ikke nul indekseret
@@ -34,7 +37,7 @@ private:
 
     int slidingDecodeIterator = 0; //Slide for decoding samples
 
-    sf::Clock clock;
+    sf::Clock _clock;
 
 
     sf::SoundBuffer _recordBuffer;
