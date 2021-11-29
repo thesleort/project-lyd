@@ -71,6 +71,7 @@ vector<bool> Controller::read() {
     vector<bool> msg = _ReceiveMessageBuffer->at(0).at(DATA);
     _ReceiveMessageBuffer->erase(_ReceiveMessageBuffer->begin());
     _RMstackLock.unlock();
+    return msg;
   }
 }
 
