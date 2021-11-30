@@ -10,6 +10,7 @@ project(slaveapp VERSION 0.1 DESCRIPTION "Master application")
 add_executable(slaveapp
   main.cpp
   roscom.cpp
+  commands.cpp
 )
 set_target_properties(slaveapp PROPERTIES PUBLIC_HEADER include/libdtmf.h)
 
