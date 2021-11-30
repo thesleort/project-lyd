@@ -1,87 +1,137 @@
-#include <iostream>
+﻿#include <iostream>
 #include <SFML/Audio.hpp>
 #include <cmath>
-#include "dtmfEncoder.h"
 #include <vector>
 #include <complex>
 #include <string>
 #include <fstream>
+
+#include "dtmfEncoder.h"
 #include "dtmfdecoder.h"
+
+#include "physicallayer.h"
+
+#include "digitalfilter.h"
 
 #include <unistd.h>
 
+
+
+
 int main()
 {
-    //DtmfSigurd generator(1000, 44100, 3000);
-    //generator.playDtmfTone(0);
-    //DtmfDecoder decoder;
-    //cout << decoder.doSample(1000) << endl;
-    //while(generator.getStatus() == 2);
-
-    SoundBufferRecorder recorder;
-    sf::Clock clock;
-    int sampletime = 100;
-    cout << "record start" << endl;
-    usleep(100);
-    recorder.start();
-
-    while(clock.getElapsedTime().asMilliseconds() <=  1000){}
-    recorder.stop();
-    cout << "record stop" << endl;
-
-    const sf::SoundBuffer& buffer = recorder.getBuffer();
-
-    const sf::Int16* samples = buffer.getSamples();
-
-    const long count = buffer.getSampleCount();
 
 
+//    vector<double> data;
+//    ifstream in("Sigurd.txt");
+//      double data1;
+//      while(in >> data1)
+//      {
+//          data.push_back(data1);
+//      }
+//      in.close();
+//      cout << "eh" <<endl;
 
-    DtmfDecoder testSampling((count/(44100.0*10.0))*1000.0);
 
-    cout << testSampling.identifyDTMF(samples, count/10.0) << endl;
+//      ofstream myfile;
+//      myfile.open ("SigurdV2.txt");
+//      for (unsigned long i = 0; i < data.size(); i++){
+//          myfile << to_string(data.at(i)) << ",";
+//      }
+//      myfile.close();
+
+//      return 0;
 
 
 
+//    for(int i = 0; i< 1000; i++){
+//    SoundBufferRecorder recorder;
+
+//    sf::Clock clock;
+//    double sampletime = 100.0;
+//    usleep(100);
+//    recorder.start();
+
+//    while(clock.getElapsedTime().asMilliseconds() <=  sampletime){}
+//    recorder.stop();
+
+//    const sf::SoundBuffer& buffer = recorder.getBuffer();
+
+//    const sf::Int16* samples = buffer.getSamples();
+
+//    const long count = buffer.getSampleCount();
+
+//    double fractionSampleTime = 10.0;
+
+//    double timefraction = sampletime/fractionSampleTime;
 
 
-//    ofstream myfile;
-//    myfile.open ("/media/sf_VirBox_Shared/raw.txt", std::ofstream::trunc);
-//    for (long i = 0; i < count; i++){
-//        myfile << to_string(samples[i]) << " ";
+
+
+    //Testning af encoder
+
+    //    DtmfEncoder encoder(70, OUTPUT_SAMPLERATE, 10000);
+
+
+
+
+    //    for(int i = 0;i < 16; i++){
+    //        encoder.playDtmfTone(i);
+    //    }
+
+
+    //    return 0;
+
+
+
+
+//       DtmfDecoder testSampling((count/(44100.0*timefraction))*1000.0);
+//       int tone = testSampling.identifyDTMF(samples, count/timefraction);
+
+//           cout << tone << endl;
+
 //    }
-//    myfile.close();
 
-//    double mean = 0;
-//    for(int i = 0; i < count; i++){
-//        mean += abs((double)samples[i]) / (double)count;
-//    }
-//    cout << "mean: " << mean << endl;
+    srand((unsigned)time(0));
+    PhysicalLayer soundObj(60,60,15);
+    vector<int> mega;
 
-//    double average = 0;
+    for(int i = 0; i < 100; i++){
+        mega.push_back(rand()%15);
+    }
 
-//    double lastAverage;
+    for (int i = 0; i < mega.size(); i++){
 
-//    double koef = 0.00005;
+        soundObj.writeOutBuffer(mega.at(i));
+    }
 
-//    // remove short loud sounds by removing data that is some % above mean.
+    int tone;
+    vector<int> tones;
 
-//    vector<double> avgVec;
-//    for (int i = 0; i < count; i++){
-//        lastAverage = average;
-//        average = abs(samples[i]) * koef + (1.0f-koef) * abs(lastAverage);
-//        if (abs(samples[i]) > mean*5){
-//            average = avgVec.at(i-1);
-//        }
-//        avgVec.push_back(average);
-//    }
+    while(true){
 
-//    ofstream myfileOther;
-//    myfile.open ("/media/sf_VirBox_Shared/avg.txt", std::ofstream::trunc);
-//    for (unsigned long i = 0; i < avgVec.size(); i++){
-//        myfile << to_string(avgVec.at(i)) << " ";
-//    }
-//    myfile.close();
+
+        if(soundObj.readInBuffer(tone)){
+            tones.push_back(tone);
+            cout << "tones vector size: " << tones.size() << endl;
+
+            if(tones.size() == mega.size()){
+
+                if(tones == mega){
+                    cout << "very gut" << endl;
+                }else{
+                    cout << "ERROR: two vectors not the same" << endl;
+                }
+
+               for(int i = 0; i < tones.size(); i++){
+                   cout << "played tone:Decoded tone  :   " << mega.at(i) << " : " << tones.at(i) << endl;
+               }
+
+            }
+        }
+
+
+    }
 
     return 0;
 }

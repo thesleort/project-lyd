@@ -19,22 +19,22 @@ ELSE()
     PUBLIC
     # DTMF decoder and encoder layer
     layer-dtmf/dtmfdecoder.cpp
-    layer-dtmf/dtmfdecoder.h
     layer-dtmf/dtmfEncoder.cpp
-    layer-dtmf/dtmfEncoder.h
     layer-dtmf/physicallayer.cpp
-    layer-dtmf/physicallayer.h
 
     # Data transfer layer
     layer-data-transfer/Controller/Controller.cpp
-    layer-data-transfer/Controller/Controller.h
     layer-data-transfer/Cyclic/Cyclic.cpp
-    layer-data-transfer/Cyclic/Cyclic.h
     layer-data-transfer/Protocol/bytestuffer.cpp
-    layer-data-transfer/Protocol/bytestuffer.h
 
     layer-data-transfer/FrameGenPlaceholder/framegen.cpp
-    layer-data-transfer/FrameGenPlaceholder/framegen.h
+
+    # Physical layer
+    layer-dtmf/dtmfdecoder.cpp
+    layer-dtmf/dtmfEncoder.cpp
+    layer-dtmf/physicallayer.cpp
+    layer-dtmf/digitalfilter.cpp
+    layer-dtmf/firfilter.cpp
   )
 ENDIF(TEST_SUITE)
 
@@ -47,7 +47,7 @@ include_directories(dtmf
   layer-data-transfer/config
 )
 find_package(SFML 2 REQUIRED network audio graphics window system)
-target_link_libraries(dtmf sfml-graphics sfml-audio)
+target_link_libraries(dtmf sfml-graphics sfml-audio fftw3)
 
 set_target_properties(dtmf PROPERTIES SOVERSION 1)
 set_target_properties(dtmf PROPERTIES PUBLIC_HEADER libdtmf/libdtmf.h)
