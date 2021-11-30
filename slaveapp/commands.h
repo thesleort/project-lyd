@@ -16,10 +16,10 @@ class Commands {
     Commands();
     ~Commands();
 
-    rotate(float degrees);
-    move();
+    void rotate(float degrees);
+    void move();
   private:
-    
+
 };
 
 #endif
