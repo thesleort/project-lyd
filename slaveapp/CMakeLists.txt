@@ -18,7 +18,9 @@ include_directories(slaveapp
   include
 )
 
-target_link_libraries(slaveapp paho-mqttpp3 paho-mqtt3as)
+find_package(nlohmann_json 3.2.0 REQUIRED)
+
+target_link_libraries(slaveapp paho-mqttpp3 paho-mqtt3as nlohmann_json::nlohmann_json)
 
 target_link_libraries(slaveapp ${CMAKE_SOURCE_DIR}/lib/libdtmf.so)
 
