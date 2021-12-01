@@ -114,9 +114,16 @@ void DtmfEncoder::playDtmfTone(int tone)
 //    int highTone = tone % 4;
 //    playDualTone(_lowFreqs[lowTone], _highFreqs[highTone]);
 
-
-
     while(_sound.getStatus() == 2){}
+
+    if(tone == 16){
+        sf::Clock Clock;
+        //pause length is set to constant of 60 ms, instead of _mSec
+        while(Clock.getElapsedTime().asMilliseconds() < 60){}
+        return;
+    }
+
+
     _sound.setBuffer(_bufferVector[tone]);
 
     //_clock.restart();

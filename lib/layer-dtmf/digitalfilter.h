@@ -16,18 +16,16 @@ struct filterCoefficients{
     vector<double> b;
 };
 
-
 class DigitalFilter
 {
 public:
-
     DigitalFilter();
     DigitalFilter(vector<filterCoefficients> filters) : filters(filters) {};
-    vector<complex<double>> simParallel(vector<complex<double>> x_complex);
+    vector<double> simParallel(vector<double> x_complex);
 
  private:
     vector<filterCoefficients> filters;
-    vector<int> simFilter(vector<int> x, filterCoefficients coeff);
+    vector<double> simFilter(vector<double> x, filterCoefficients coeff);
 };
 
 #endif // DIGITALFILTER_H
