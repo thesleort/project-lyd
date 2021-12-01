@@ -24,9 +24,26 @@ DtmfDecoder::DtmfDecoder(double sampleTime) : _sampleTime(sampleTime/1000.0)
     fftin = fftw_alloc_complex(SAMPLERATE/_downSampling);
     fftout = fftw_alloc_complex(SAMPLERATE/_downSampling);
 
-    _prevAmp = vector<double>{0,0}; //Amplitude from previous sampling
+    //Amplitude from previous sampling
     _CurrentAmp = vector<double>{0,0};
+    _prevAmp =  _CurrentAmp;
 
+
+    // filter keofficienter
+        vector<double> a1 = {0, 0.00759724};
+        vector<double> b1 = {-0.976123};
+        filterCoefficients filter1(a1, b1);
+
+        vector<double> a2 = {0, -0.0716137};
+        vector<double> b2 = {-0.930117};
+        filterCoefficients filter2(a2, b2);
+
+        vector<double> a3 = {0, 0.0810964, -0.0387499};
+        vector<double> b3 = {-1.77176, 0.831691};
+        filterCoefficients filter3(a3, b3);
+
+        // opret filter
+        _dFilter = DigitalFilter(vector<filterCoefficients>{filter1, filter2, filter3});
 
 
 }
@@ -38,6 +55,8 @@ DtmfDecoder::DtmfDecoder(double sampleTime) : _sampleTime(sampleTime/1000.0)
 
 int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
 {
+    //For knowing how many times the tone has come prior
+
     _sampleTime = sampletime/1000;
 //    cout << "amount of samples: " << count << endl;
 
@@ -51,6 +70,9 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
 //   cout << clock.getElapsedTime().asMilliseconds() << endl;
 
    //Vil give fejl indtil filteret er lavet.
+
+   dataVec = _dFilter.simParallel(dataVec);
+
    vector<complex<double>> complexSoundBuffer = realToComplexVector(dataVec,count);
 
 
@@ -86,6 +108,10 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
    int tone;
 
    if(peaks.at(0) == -1){
+       //cout << "ERROR: sound to low" << endl;
+
+       //Important to know if the last error was amp block, for tailing error check.
+       _prevTone = -1;
        return -1;
    }
 
@@ -93,16 +119,35 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
 
 
    if(tone == -2){
+       //cout << "ERROR: error margin too great" << endl;
+
       return -2;
    }
 
+   //If we begin sampling with a new tone, then delete the data from previous tone
+   //Testing, disregard checking if it does not match the previous number
+   if(_prevTone < 0){
+       //cout << "Tailer checker restarted" << endl;
+       //Initiate a double vector with values in its first vector
+       restartTEC();
+   }
 
 
-   if(tailingErrorCheck(tone) == -3){
+   //If previous tone was amp block, then a tailing error is impossible.
+   if(tailingErrorCheck(tone) == -3 && _prevTone != -1){
        //cout << "Tailing Tone: " << tone << endl;
        return -3;
    }
 
+   if(_prevTone == tone){
+       _comboCounterTEC++;
+   }else{
+       if(_prevTone < 0 && tone >= 0){
+           _comboCounterTEC++;
+       }
+
+       _prevTone = tone;
+   }
 
    return tone;
 
@@ -111,28 +156,77 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
 int DtmfDecoder::tailingErrorCheck(int tone)
 {
 
+
+
     if(_prevAmp.at(0) == 0 || _prevAmp.at(1) == 0){
 
         //If tone != _prevTone, Then new tone has begun. Restart tailing error check
         _prevAmp = _CurrentAmp;
         return tone;
+    }
+
+    double localTEM = _tailingErrorMargin-(double)(_comboCounterTEC/10.0); //tailing error Margin
+
+
+
+    //cout << "test Amp LOW: " << _prevAmp.at(0) << "  :   HIGH: " << _prevAmp.at(1) << "  :   size: " << _prevAmp.size() << "  :  TEM_value: " << localTEM << endl;
+
+
+    if(_prevWasTail){
+        if(((_prevAmp.at(0)-_CurrentAmp.at(0)) > 0) && (_prevAmp.at(1)-_CurrentAmp.at(1) > 0)){
+
+            //        cout << "tail error check value low: "  << ((double)_prevAmp.at(0)-(double)_CurrentAmp.at(0))/(double)_prevAmp.at(0) << "  :  tail error check value HIGH: " << ((double)_prevAmp.at(1)-(double)_CurrentAmp.at(1))/(double)_prevAmp.at(1) << endl;
+            //        cout << "Previous amp LOW: " << (double)_prevAmp[0] << "    :   previous amp HIGH: " << (double)_prevAmp[1] << endl;
+            //        cout << "Current amp LOW: " << (double)_CurrentAmp.at(0)<< "   :   current amp HIGH  " << (double)_CurrentAmp[1] << endl;
+            //cout << "Tailer checker restarted" << endl;
+            _prevAmp = _CurrentAmp;
+            _prevWasTail = false;
+            restartTEC();
+            return -3;
+
+        }else{
+
+            _prevAmp = _CurrentAmp;
+            _prevWasTail = false;
+        }
 
     }
 
+    //Test: try
+    double ratioPreviousAmpLOW = (_prevAmp.at(0)-_CurrentAmp.at(0))/_prevAmp.at(0);
+    double ratioPreviousAmpHIGH = (_prevAmp.at(1)-_CurrentAmp.at(1))/_prevAmp.at(1);
 
-    if(((_prevAmp.at(0)-_CurrentAmp.at(0))/_prevAmp.at(0) > _tailingErrorMargin) || (_prevAmp.at(1)-_CurrentAmp.at(1))/_prevAmp.at(1) > _tailingErrorMargin ){
+    if((ratioPreviousAmpLOW > localTEM) || (ratioPreviousAmpHIGH > localTEM)){
 
+        //        cout << "tail error check value low: "  << ((double)_prevAmp.at(0)-(double)_CurrentAmp.at(0))/(double)_prevAmp.at(0) << "  :  tail error check value HIGH: " << ((double)_prevAmp.at(1)-(double)_CurrentAmp.at(1))/(double)_prevAmp.at(1) << endl;
+        //        cout << "Previous amp LOW: " << (double)_prevAmp[0] << "    :   previous amp HIGH: " << (double)_prevAmp[1] << endl;
+        //        cout << "Current amp LOW: " << (double)_CurrentAmp.at(0)<< "   :   current amp HIGH  " << (double)_CurrentAmp[1] << endl;
+        //cout << "Tailer checker restarted" << endl;
         _prevAmp = _CurrentAmp;
+        _prevWasTail = true;
+        restartTEC();
         return -3;
 
-    }else{
+    }else if((ratioPreviousAmpLOW < -localTEM)||(ratioPreviousAmpHIGH < -localTEM)){
+        //If the ratio was too great, the data and should be lowered by an average.
+        //cout << "   spike detection" << endl;
+        _CurrentAmp.at(0) = (_CurrentAmp.at(0)+_prevAmp.at(0))/2;
+        _CurrentAmp.at(1) = (_CurrentAmp.at(1)+_prevAmp.at(1))/2;
 
         _prevAmp = _CurrentAmp;
+        _prevWasTail = false;
+        return tone;
+
     }
 
-
-
+    _prevAmp = _CurrentAmp;
+    _prevWasTail = false;
     return tone;
+}
+
+void DtmfDecoder::restartTEC()
+{
+    _comboCounterTEC = 0;
 }
 
 
