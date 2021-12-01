@@ -7,7 +7,6 @@
  * 
  */
 DTMF::DTMF() {
-  std::cout << "HEJ MED DIG 2" << std::endl;
   m_receiveBuffer = new std::vector<DTMFFrame>();
   m_transmitBuffer = new std::vector<DTMFFrame>();
 
@@ -43,7 +42,6 @@ void DTMF::transmit(DTMFFrame frame, bool blocking) {
   m_transmitBufferMutex.lock();
   m_transmitBuffer->push_back(frame);
   m_transmitBufferMutex.unlock();
-  std::cout << "libdtmf: Frame received" << std::endl;
 }
 
 /**
@@ -99,13 +97,15 @@ void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
  */
 void DTMF::receiver(std::atomic<bool> &cancellation_token) {
   while (!cancellation_token) {
-    // std::vector<bool> readData;
+    std::vector<bool> readData;
     DTMFFrame frame;
     // readData = m_controller->read();
-    // frame = convertBoolVectorToFrame(readData);
-    m_receiveBufferMutex.lock();
-    m_receiveBuffer->push_back(frame);
-    m_receiveBufferMutex.unlock();
+    if (readData.size() > 0) {
+      frame = convertBoolVectorToFrame(readData);
+      m_receiveBufferMutex.lock();
+      m_receiveBuffer->push_back(frame);
+      m_receiveBufferMutex.unlock();
+    }
   }
 }
 
