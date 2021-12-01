@@ -130,7 +130,7 @@ void PhysicalLayer::decodingV2()
         //cout << clock.getElapsedTime().asMilliseconds() << endl;
 
 
-        //cout << "DTMF TONE: " << i << endl;
+        cout << "DTMF TONE: " << i << endl;
 
 
         if(i >= 0 && i == _dtmfTone){
@@ -145,7 +145,7 @@ void PhysicalLayer::decodingV2()
                 sem_post(&_inBufferMutex);
 
 
-                //cout << "                                              COMBO BREAKER: " << i << endl;
+                cout << "                                              COMBO BREAKER: " << i << endl;
                 _dtmfComboCounter = 0;
             }
         }else{

@@ -29,6 +29,22 @@ DtmfDecoder::DtmfDecoder(double sampleTime) : _sampleTime(sampleTime/1000.0)
     _prevAmp =  _CurrentAmp;
 
 
+    // filter keofficienter
+        vector<double> a1 = {0, 0.00759724};
+        vector<double> b1 = {-0.976123};
+        filterCoefficients filter1(a1, b1);
+
+        vector<double> a2 = {0, -0.0716137};
+        vector<double> b2 = {-0.930117};
+        filterCoefficients filter2(a2, b2);
+
+        vector<double> a3 = {0, 0.0810964, -0.0387499};
+        vector<double> b3 = {-1.77176, 0.831691};
+        filterCoefficients filter3(a3, b3);
+
+        // opret filter
+        _dFilter = DigitalFilter(vector<filterCoefficients>{filter1, filter2, filter3});
+
 
 }
 
@@ -54,6 +70,9 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
 //   cout << clock.getElapsedTime().asMilliseconds() << endl;
 
    //Vil give fejl indtil filteret er lavet.
+
+   dataVec = _dFilter.simParallel(dataVec);
+
    vector<complex<double>> complexSoundBuffer = realToComplexVector(dataVec,count);
 
 

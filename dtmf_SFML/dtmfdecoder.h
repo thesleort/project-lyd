@@ -1,4 +1,4 @@
-#ifndef DTMFDECODER_H
+﻿#ifndef DTMFDECODER_H
 #define DTMFDECODER_H
 #define SAMPLERATE 44100
 #include <vector>
@@ -25,6 +25,10 @@ private:
         double amplitude;
         double frequency;
     };
+
+    //IIR filter
+    DigitalFilter _dFilter;
+
     //Debugging Report:mp block, sound i
     //res: -1 sound to quiet
     //res: -2 Error margin is too great;
