@@ -1,7 +1,6 @@
 
 #include "libdtmf.h"
 
-#include <iostream>
 /**
  * @brief Construct a new DTMF::DTMF object
  * 
@@ -77,14 +76,12 @@ const uint16_t DTMF::receive(DTMFFrame &frame, bool blocking) {
  */
 void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
   while (!cancellation_token) {
-    for (DTMFFrame frame: *m_transmitBuffer) {
-
-      m_transmitBufferMutex.lock();
-      // m_controller->write(generateBooleanFrame(frame));
-      m_transmitBuffer->erase(m_transmitBuffer->begin());
-      std::cout << "libdtmf: Frame transmitted" << std::endl;
-      std::cout << " - size: " << m_transmitBuffer->size() << std::endl;
-      m_transmitBufferMutex.unlock();
+    while (m_transmitBuffer->size() > 0) {
+      if (m_transmitBufferMutex.try_lock()) {
+        m_controller->write(generateBooleanFrame(m_transmitBuffer->at(0)));
+        m_transmitBuffer->erase(m_transmitBuffer->begin());
+        m_transmitBufferMutex.unlock();
+      }
     }
   }
 }
@@ -111,19 +108,20 @@ void DTMF::receiver(std::atomic<bool> &cancellation_token) {
 
 std::vector<bool> DTMF::generateBooleanFrame(DTMFFrame &frame) {
   std::vector<bool> boolDataVector(frame.data_size * sizeof(uint8_t));
-
   for (unsigned i = 0; i < frame.data_size; i++) {
-    char bitmask = BIT_7;
-    for (unsigned bit = 0; bit < sizeof(uint8_t); bit++) {
-      if ((frame.data[i] & bitmask) && bitmask) {
+    uint8_t bitmask = BIT_7;
+    for (unsigned bit = 0; bit < sizeof(uint8_t) * 8; bit++) { // 8 is the size of a byte in bits
+
+      // Checks if the current bit is set or not.
+      if ((frame.data[i] & bitmask) == bitmask) {
         boolDataVector.push_back(true);
       } else {
         boolDataVector.push_back(false);
       }
-      bitmask >> 1;
+
+      bitmask = bitmask >> 1;
     }
   }
-  std::cout << "libdtmf: Boolean frame generated" << std::endl;
   return boolDataVector;
 }
 
@@ -138,7 +136,6 @@ DTMFFrame DTMF::convertBoolVectorToFrame(std::vector<bool> boolFrame) {
       frame.data[i] |= short(boolFrame.at(super_index)) << bit;
     }
   }
-  std::cout << "libdtmf: Bool vector converted to frame" << std::endl;
   return frame;
 }
 
