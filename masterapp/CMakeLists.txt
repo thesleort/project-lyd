@@ -16,7 +16,7 @@ find_package(Curses REQUIRED)
 include_directories(${CURSES_INCLUDE_DIR})
 set_target_properties(masterapp PROPERTIES PUBLIC_HEADER include/libdtmf.h)
 
-include_directories(slaveapp 
+include_directories(masterapp 
   include
 )
 
