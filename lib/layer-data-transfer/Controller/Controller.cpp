@@ -226,6 +226,9 @@ void Controller::autoTransmit() {
       Transmit(msg);
       }
     }
+    #ifdef WITH_SLEEP
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_UTIME));
+    #endif
   }
 }
 
@@ -239,6 +242,9 @@ void Controller::autoReceive() {
       _inbufferLock.unlock();
       Receive(frame);
     }
+    #ifdef WITH_SLEEP
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_UTIME));
+    #endif
   }
 }
 
@@ -247,6 +253,9 @@ void Controller::autoSplitInput() {
     while (_inputBuffer->size() > 2) {
       SplitBuffer();
     }
+    #ifdef WITH_SLEEP
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_UTIME));
+    #endif
   }
 }
 
@@ -320,6 +329,9 @@ void Controller::autoReadDTMF() {
       _inputBuffer->push_back(tone); // oldest first in buffer
       _inbufferLock.unlock();
     }
+    #ifdef WITH_SLEEP
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_UTIME));
+    #endif
   }
 }
 
@@ -334,6 +346,9 @@ void Controller::autoWriteDTMF() {
       }
       _outbufferLock.unlock();
     }
+    #ifdef WITH_SLEEP
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_UTIME));
+    #endif
   }
 }
 

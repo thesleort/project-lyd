@@ -1,6 +1,10 @@
 
 #include "libdtmf.h"
 
+#include <unistd.h>
+#include <iostream>
+#include <chrono>
+
 /**
  * @brief Construct a new DTMF::DTMF object
  * 
@@ -83,6 +87,9 @@ void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
         m_transmitBufferMutex.unlock();
       }
     }
+    #ifdef WITH_SLEEP
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_UTIME));
+    #endif
   }
 }
 
@@ -103,6 +110,9 @@ void DTMF::receiver(std::atomic<bool> &cancellation_token) {
       m_receiveBuffer->push_back(frame);
       m_receiveBufferMutex.unlock();
     }
+    #ifdef WITH_SLEEP
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_UTIME));
+    #endif
   }
 }
 
