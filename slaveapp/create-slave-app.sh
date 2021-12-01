@@ -12,7 +12,7 @@ cmake -DTEST_SUITE=OFF ..
 make -j$(nproc)
 cp libdtmf.so* ../../slaveapp/lib
 cd ..
-cp */*.h ../masterapp/include
+cp */*.h ../slaveapp/include
 cp */*/*.h ../slaveapp/include
 cp libdtmf/libdtmf.h ../slaveapp/include
 cd ../slaveapp
