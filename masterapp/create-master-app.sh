@@ -8,7 +8,7 @@ mkdir -p lib
 cd ../lib
 mkdir -p build
 cd build
-cmake -DTEST_SUITE=OFF ..
+cmake -DTEST_SUITE=OFF -DWITH_SLEEP=ON -DSLEEP_MTIME=10 ..
 make -j$(nproc)
 cp libdtmf.so* ../../masterapp/lib
 cd ..

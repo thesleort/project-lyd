@@ -7,13 +7,21 @@ set(CMAKE_BUILD_TYPE Debug)
 project(dtmf VERSION 0.1 DESCRIPTION "DTMF Communication Interface")
 
 OPTION(TEST_SUITE "Compile for test usage" OFF)
+OPTION(WITH_SLEEP "Add small wait state in all asynchronous threads" ON)
 
 add_library(dtmf SHARED
   # Main library interface file
   libdtmf/libdtmf.cpp
 )
+IF(WITH_SLEEP)
+  MESSAGE(STATUS "Enabling sleep timers")
+  ADD_DEFINITIONS(-DWITH_SLEEP)
+  ADD_DEFINITIONS(-DSLEEP_UTIME=${SLEEP_MTIME})
+ENDIF(WITH_SLEEP)
+
 IF(TEST_SUITE)
-    ADD_DEFINITIONS(-DTEST_SUITE)
+  MESSAGE(STATUS "Compiling test suite")
+  ADD_DEFINITIONS(-DTEST_SUITE)
 ELSE()
   target_sources(dtmf
     PUBLIC
