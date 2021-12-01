@@ -5,19 +5,26 @@
 #include <ncurses.h>
 #include <unistd.h>
 
+#include <unistd.h>
+
 int main(void) {
-  // std::cout << "Starting" << std::endl;
+  std::cout << "Starting" << std::endl;
   DTMF *dtmf = new DTMF();
   DTMFFrame frame;
-  // std::cout << "DTMF started" << std::endl;
+  std::cout << "DTMF started" << std::endl;
   frame.data_size = 1;
-  frame.data = new uint8_t[frame.data_size];
+  frame.data = new uint8_t(frame.data_size);
 
+  frame.data[0] = DATATYPE_MOVE | MOVE_FORWARD;
+  // dtmf->transmit(frame);
+  // while(true) {
+
+  // }
   initscr();
 
   cbreak();
   noecho();
-    // nodelay(stdscr, TRUE);
+  nodelay(stdscr, TRUE);
   scrollok(stdscr, TRUE);
 
   int flag;

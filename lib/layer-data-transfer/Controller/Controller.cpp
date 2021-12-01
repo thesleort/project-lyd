@@ -20,13 +20,18 @@ Controller::Controller(double s) {
   _incomingFrames = new vector<vector<int>>;
   _outgoingMessages = new vector<vector<bool>>;
 
-  vector<int> *_outputBuffer = new vector<int>; // Output to channel
-  vector<int> *_inputBuffer = new vector<int>;  // Incoming channel NEEDS TO BE CHRONOLOGICALLY INDEXED FROM 0
+  _outputBuffer = new vector<int>; // Output to channel
+  _inputBuffer = new vector<int>;  // Incoming channel NEEDS TO BE CHRONOLOGICALLY INDEXED FROM 0
+
+  _FG = new FrameGenerator();
+  _Stuffer = new bytestuffer({1, 1, 1, 1}, {0, 0, 0, 0});
+  _pLayer = new PhysicalLayer(30,30,30);
+  _CRChecker = new Cyclic({1, 0, 1, 1, 1});
 
   _timeout = (s / 0.00002); // implicit typecast :3
   // sem_init(&_outbufferLock,0,1);
   receiveThread = new thread(&Controller::autoReceive, this);   // auto receive on _incomingframes->_RMSGBuffer
-  splitThread = new thread(&Controller::autoSplitInput, this);  // auto split _inputbuffer into frames->_incomingframes
+  // splitThread = new thread(&Controller::autoSplitInput, this);  // auto split _inputbuffer into frames->_incomingframes
   transmitThread = new thread(&Controller::autoTransmit, this); // auto transmit on MSG from _outgoingMSGbuffer
   DTMFreadT = new thread(&Controller::autoWriteDTMF, this);     // auto write DTMF from beginning of _outputbuffer
   DTMFwriteT = new thread(&Controller::autoReadDTMF, this);     // auto read DTMF to end of _inputbuffer
@@ -214,11 +219,12 @@ void Controller::TransmitACK(vector<bool> seq) {
 void Controller::autoTransmit() {
   while (1) {
     while (_outgoingMessages->size() > 0) {
-      _TMstackLock.lock();
+      if (_TMstackLock.try_lock()) {
       vector<bool> msg = _outgoingMessages->at(0);          // first element on outgoing frames is msg
       _outgoingMessages->erase(_outgoingMessages->begin()); // first msg on stack is
       _TMstackLock.unlock();
       Transmit(msg);
+      }
     }
   }
 }
@@ -226,8 +232,11 @@ void Controller::autoTransmit() {
 void Controller::autoReceive() {
   while (1) {
     while (_incomingFrames->size() > 0) {
+
       vector<int> frame = _incomingFrames->at(0);
+      _inbufferLock.lock();
       _incomingFrames->erase(_incomingFrames->begin());
+      _inbufferLock.unlock();
       Receive(frame);
     }
   }
