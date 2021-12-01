@@ -55,9 +55,23 @@
       "bit": "cpp",
       "condition_variable": "cpp",
       "set": "cpp",
-      "mutex": "cpp"
+      "mutex": "cpp",
+      "cstring": "cpp",
+      "bitset": "cpp",
+      "compare": "cpp",
+      "concepts": "cpp",
+      "forward_list": "cpp",
+      "list": "cpp",
+      "map": "cpp",
+      "numbers": "cpp",
+      "stop_token": "cpp",
+      "valarray": "cpp",
+      "semaphore": "cpp"
     },
     "cSpell.words": [
       "DTMF"
+    ],
+    "cSpell.ignoreWords": [
+      "inbuffer"
     ]
 }
