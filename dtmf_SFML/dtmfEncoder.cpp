@@ -118,7 +118,8 @@ void DtmfEncoder::playDtmfTone(int tone)
 
     if(tone == 16){
         sf::Clock Clock;
-        while(Clock.getElapsedTime().asMilliseconds() < _mSec){}
+        //pause length is set to constant of 60 ms, instead of _mSec
+        while(Clock.getElapsedTime().asMilliseconds() < 60){}
         return;
     }
 
