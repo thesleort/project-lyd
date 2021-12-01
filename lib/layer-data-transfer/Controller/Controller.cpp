@@ -6,6 +6,7 @@
 #include "bytestuffer.h"
 #include "framegen.h"
 #include "Controller.h"
+#include "..\layer-dtmf\physicallayer.h"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -20,11 +21,21 @@ Controller::Controller(double s) {
   _incomingFrames = new vector<vector<int>>;
   _outgoingMessages = new vector<vector<bool>>;
 
+  vector<int> *_outputBuffer=new vector<int>;              //Output to channel
+  vector<int> *_inputBuffer=new vector<int>;               //Incoming channel NEEDS TO BE CHRONOLOGICALLY INDEXED FROM 0
+  
+
+
   _timeout = (s / 0.00002); //implicit typecast :3
   //sem_init(&_outbufferLock,0,1);
-  receiveThread = new thread(&Controller::autoReceive, this);
-  splitThread = new thread(&Controller::autoSplitInput, this);
-  transmitThread = new thread(&Controller::autoTransmit, this);
+  receiveThread = new thread(&Controller::autoReceive, this); //auto receive on _incomingframes->_RMSGBuffer
+  splitThread = new thread(&Controller::autoSplitInput, this); //auto split _inputbuffer into frames->_incomingframes
+  transmitThread = new thread(&Controller::autoTransmit, this); //auto transmit on MSG from _outgoingMSGbuffer
+  DTMFreadT=new thread(&Controller::autoWriteDTMF,this);  //auto write DTMF from beginning of _outputbuffer
+  DTMFwriteT=new thread(&Controller::autoReadDTMF,this); //auto read DTMF to end of _inputbuffer
+
+
+
 }
 
 Controller::~Controller() {
@@ -34,11 +45,14 @@ Controller::~Controller() {
   delete _Stuffer;
   delete _incomingFrames;
   delete _outgoingMessages;
+  delete _pLayer;
 
   //sem_destroy(&_outbufferLock);
   receiveThread->join();
   transmitThread->join();
   splitThread->join();
+  DTMFreadT->join();
+  DTMFwriteT->join();
 }
 
 //-------------Setup---------
@@ -50,7 +64,7 @@ void Controller::addInput(vector<int> &in) {
   _inputBuffer = &in;
 }
 
-//------------Public Acces-----------
+//------------Public Access-----------
 
 void Controller::write(vector<bool> msg) {
   _TMstackLock.lock();
@@ -234,6 +248,7 @@ void Controller::autoSplitInput() {
 }
 
 void Controller::SplitBuffer() {
+  _inbufferLock.lock();
   int _flagI = _Stuffer->getFlag();
   int _etcI = _Stuffer->getEtc();
   int size = _inputBuffer->size();
@@ -291,6 +306,31 @@ void Controller::SplitBuffer() {
     _incomingFrames->push_back(frame);
     _inputBuffer->erase(_inputBuffer->begin(), _inputBuffer->begin() + frameStop + 1); //fixes program. in erase range with begin(), the amount of erased elements is equal to It_last-It_first(so if framestop without +1 is used and framestop index is 2, only 2 elements are deleted from input)
   }
+  _inbufferLock.unlock();
+}
+
+void Controller::autoReadDTMF(){
+int tone;
+while(1){
+  if(_pLayer->readInBuffer(tone))){
+    _inbufferLock.lock();
+    _inputBuffer->push_back(tone); //oldest first in buffer
+    _inbufferLock.unlock();
+  }
+}
+
+void Controller::autoWriteDTMF(){
+  while(1){
+    while(_outputBuffer->size()>1){
+      _outbufferLock.lock();
+      int size=_outputBuffer->size();
+        for(int i=0;i<size;i++){
+          _pLayer->writeOutBuffer(_outputBuffer->at(0)); //sends frame from beginning of buffer
+          _outputBuffer->erase(_outputBuffer.begin());
+        }
+      _outbufferLock.unlock();
+    }
+  }    
 }
 
 void Controller::printReceived() {
