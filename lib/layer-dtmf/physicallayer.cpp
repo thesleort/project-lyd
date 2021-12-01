@@ -130,7 +130,7 @@ void PhysicalLayer::decodingV2()
         //cout << clock.getElapsedTime().asMilliseconds() << endl;
 
 
-        cout << "DTMF TONE: " << i << endl;
+        // cout << "DTMF TONE: " << i << endl;
 
 
         if(i >= 0 && i == _dtmfTone){
