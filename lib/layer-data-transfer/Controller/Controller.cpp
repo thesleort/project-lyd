@@ -67,7 +67,6 @@ void Controller::addInput(vector<int> &in) {
 
 void Controller::write(vector<bool> msg) {
   _TMstackLock.lock();
-  std::cout << "writing" << std::endl;
   _outgoingMessages->push_back(msg);
   _TMstackLock.unlock();
 }
@@ -221,7 +220,6 @@ void Controller::autoTransmit() {
   while (1) {
     while (_outgoingMessages->size() > 0) {
       if (_TMstackLock.try_lock()) {
-      std::cout << "test" << std::endl;
       vector<bool> msg = _outgoingMessages->at(0);          // first element on outgoing frames is msg
       _outgoingMessages->erase(_outgoingMessages->begin()); // first msg on stack is
       _TMstackLock.unlock();

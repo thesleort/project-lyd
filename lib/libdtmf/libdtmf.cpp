@@ -107,7 +107,7 @@ void DTMF::receiver(std::atomic<bool> &cancellation_token) {
 }
 
 std::vector<bool> DTMF::generateBooleanFrame(DTMFFrame &frame) {
-  std::vector<bool> boolDataVector(frame.data_size * sizeof(uint8_t));
+  std::vector<bool> boolDataVector;
   for (unsigned i = 0; i < frame.data_size; i++) {
     uint8_t bitmask = BIT_7;
     for (unsigned bit = 0; bit < sizeof(uint8_t) * 8; bit++) { // 8 is the size of a byte in bits
