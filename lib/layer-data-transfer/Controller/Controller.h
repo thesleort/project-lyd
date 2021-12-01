@@ -4,6 +4,7 @@
 #include "Cyclic.h"
 #include "bytestuffer.h"
 #include "framegen.h"
+#include "physicallayer.h"
 
 #include <vector>
 #include <mutex>
@@ -30,7 +31,8 @@ class Controller {
   void autoTransmit();
   void autoReceive();
   void autoSplitInput();
-
+  void autoReadDTMF();
+  void autoWriteDTMF();
 
  
  //Testing
@@ -52,10 +54,13 @@ private:
   mutex _outbufferLock;
   mutex _RMstackLock;
   mutex _TMstackLock;
+  mutex _inbufferLock;
+
   //modules
   FrameGenerator *_FG = new FrameGenerator();
   Cyclic *_CRChecker = new Cyclic({1, 0, 1, 1, 1});
   bytestuffer *_Stuffer = new bytestuffer({1, 1, 1, 1}, {0, 0, 0, 0});
+  PhysicalLayer *_pLayer = new PhysicalLayer(30,30,30);
 
   //type patterns
   vector<bool> _msgType = {1, 0};
@@ -81,6 +86,8 @@ private:
   thread *receiveThread;
   thread *splitThread;
   thread *transmitThread;
+  thread *DTMFwriteT;
+  thread *DTMFreadT;
   
 };
 
