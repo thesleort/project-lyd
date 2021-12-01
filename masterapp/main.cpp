@@ -8,13 +8,15 @@
 #include <unistd.h>
 
 int main(void) {
-  // std::cout << "Starting" << std::endl;
+  std::cout << "Starting" << std::endl;
   DTMF *dtmf = new DTMF();
   DTMFFrame frame;
-  // std::cout << "DTMF started" << std::endl;
+  std::cout << "DTMF started" << std::endl;
   frame.data_size = 1;
   frame.data = new uint8_t(frame.data_size);
 
+  frame.data[0] = DATATYPE_MOVE | MOVE_FORWARD;
+  std::cout << "data: " << unsigned(frame.data[0]) << std::endl;
   dtmf->transmit(frame);
   while(true) {
 
@@ -23,7 +25,7 @@ int main(void) {
 
   // cbreak();
   // noecho();
-    // nodelay(stdscr, TRUE);
+  //   nodelay(stdscr, TRUE);
   // scrollok(stdscr, TRUE);
 
   // int flag;
@@ -68,7 +70,7 @@ int main(void) {
   //     break;
   //   };
 
-  //   // dtmf->transmit(frame);
+  //   dtmf->transmit(frame);
   // }
 
   return 0;

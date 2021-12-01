@@ -57,10 +57,10 @@ private:
   mutex _inbufferLock;
 
   //modules
-  FrameGenerator *_FG = new FrameGenerator();
-  Cyclic *_CRChecker = new Cyclic({1, 0, 1, 1, 1});
-  bytestuffer *_Stuffer = new bytestuffer({1, 1, 1, 1}, {0, 0, 0, 0});
-  PhysicalLayer *_pLayer = new PhysicalLayer(30,30,30);
+  FrameGenerator *_FG;
+  Cyclic *_CRChecker;
+  bytestuffer *_Stuffer;
+  PhysicalLayer *_pLayer;
 
   //type patterns
   vector<bool> _msgType = {1, 0};

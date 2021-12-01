@@ -14,9 +14,18 @@ bytestuffer::~bytestuffer(){};
 
 vector<int> bytestuffer::boolToInt(vector<bool> in) {
   vector<int> out;
+  for (bool b : in) {
+    if (b) {
+      std::cout << 1 << ", ";
+    } else {
+      std::cout << 0 << ", ";
+    }
+  }
+
   while (in.size() > 0) {
     out.push_back(in.at(0) * 8 + in.at(1) * 4 + in.at(2) * 2 + in.at(3) * 1); //4 bits til "hex" som int
     in.erase(in.begin());                                                     //4 bits deleted
+    std::cout << "DEBUG" << std::endl;
     in.erase(in.begin());
     in.erase(in.begin());
     in.erase(in.begin());
@@ -64,6 +73,7 @@ vector<int> bytestuffer::stuff(vector<bool> in) {
       i++; //i is iterated, since i+1 is now the same as the old i, which would mean etc would be added
     }
   }
+
   for (int i = 0; i < inInt.size(); i++) {
     if (inInt.at(i) == _flagI) {
       inInt.insert(inInt.begin() + i, _etcI);
