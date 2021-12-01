@@ -1,11 +1,13 @@
 
 #include "libdtmf.h"
 
+#include <iostream>
 /**
  * @brief Construct a new DTMF::DTMF object
  * 
  */
 DTMF::DTMF() {
+  std::cout << "HEJ MED DIG 2" << std::endl;
   m_receiveBuffer = new std::vector<DTMFFrame>();
   m_transmitBuffer = new std::vector<DTMFFrame>();
 
@@ -41,6 +43,7 @@ void DTMF::transmit(DTMFFrame frame, bool blocking) {
   m_transmitBufferMutex.lock();
   m_transmitBuffer->push_back(frame);
   m_transmitBufferMutex.unlock();
+  std::cout << "libdtmf: Frame received" << std::endl;
 }
 
 /**
@@ -77,9 +80,12 @@ const uint16_t DTMF::receive(DTMFFrame &frame, bool blocking) {
 void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
   while (!cancellation_token) {
     for (DTMFFrame frame: *m_transmitBuffer) {
-      m_controller->write(generateBooleanFrame(frame));
+
       m_transmitBufferMutex.lock();
+      // m_controller->write(generateBooleanFrame(frame));
       m_transmitBuffer->erase(m_transmitBuffer->begin());
+      std::cout << "libdtmf: Frame transmitted" << std::endl;
+      std::cout << " - size: " << m_transmitBuffer->size() << std::endl;
       m_transmitBufferMutex.unlock();
     }
   }
@@ -93,10 +99,10 @@ void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
  */
 void DTMF::receiver(std::atomic<bool> &cancellation_token) {
   while (!cancellation_token) {
-    std::vector<bool> readData;
+    // std::vector<bool> readData;
     DTMFFrame frame;
-    readData = m_controller->read();
-    frame = convertBoolVectorToFrame(readData);
+    // readData = m_controller->read();
+    // frame = convertBoolVectorToFrame(readData);
     m_receiveBufferMutex.lock();
     m_receiveBuffer->push_back(frame);
     m_receiveBufferMutex.unlock();
@@ -117,6 +123,7 @@ std::vector<bool> DTMF::generateBooleanFrame(DTMFFrame &frame) {
       bitmask >> 1;
     }
   }
+  std::cout << "libdtmf: Boolean frame generated" << std::endl;
   return boolDataVector;
 }
 
@@ -131,7 +138,7 @@ DTMFFrame DTMF::convertBoolVectorToFrame(std::vector<bool> boolFrame) {
       frame.data[i] |= short(boolFrame.at(super_index)) << bit;
     }
   }
-
+  std::cout << "libdtmf: Bool vector converted to frame" << std::endl;
   return frame;
 }
 
