@@ -28,6 +28,7 @@ private:
     //Debugging Report:mp block, sound i
     //res: -1 sound to quiet
     //res: -2 Error margin is too great;
+    //res: -3 Tailing error. Smaller tail sound is cut off.
     vector<double> _lowFreqs = {697.0, 770.0, 852.0, 941.0};
     vector<double> _highFreqs = {1209.0, 1336.0, 1477.0, 1633.0};
     const int _cutoffLow = 600;
@@ -43,19 +44,26 @@ private:
     double _errorMargin = 7.0;
     int _repeatPadding = 1;
     int _downSampling  = 1;
-    int _ampthreshhold = 20000;
+    int _ampthreshhold = 50000;
 
 
 
-    //Taling error check and variables
+    //Taling error check (TEC)
     int tailingErrorCheck(int tone);
-    vector<double> _prevAmp; //Amplitude from previous sampling
-    int _prevTone = -1;
+
+    //vector og all previous amps sucks ass
+    vector<double> _prevAmp; //Amplitude from previous samples, get average.
+    int _comboCounterTEC = 0;
+
+    int _prevTone = -4; //-4 undefined until we find a 4. error type.
     vector<double> _CurrentAmp;
-    double _tailingErrorMargin =  0.5;
+    double _tailingErrorMargin =  0.75; //Starts loose, but is a dynamic value in TEC
+    bool _prevWasTail = false;
+    void restartTEC(); // set the _comboCounterTEC to 0
 
 
-    //jonas fft:
+
+    //fft:
     fftw_complex *fftin, *fftout;
     fftw_plan my_plan;
 

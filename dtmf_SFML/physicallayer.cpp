@@ -75,8 +75,12 @@ void PhysicalLayer::encoding()
     while(true){
         if (_outBuffer.size() > 0){
 
-            while(encoder.getStatus() == 2){}
+
+            //encoder.playDtmfTone(16);
+
             sem_wait(&_outBufferMutex);
+
+            encoder.playDtmfTone(16);
 
             encoder.playDtmfTone(_outBuffer.at(0));
 
@@ -141,7 +145,7 @@ void PhysicalLayer::decodingV2()
                 sem_post(&_inBufferMutex);
 
 
-                //cout << "       COMBO BREAKER: " << _dtmfTone << endl;
+                //cout << "                                              COMBO BREAKER: " << i << endl;
                 _dtmfComboCounter = 0;
             }
         }else{
