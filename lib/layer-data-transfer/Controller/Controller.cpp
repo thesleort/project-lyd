@@ -28,10 +28,10 @@ Controller::Controller(double s) {
   _pLayer = new PhysicalLayer(30,30,30);
   _CRChecker = new Cyclic({1, 0, 1, 1, 1});
 
-  _timeout = (s / 0.00002); // implicit typecast :3
+  _timeout = (s / 0.00005); // implicit typecast :3
   // sem_init(&_outbufferLock,0,1);
   receiveThread = new thread(&Controller::autoReceive, this);   // auto receive on _incomingframes->_RMSGBuffer
-  // splitThread = new thread(&Controller::autoSplitInput, this);  // auto split _inputbuffer into frames->_incomingframes
+  splitThread = new thread(&Controller::autoSplitInput, this);  // auto split _inputbuffer into frames->_incomingframes
   transmitThread = new thread(&Controller::autoTransmit, this); // auto transmit on MSG from _outgoingMSGbuffer
   DTMFreadT = new thread(&Controller::autoWriteDTMF, this);     // auto write DTMF from beginning of _outputbuffer
   DTMFwriteT = new thread(&Controller::autoReadDTMF, this);     // auto read DTMF to end of _inputbuffer
@@ -141,13 +141,16 @@ void Controller::Transmit(vector<bool> msg) {
 #ifdef _WIN32
     Sleep(0.02); // Windows sleep
 #else
-    usleep(3000); // Linux sleep
+    // usleep(2); // Linux sleep
+    std::this_thread::sleep_for(std::chrono::microseconds(20));
 #endif
     ACK = compareACK(seq);
     k--;
+    // cout<<k<<endl;
   }
   if (!ACK) { // if no ACK is received either the frame or ack was lost or an error occurred
     Transmit(msg);
+    cout<<"retransmit"<<endl;
   } else { // if an ACK has been received, we flip the _currentSeq, which means the next msg we send has a new seqnr
     _currentSeq.flip();
 #ifdef DEBUG_PRINT
