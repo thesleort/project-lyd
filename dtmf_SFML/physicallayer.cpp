@@ -146,6 +146,7 @@ void PhysicalLayer::decodingV2()
 
 
                 cout << "                                              COMBO BREAKER: " << i << endl;
+                _decodeObj.UpdateAmpBlock();
                 _dtmfComboCounter = 0;
             }
         }else{
