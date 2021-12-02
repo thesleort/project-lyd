@@ -1,4 +1,7 @@
 #include <nlohmann/json.hpp>
+#ifndef TEST_MODE
+#include <iostream>
+#endif
 
 #include "libdtmf.h"
 #include "packet.h"
@@ -6,14 +9,18 @@
 
 using json = nlohmann::json;
 
+#ifndef TEST_MODE
 #define ROSCOM_URI "tcp://localhost:1883"
+#endif
 
 int main(int argc, char *argv[]) {
   DTMF *dtmf = new DTMF();
   DTMFFrame frame;
 
+  #ifndef TEST_MODE
   RosCommunicator roscom(ROSCOM_URI);
   roscom.connect();
+  #endif 
   while (true) {
 
     if (dtmf->receive(frame) > 0) {
@@ -40,11 +47,16 @@ int main(int argc, char *argv[]) {
             angularVelocity = -0.5;
             break;
         }
+        #ifndef TEST_MODE
         jsonMessage = {
           { "linear", {{"x", linearVelocity}, {"y", 0.0}, {"z", 0}}},
           { "angular", {{"x", 0.0}, {"y", 0.0}, {"z", angularVelocity}}}
         };
         roscom.publish_message(jsonMessage);
+        #else
+        std::cout << "Linear velocity : " << linearVelocity << std::endl;
+        std::cout << "Angular velocity: " << angularVelocity << std::endl;
+        #endif
       }
     }
   }

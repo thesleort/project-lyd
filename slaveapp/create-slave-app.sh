@@ -20,5 +20,5 @@ cd ../slaveapp
 # Compile slave application
 mkdir -p build
 cd build
-cmake ..
+cmake -DTEST_MODE=ON ..
 make -j$(nproc)

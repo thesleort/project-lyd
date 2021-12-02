@@ -7,6 +7,12 @@ set(CMAKE_CXX_FLAGS -pthread)
 
 project(slaveapp VERSION 0.1 DESCRIPTION "Master application")
 
+OPTION(TEST_MODE "For testing slaveapp on a PC" OFF)
+
+IF(TEST_MODE)
+  ADD_DEFINITIONS(-DTEST_MODE)
+ENDIF(TEST_MODE)
+
 add_executable(slaveapp
   main.cpp
   roscom.cpp
