@@ -95,13 +95,13 @@ int main()
 
     int decodetime = 15;
     PhysicalLayer soundObj(decodetime*4,decodetime*4,decodetime);
-    vector<int> mega{};
+    vector<int> mega{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0};
 
     int duplicatorFactor = 2;
 
-    for(int i = 0; i < 200; i++){
-        mega.push_back(rand()%15);
-    }
+//    for(int i = 0; i < 10; i++){
+//        mega.push_back(rand()%15);
+//    }
 
 
     for (int i = 0; i < mega.size(); i++){
@@ -115,34 +115,29 @@ int main()
     while(true){
 
 
-        if(soundObj.readInBuffer(tone)){
-            tones.push_back(tone);
+//        if(soundObj.readInBuffer(tone)){
+//            tones.push_back(tone);
 
-            if(tones.size() == mega.size()){
+//            if(tones.size() == mega.size()){
 
-                if(tones == mega){
-
-                    for(int i : mega){
-                        cout << "TONES: " << i << endl;
-                    }
-                    cout << "very gut" << endl;
-                    return 0;
-                }else{
-
-                    for(int i : mega){
-                        cout << "TONES: " << i << endl;
-                    }
-                    cout << "ERROR: two vectors not the same" << endl;
-                    return 0;
-                }
-
-               for(int i = 0; i < tones.size(); i++){
-                   cout << "played tone:Decoded tone  :   " << mega.at(i) << " : " << tones.at(i) << endl;
-               }
+//                if(tones == mega){
 
 
-            }
-        }
+//                    cout << "very gut" << endl;
+//                    return 0;
+//                }else{
+
+//                    cout << "ERROR: two vectors not the same" << endl;
+//                    return 0;
+//                }
+
+//               for(int i = 0; i < tones.size(); i++){
+//                   cout << "played tone:Decoded tone  :   " << mega.at(i) << " : " << tones.at(i) << endl;
+//               }
+
+
+//            }
+//        }
 
 
     }
