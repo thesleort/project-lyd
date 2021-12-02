@@ -25,7 +25,7 @@ Controller::Controller(double s) {
 
   _FG = new FrameGenerator();
   _Stuffer = new bytestuffer({1, 1, 1, 1}, {0, 0, 0, 0});
-  _pLayer = new PhysicalLayer(80,80,20);
+  _pLayer = new PhysicalLayer(60,60,15);
   _CRChecker = new Cyclic({1, 0, 1, 1, 1});
 
   _timeout = (s / 0.00005); // implicit typecast :3
@@ -182,7 +182,7 @@ void Controller::Receive(vector<int> in) {
   vector<vector<bool>> msg = _FG->splitFrame(_Stuffer->unstuff(in));
 
   if (msg.at(TYPE) == _msgType) { // if msg is a message, we do a CRC check
-
+    
     if (_CRChecker->Decode(msg.at(DATA), msg.at(CRCC))) { // If crc returns no error, we check the sequencenumber
       if (msg.at(SEQ) == _lastReceivedSeq) {
         // if seq of msg is same as last message, and CRC shows no error, the last ACK has been lost and we "resend" the ack
@@ -202,6 +202,7 @@ void Controller::Receive(vector<int> in) {
         _RMstackLock.unlock();
       }
     } // if a crc error has occurred we just wait for the msg to be resent
+    
   } else if (msg.at(TYPE) == _ackType) {
     _ACKstackLock.lock();
     _ReceivedACKBuffer->push_back(msg.at(SEQ)); // Saves SEQ on received ACK stack
@@ -222,6 +223,7 @@ void Controller::TransmitACK(vector<bool> seq) {
     _outputBuffer->push_back(n);
   }
   _outbufferLock.unlock();
+
  
 }
 
@@ -277,7 +279,7 @@ void Controller::SplitBuffer() {
   try {
     for (int i = 0; i < size - 1; i++) {   // look at size -1 values since we check i+1 to determine flag
       if (_inputBuffer->at(i) == _flagI) { // if flag is found it might be a starting flag
-        if (i == 0) {                      // else/iffed on i=0 if value after 0 wasnt type+seq because of && statement, resulted in checking i-1 for i=0, fixed by taking else if to i=0 statment instead of i=0 && ....
+        if (i == 0) {                      // else/iffed on i=0 if value after 0 wasnt type+seq because of && statement, resulted in checking i-1 for i=0, fixed by taking else if to i=0 statement instead of i=0 && ....
           if (_inputBuffer->at(i + 1) == 4 || _inputBuffer->at(i + 1) == 7 || _inputBuffer->at(i + 1) == 8 || _inputBuffer->at(i + 1) == 11) {
             frameStart = 0; // if it is the buffer beginning, it is a flag if the next value is a combination of type + seq
             break;
@@ -287,8 +289,7 @@ void Controller::SplitBuffer() {
             frameStart = i; // we have a starting flag if the next int is a valid type+seq
             break;
           }
-        } // if not we keep looking (if frame can naturally consist of etc->flag, this will break)
-      }
+        } // if not we keep looking       
     }
   } catch (const exception &e) {
     cout << "Framestart error" << e.what() << endl;
@@ -303,9 +304,14 @@ void Controller::SplitBuffer() {
     if (frameStart != -1) {                                                      // only look for framestop if we have a defined start
                                                                                  //  cout << "Framestart +1 - size: " << frameStart+1 - size << endl;
       for (int i = frameStart + 1; i < size; i++) {                              // Starts at +1 since we do not want the starting flag
-        if (_inputBuffer->at(i) == _flagI && _inputBuffer->at(i - 1) != _etcI) { // the next flag we find without an etc will be the stop
+        if (_inputBuffer->at(i) == _flagI && _inputBuffer->at(i - 1) != _etcI) { // the next flag we find without an etc will be the stop         
           frameStop = i;
           break;
+        } else if(i>2) {
+            if(_inputBuffer->at(i) == _flagI && _inputBuffer->at(i - 1) == _etcI && _inputBuffer->at(i - 2) == _etcI){//deals with natural 0s before flags by accepting stop flag if it has 2 etc before it(natural 0 + stuff), cant break(at(-1)) because it requries i>2
+              frameStop = i;
+              break;
+            }
         }
       }
     }

@@ -153,6 +153,8 @@ void PhysicalLayer::decodingV2()
                 sem_wait(&_inBufferMutex);
  
                 _inBuffer.push_back(i);
+                cout << "DTMF TONE: " << i << endl;
+
 
                 sem_post(&_inBufferMutex);
 
