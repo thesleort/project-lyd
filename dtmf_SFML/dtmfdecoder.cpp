@@ -172,7 +172,7 @@ void DtmfDecoder::UpdateAmpBlock()
 
     _ampBlockMarginLow = (_cummulativeAmp.at(0)/3.0)*AmpBlockPercent;
     _ampBlockMarginHigh = (_cummulativeAmp.at(1)/3.0)*AmpBlockPercent;
-    cout << "LOW BLOCK: " << _ampBlockMarginLow << "   :   HIGH BLOCK: " << _ampBlockMarginHigh << endl;
+    //cout << "LOW BLOCK: " << _ampBlockMarginLow << "   :   HIGH BLOCK: " << _ampBlockMarginHigh << endl;
     _cummulativeAmp = vector<double>{0,0};
 
 }
@@ -193,7 +193,7 @@ int DtmfDecoder::tailingErrorCheck(int tone)
 
 
 
-    cout << "test Amp LOW: " << _prevAmp.at(0) << "  :   HIGH: " << _prevAmp.at(1) << "  :   size: " << _prevAmp.size() << "  :  TEM_value: " << localTEM << endl;
+    //cout << "test Amp LOW: " << _prevAmp.at(0) << "  :   HIGH: " << _prevAmp.at(1) << "  :   size: " << _prevAmp.size() << "  :  TEM_value: " << localTEM << endl;
 
 
     if(_prevWasTail){
@@ -369,7 +369,7 @@ vector<double> DtmfDecoder::findSignalPeaks(const vector<signal> & signaldata, d
 
     //Hurtig fix til amp begrænsning
 
-    cout << "AMP DATA : " << peakAmp.at(0) << "    :    HIGH    :    " << peakAmp.at(1) <<  endl;
+    //cout << "AMP DATA : " << peakAmp.at(0) << "    :    HIGH    :    " << peakAmp.at(1) <<  endl;
 
     if(peakAmp.at(0) < _ampBlockMarginLow || peakAmp.at(1) < _ampBlockMarginHigh){
           peakFreqs[0] = -1;

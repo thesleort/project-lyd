@@ -92,12 +92,17 @@ int main()
 //    }
 
     srand((unsigned)time(0));
-    PhysicalLayer soundObj(60,60,15);
-    vector<int> mega;
 
-    for(int i = 0; i < 100; i++){
+    int decodetime = 15;
+    PhysicalLayer soundObj(decodetime*4,decodetime*4,decodetime);
+    vector<int> mega{};
+
+    int duplicatorFactor = 2;
+
+    for(int i = 0; i < 200; i++){
         mega.push_back(rand()%15);
     }
+
 
     for (int i = 0; i < mega.size(); i++){
 
@@ -112,25 +117,69 @@ int main()
 
         if(soundObj.readInBuffer(tone)){
             tones.push_back(tone);
-            cout << "tones vector size: " << tones.size() << endl;
 
             if(tones.size() == mega.size()){
 
                 if(tones == mega){
+
+                    for(int i : mega){
+                        cout << "TONES: " << i << endl;
+                    }
                     cout << "very gut" << endl;
+                    return 0;
                 }else{
+
+                    for(int i : mega){
+                        cout << "TONES: " << i << endl;
+                    }
                     cout << "ERROR: two vectors not the same" << endl;
+                    return 0;
                 }
 
                for(int i = 0; i < tones.size(); i++){
                    cout << "played tone:Decoded tone  :   " << mega.at(i) << " : " << tones.at(i) << endl;
                }
 
+
             }
         }
 
 
     }
+
+
+//    int fails = 0;
+//        int success = 0;
+//        srand((unsigned)time(0));
+//        PhysicalLayer soundObj(60,60,15);
+
+//        for(int i = 0; i < 10; i++){
+//            int trueTone = rand()%15;
+//            soundObj.writeOutBuffer(trueTone);
+//            int tone;
+//            sf::Clock clock;
+//            while(true){
+//                if (clock.getElapsedTime().asMilliseconds() > 12                              00){
+//                    fails++;
+//                    cout << "timeout" << endl;
+//                    break;
+//                }
+//                if (soundObj.readInBuffer(tone)){
+//                    if (trueTone == tone){
+//                        success++;
+//                        cout << "success" << endl;
+//                        break;
+//                    }
+//                    else{
+//                        fails++;
+//                        cout << "wrong tone" << endl;
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//        cout << "fails: " << fails << "     succeses: " << success << endl;
+//        cout << "fail ratio + you're white + didn't ask: " << (((double) fails)/((double) fails + (double) success))*100 << "%" << endl;
 
     return 0;
 }
