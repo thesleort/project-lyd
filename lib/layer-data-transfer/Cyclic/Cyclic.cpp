@@ -45,11 +45,11 @@ vector<bool> Cyclic::remainder(vector<bool> dataword, vector<bool> tail) {
       longdivisor = zerodiv;
     }
     //error detection:
-    // cout << "Iteration; "<< i<<" in: ";
+     //cout << "Iteration; "<< i<<" in: ";
     //for(bool l: dataword){
-    //  cout << l;
-    //}
-    // cout << endl;
+   //   cout << l;
+  //  }
+  //   cout << endl;
     //------
 
     int startsize = longdivisor.size();
@@ -58,10 +58,10 @@ vector<bool> Cyclic::remainder(vector<bool> dataword, vector<bool> tail) {
     }
     //ED
     //cout << "new longdivisor: ";
-    //for(bool l:longdivisor){
-    //    cout << l;
-    //}
-    //cout << endl;
+   // for(bool l:longdivisor){
+   //     cout << l;
+   // }
+  // cout << endl;
 
     //----
 
@@ -78,7 +78,7 @@ vector<bool> Cyclic::remainder(vector<bool> dataword, vector<bool> tail) {
     //for(bool l:dataword){
     //    cout<<l;
     // }
-    //cout << endl;
+   // cout << endl;
     // ----
   }
 
@@ -92,7 +92,7 @@ vector<bool> Cyclic::Encode(vector<bool> dataword) {
 }
 
 bool Cyclic::Decode(vector<bool> dataword, vector<bool> tail) {
-  vector<bool> remains = remainder(dataword, tail); //remainder is dataword with tail from encoding
+  vector<bool> remains = remainder(dataword, tail); //remainder is dataword with tail from encoding 
   for (bool i : remains) {
     if (i) {
       return 0; //if remainder is 1 at any point there has been an error
