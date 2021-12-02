@@ -6,6 +6,8 @@
 #include <unistd.h>
 
 #include <unistd.h>
+#include <condition_variable>
+#include <mutex>
 
 int main(void) {
   std::cout << "Starting" << std::endl;
@@ -15,9 +17,14 @@ int main(void) {
   frame.data_size = 1;
   frame.data = new uint8_t(frame.data_size);
 
-  // frame.data[0] = DATATYPE_MOVE | MOVE_STOP;
-  // dtmf->transmit(frame);
-  // // // dtmf->transmit(frame);
+  frame.data[0] = DATATYPE_MOVE | MOVE_STOP;
+  dtmf->transmit(frame);
+  // // dtmf->transmit(frame);
+
+  // std::mutex mutex;
+  // std::unique_lock<std::mutex> lock(mutex);
+  // std::condition_variable cv;
+  // cv.wait(lock);
   // while(true) {
 
   // }

@@ -45,6 +45,9 @@ PhysicalLayer::~PhysicalLayer()
 
 bool PhysicalLayer::readInBuffer(int& dtmf)
 {
+    std::unique_lock<std::mutex> lock(m_readMutex);
+    m_cv_read.wait(lock);
+    std::cout << "WAITING" << std::endl;
     if(_inBuffer.size() > 0){
         sem_wait(&_inBufferMutex);
 
@@ -65,6 +68,7 @@ bool PhysicalLayer::writeOutBuffer(int dtmf)
     _outBuffer.push_back(dtmf);
 
     sem_post(&_outBufferMutex);
+    m_cv_write.notify_all();
     return true;
 }
 
@@ -75,8 +79,9 @@ void PhysicalLayer::encoding()
      sf::Clock clock;
 
      while(true){
-
-         if (_outBuffer.size() > 0){
+        std::unique_lock<std::mutex> lock(m_writeMutex);
+        m_cv_write.wait(lock);
+        while (_outBuffer.size() > 0) {
             //  cout << "_outBuffer size: " << _outBuffer.size() << endl;
              soundPlaying = true;
 
@@ -95,12 +100,11 @@ void PhysicalLayer::encoding()
 
              sem_post(&_outBufferMutex);
 
-         }else{
-             if(soundPlaying == true){
-             soundPlaying = false;
-             timeSinceSoundPlayed.restart();
-             }
          }
+          if(soundPlaying == true){
+          soundPlaying = false;
+          timeSinceSoundPlayed.restart();
+        }
      }
      return;
 }
@@ -160,6 +164,7 @@ void PhysicalLayer::decodingV2()
 
                 _decodeObj.UpdateAmpBlock();
                 _dtmfComboCounter = 0;
+                m_cv_read.notify_all();
             }
         }else{
             _dtmfTone = i;

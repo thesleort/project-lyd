@@ -7,6 +7,7 @@
 #include <mutex>
 #include <atomic>
 #include <string>
+#include <condition_variable>
 
 #ifndef TEST_SUITE
 #include "Controller.h"
@@ -58,6 +59,9 @@ class DTMF {
 
     std::atomic<bool> m_stopFlag;
     std::atomic<bool> m_responseFlag;
+
+    std::condition_variable m_cv_transmitted;
+    std::mutex m_transmitMutex;
 
     std::mutex m_transmitBufferMutex;
     std::mutex m_receiveBufferMutex;

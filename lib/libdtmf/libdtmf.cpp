@@ -45,6 +45,7 @@ void DTMF::transmit(DTMFFrame frame, bool blocking) {
   m_transmitBufferMutex.lock();
   m_transmitBuffer->push_back(frame);
   m_transmitBufferMutex.unlock();
+  m_cv_transmitted.notify_all();
 }
 
 /**
@@ -80,6 +81,8 @@ const uint16_t DTMF::receive(DTMFFrame &frame, bool blocking) {
  */
 void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
   while (!cancellation_token) {
+    std::unique_lock<std::mutex> lock(m_transmitMutex);
+    m_cv_transmitted.wait(lock);
     while (m_transmitBuffer->size() > 0) {
       if (m_transmitBufferMutex.try_lock()) {
         m_controller->write(generateBooleanFrame(m_transmitBuffer->at(0)));

@@ -69,6 +69,7 @@ void Controller::write(vector<bool> msg) {
   _TMstackLock.lock();
   _outgoingMessages->push_back(msg);
   _TMstackLock.unlock();
+  m_cv_autoTransmit.notify_all();
 }
 
 bool Controller::checkReceive() {
@@ -77,6 +78,8 @@ bool Controller::checkReceive() {
 }
 
 vector<bool> Controller::read() {
+  std::unique_lock<std::mutex> lock(m_readMutex);
+  m_cv_read.wait(lock);
   if (!checkReceive()) {
     return {};
   } else {
@@ -200,6 +203,7 @@ void Controller::Receive(vector<int> in) {
         _RMstackLock.lock();
         _ReceiveMessageBuffer->push_back(msg); // msg->buffer
         _RMstackLock.unlock();
+        m_cv_read.notify_all();
       }
     } // if a crc error has occurred we just wait for the msg to be resent
     
@@ -229,6 +233,8 @@ void Controller::TransmitACK(vector<bool> seq) {
 
 void Controller::autoTransmit() {
   while (1) {
+    std::unique_lock<std::mutex> lock(m_autoTransmitMutex);
+    m_cv_autoTransmit.wait(lock);
     while (_outgoingMessages->size() > 0) {
       if (_TMstackLock.try_lock()) {
       vector<bool> msg = _outgoingMessages->at(0);          // first element on outgoing frames is msg
@@ -260,6 +266,8 @@ void Controller::autoReceive() {
 
 void Controller::autoSplitInput() {
   while (1) {
+    std::unique_lock<std::mutex> lock(m_autoSplitMutex);
+    m_cv_autoSplit.wait(lock);
     while (_inputBuffer->size() > 2) {
       SplitBuffer();
     }
@@ -289,7 +297,8 @@ void Controller::SplitBuffer() {
             frameStart = i; // we have a starting flag if the next int is a valid type+seq
             break;
           }
-        } // if not we keep looking       
+        } // if not we keep looking      
+      } 
     }
   } catch (const exception &e) {
     cout << "Framestart error" << e.what() << endl;
@@ -344,6 +353,7 @@ void Controller::autoReadDTMF() {
       _inbufferLock.lock();
       _inputBuffer->push_back(tone); // oldest first in buffer
       _inbufferLock.unlock();
+      m_cv_autoSplit.notify_all();
     }
     #ifdef WITH_SLEEP
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_UTIME));
