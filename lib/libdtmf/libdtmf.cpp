@@ -103,7 +103,8 @@ void DTMF::receiver(std::atomic<bool> &cancellation_token) {
   while (!cancellation_token) {
     std::vector<bool> readData;
     DTMFFrame frame;
-    // readData = m_controller->read();
+    readData = m_controller->read();
+    std::cout << "readData size: " << readData.size() << std::endl;
     if (readData.size() > 0) {
       frame = convertBoolVectorToFrame(readData);
       m_receiveBufferMutex.lock();
@@ -138,14 +139,16 @@ std::vector<bool> DTMF::generateBooleanFrame(DTMFFrame &frame) {
 DTMFFrame DTMF::convertBoolVectorToFrame(std::vector<bool> boolFrame) {
   DTMFFrame frame;
   frame.data_size  = boolFrame.size() / sizeof(uint8_t);
-  frame.data = new uint8_t[frame.data_size];
+  frame.data = new uint8_t(frame.data_size);
   for (unsigned i = 0; i < frame.data_size; i++) {
     frame.data[i] = 0;
-    for (unsigned bit = sizeof(uint8_t) - 1; bit >= 0; bit--) {
-      unsigned super_index = i * sizeof(uint8_t) + bit;
+    // std::cout << ""
+    for (unsigned bit = (sizeof(uint8_t) * 8) - 1; bit >= 0; bit--) {
+      unsigned super_index = i * (sizeof(uint8_t) * 8) + bit;
       frame.data[i] |= short(boolFrame.at(super_index)) << bit;
     }
   }
+  std::cout << "Convert done" << std::endl;
   return frame;
 }
 
