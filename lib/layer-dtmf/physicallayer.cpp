@@ -156,8 +156,6 @@ void PhysicalLayer::decodingV2()
 
                 sem_post(&_inBufferMutex);
 
-
-                cout << "               COMBO BREAKER: " << i << endl;
                 _decodeObj.UpdateAmpBlock();
                 _dtmfComboCounter = 0;
             }
