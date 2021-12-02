@@ -96,9 +96,13 @@ bool Controller::compareACK(vector<bool> in) {
   } else {
     if (in == _ReceivedACKBuffer->at(0)) {
       ACKcorrect = 1;
+      _ACKstackLock.lock();
       _ReceivedACKBuffer->erase(_ReceivedACKBuffer->begin()); // if seq is same as ACK seq, set bool, erase vect
+      _ACKstackLock.unlock();
     } else {
+      _ACKstackLock.lock();
       _ReceivedACKBuffer->erase(_ReceivedACKBuffer->begin()); // if not, seq is deleted and ignored so we dont get stuck
+      _ACKstackLock.unlock();
 #ifdef DEBUG_PRINT
       cout << "ACK deleted thrown out" << endl;
 #endif
@@ -199,7 +203,9 @@ void Controller::Receive(vector<int> in) {
       }
     } // if a crc error has occurred we just wait for the msg to be resent
   } else if (msg.at(TYPE) == _ackType) {
-    _ReceivedACKBuffer->push_back(msg.at(SEQ)); // is actually useless, since we look for any ACK
+    _ACKstackLock.lock();
+    _ReceivedACKBuffer->push_back(msg.at(SEQ)); // Saves SEQ on received ACK stack
+    _ACKstackLock.unlock();
 #ifdef DEBUG_PRINT
     cout << "-----------" << endl;
 #endif
@@ -216,7 +222,7 @@ void Controller::TransmitACK(vector<bool> seq) {
     _outputBuffer->push_back(n);
   }
   _outbufferLock.unlock();
-  //_outputBuffer->insert(_outputBuffer->begin(),intAck.begin(),intAck.end());
+ 
 }
 
 void Controller::autoTransmit() {
@@ -238,11 +244,10 @@ void Controller::autoTransmit() {
 void Controller::autoReceive() {
   while (1) {
     while (_incomingFrames->size() > 0) {
-
+      _splitFramesLock.lock();
       vector<int> frame = _incomingFrames->at(0);
-      _inbufferLock.lock();
       _incomingFrames->erase(_incomingFrames->begin());
-      _inbufferLock.unlock();
+      _splitFramesLock.unlock();
       Receive(frame);
     }
     #ifdef WITH_SLEEP
@@ -318,7 +323,9 @@ void Controller::SplitBuffer() {
 
       frame.push_back(_inputBuffer->at(i)); // frame is created based on start and stop values
     }
+    _splitFramesLock.lock();
     _incomingFrames->push_back(frame);
+    _splitFramesLock.unlock();
     _inputBuffer->erase(_inputBuffer->begin(), _inputBuffer->begin() + frameStop + 1); // fixes program. in erase range with begin(), the amount of erased elements is equal to It_last-It_first(so if framestop without +1 is used and framestop index is 2, only 2 elements are deleted from input)
   }
   _inbufferLock.unlock();
