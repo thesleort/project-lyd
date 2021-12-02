@@ -25,7 +25,7 @@ Controller::Controller(double s) {
 
   _FG = new FrameGenerator();
   _Stuffer = new bytestuffer({1, 1, 1, 1}, {0, 0, 0, 0});
-  _pLayer = new PhysicalLayer(60,60,15);
+  _pLayer = new PhysicalLayer(80,80,20);
   _CRChecker = new Cyclic({1, 0, 1, 1, 1});
 
   _timeout = (s / 0.00005); // implicit typecast :3
