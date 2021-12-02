@@ -31,7 +31,7 @@ Controller::Controller(double s) {
   _timeout = (s / 0.00002); // implicit typecast :3
   // sem_init(&_outbufferLock,0,1);
   receiveThread = new thread(&Controller::autoReceive, this);   // auto receive on _incomingframes->_RMSGBuffer
-  // splitThread = new thread(&Controller::autoSplitInput, this);  // auto split _inputbuffer into frames->_incomingframes
+  splitThread = new thread(&Controller::autoSplitInput, this);  // auto split _inputbuffer into frames->_incomingframes
   transmitThread = new thread(&Controller::autoTransmit, this); // auto transmit on MSG from _outgoingMSGbuffer
   DTMFreadT = new thread(&Controller::autoWriteDTMF, this);     // auto write DTMF from beginning of _outputbuffer
   DTMFwriteT = new thread(&Controller::autoReadDTMF, this);     // auto read DTMF to end of _inputbuffer
