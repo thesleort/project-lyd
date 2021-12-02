@@ -120,7 +120,7 @@ std::vector<bool> DTMF::generateBooleanFrame(DTMFFrame &frame) {
   std::vector<bool> boolDataVector;
 
   // Add the data response type in the first 4 bits of the frame to be sent.
-  for (unsigned i = 4; i < sizeof(uint8_t) * 8; --i) {
+  for (unsigned i = 4; i < sizeof(uint8_t) * 8; i++) {
     uint8_t bitmask = BIT_3;
     if ((frame.frame_response_type & bitmask) == bitmask) {
       boolDataVector.push_back(true);
