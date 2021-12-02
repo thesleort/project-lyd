@@ -17,7 +17,7 @@ int main(void) {
 
   cbreak();
   noecho();
-    // nodelay(stdscr, TRUE);
+  nodelay(stdscr, TRUE);
   scrollok(stdscr, TRUE);
 
   int flag;
@@ -28,29 +28,33 @@ int main(void) {
   bool inputLoop = true;
   while (inputLoop) {
 
-    
     int c = getch();
-    clear();
+    // clear();
     
     switch (c) {
     case 119:
       frame.data[0] = DATATYPE_MOVE | MOVE_FORWARD;
+      dtmf->transmit(frame);
       printw("w");
       break;
     case 115:
       frame.data[0] = DATATYPE_MOVE | MOVE_BACKWARDS;
+      dtmf->transmit(frame);
       printw("s");
       break;
     case 97:
       frame.data[0] = DATATYPE_MOVE | MOVE_LEFT90;
+      dtmf->transmit(frame);
       printw("a");
       break;
     case 100:
       frame.data[0] = DATATYPE_MOVE | MOVE_RIGHT90;
+      dtmf->transmit(frame);
       printw("d");
       break;
     case 32:
       frame.data[0] = DATATYPE_MOVE | MOVE_STOP;
+      dtmf->transmit(frame);
       printw("spacebar");
       break;
     case 27:
@@ -61,8 +65,7 @@ int main(void) {
     default:
       break;
     };
-
-    dtmf->transmit(frame);
+    
   }
 
   return 0;
