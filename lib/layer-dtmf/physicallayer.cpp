@@ -77,7 +77,7 @@ void PhysicalLayer::encoding()
      while(true){
 
          if (_outBuffer.size() > 0){
-             cout << "_outBuffer size: " << _outBuffer.size() << endl;
+            //  cout << "_outBuffer size: " << _outBuffer.size() << endl;
              soundPlaying = true;
 
 
@@ -142,7 +142,7 @@ void PhysicalLayer::decodingV2()
         //cout << clock.getElapsedTime().asMilliseconds() << endl;
 
 
-        // cout << "DTMF TONE: " << i << endl;
+        //  cout << "DTMF TONE: " << i << endl;
 
 
         if(i >= 0 && i == _dtmfTone){
@@ -151,13 +151,13 @@ void PhysicalLayer::decodingV2()
 
 
                 sem_wait(&_inBufferMutex);
-
+ 
                 _inBuffer.push_back(i);
 
                 sem_post(&_inBufferMutex);
 
 
-                //cout << "                                              COMBO BREAKER: " << i << endl;
+                cout << "               COMBO BREAKER: " << i << endl;
                 _decodeObj.UpdateAmpBlock();
                 _dtmfComboCounter = 0;
             }
@@ -234,7 +234,7 @@ void PhysicalLayer::inputSampleToBuffer(const Int16 *samples, size_t sampleCount
 
 bool PhysicalLayer::onProcessSamples(const Int16* samples, std::size_t sampleCount)
 {
-    if(timeSinceSoundPlayed.getElapsedTime().asMilliseconds() > 1000 && soundPlaying == false){
+    if(soundPlaying == false){
     new thread(&PhysicalLayer::inputSampleToBuffer, this, samples, sampleCount);
     }
 
