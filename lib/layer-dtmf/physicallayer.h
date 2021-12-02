@@ -26,6 +26,8 @@ public:
 
 
 private:
+    bool soundPlaying = false;
+
     int testIterator = 0; //KIS
     int testInterator2 = 0; //KIS
 
@@ -37,7 +39,8 @@ private:
 
     int slidingDecodeIterator = 0; //Slide for decoding samples
 
-    sf::Clock _clock;
+    sf::Clock _clock; //DEbug object
+    sf::Clock timeSinceSoundPlayed; //The onprocess sample can first start 1 second after the last sound has played.
 
 
     sf::SoundBuffer _recordBuffer;
@@ -64,6 +67,7 @@ private:
 
     void decodingV2(); //Test version af Decoding koblet til prototype onProcessSamples
     DtmfDecoder _decodeObj;
+    DtmfEncoder _dtmfEncoder;
     sf::SoundBuffer _soundbuffer;
 
     void inputSampleToBuffer(const sf::Int16 *samples, std::size_t sampleCount);

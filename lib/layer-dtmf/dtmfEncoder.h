@@ -30,6 +30,7 @@ private:
     sf::Clock _clock;
 
 public:
+    DtmfEncoder();
     DtmfEncoder(int mSec, int sampleRate, int amplitude);
 
     int getStatus();

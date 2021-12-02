@@ -68,6 +68,11 @@ void DtmfEncoder::setupDTMF()
 
 }
 
+DtmfEncoder::DtmfEncoder()
+{
+
+}
+
 DtmfEncoder::DtmfEncoder(int mSec, int sampleRate, int amplitude)
 {
     _sound.setBuffer(_buffer);
@@ -114,7 +119,8 @@ void DtmfEncoder::playDtmfTone(int tone)
 //    int highTone = tone % 4;
 //    playDualTone(_lowFreqs[lowTone], _highFreqs[highTone]);
 
-    while(_sound.getStatus() == 2){}
+
+
 
     if(tone == 16){
         sf::Clock Clock;
@@ -124,11 +130,13 @@ void DtmfEncoder::playDtmfTone(int tone)
     }
 
 
+
     _sound.setBuffer(_bufferVector[tone]);
+
 
     //_clock.restart();
     _sound.play();
-
+    while(_sound.getStatus() == 2){}
 
 
 

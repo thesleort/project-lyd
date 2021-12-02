@@ -17,6 +17,7 @@ class DtmfDecoder
 public:
     DtmfDecoder(double sampleTime);
     int identifyDTMF(const sf::Int16* data, int count, double sampleTime);
+    void UpdateAmpBlock(); //Updates the Amp block, with assumption of combobreaker.
 
 
 private:
@@ -50,6 +51,13 @@ private:
     int _downSampling  = 1;
     int _ampthreshhold = 50000;
 
+    int _ampBlockMarginLow = 10000;
+    int _ampBlockMarginHigh = 10000;
+
+
+    double AmpBlockPercent = 0.12; //Percentage size of average dtmf tone
+
+
 
 
     //Taling error check (TEC)
@@ -64,6 +72,7 @@ private:
     double _tailingErrorMargin =  0.75; //Starts loose, but is a dynamic value in TEC
     bool _prevWasTail = false;
     void restartTEC(); // set the _comboCounterTEC to 0
+    vector<double> _cummulativeAmp;
 
 
 
