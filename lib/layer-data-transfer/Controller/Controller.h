@@ -54,6 +54,8 @@ private:
   mutex _outbufferLock;
   mutex _RMstackLock;
   mutex _TMstackLock;
+  mutex _ACKstackLock;
+  mutex _splitFramesLock;
   mutex _inbufferLock;
 
   //modules
