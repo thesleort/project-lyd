@@ -150,15 +150,18 @@ std::vector<bool> DTMF::generateBooleanFrame(DTMFFrame &frame) {
 
 DTMFFrame DTMF::convertBoolVectorToFrame(std::vector<bool> boolFrame) {
   DTMFFrame frame;
+  std::cout << "Bool vector size: " << boolFrame.size() << std::endl;
   frame.data_size = unsigned(boolFrame.size() / (sizeof(uint8_t) * 8));
   frame.data = new uint8_t(frame.data_size);
   unsigned super_index = 0;
 
   uint8_t responseType = DATA_NO_RES;
-  for (unsigned bit = 3; bit >= 0; --bit) {
+  for (unsigned bit = 3; bit > 0; --bit) {
     responseType |= short(boolFrame.at(super_index)) << bit;
     super_index++;
   } 
+
+  std::cout << "super index: " << super_index << std::endl;
 
   for (unsigned i = 0; i < frame.data_size; i++) {
     frame.data[i] = 0;
