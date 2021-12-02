@@ -76,11 +76,12 @@ const uint16_t DTMF::receive(DTMFFrame &frame, bool blocking) {
  */
 void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
   while (!cancellation_token) {
-    for (DTMFFrame frame: *m_transmitBuffer) {
-      m_controller->write(generateBooleanFrame(frame));
-      m_transmitBufferMutex.lock();
-      m_transmitBuffer->erase(m_transmitBuffer->begin());
-      m_transmitBufferMutex.unlock();
+    while (m_transmitBuffer->size() > 0) {
+      if (m_transmitBufferMutex.try_lock()) {
+        m_controller->write(generateBooleanFrame(m_transmitBuffer->at(0)));
+        m_transmitBuffer->erase(m_transmitBuffer->begin());
+        m_transmitBufferMutex.unlock();
+      }
     }
   }
 }
@@ -93,23 +94,33 @@ void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
  */
 void DTMF::receiver(std::atomic<bool> &cancellation_token) {
   while (!cancellation_token) {
-    
+    std::vector<bool> readData;
+    DTMFFrame frame;
+    // readData = m_controller->read();
+    if (readData.size() > 0) {
+      frame = convertBoolVectorToFrame(readData);
+      m_receiveBufferMutex.lock();
+      m_receiveBuffer->push_back(frame);
+      m_receiveBufferMutex.unlock();
+    }
   }
 }
 
 std::vector<bool> DTMF::generateBooleanFrame(DTMFFrame &frame) {
-  std::vector<bool> boolDataVector(frame.data_size * sizeof(uint8_t));
-
+  std::vector<bool> boolDataVector;
   for (unsigned i = 0; i < frame.data_size; i++) {
-    unsigned i8 = i * sizeof(uint8_t);
-    boolDataVector.push_back(frame.data[i8 + 0] | BIT_7);
-    boolDataVector.push_back(frame.data[i8 + 1] | BIT_6);
-    boolDataVector.push_back(frame.data[i8 + 2] | BIT_5);
-    boolDataVector.push_back(frame.data[i8 + 3] | BIT_4);
-    boolDataVector.push_back(frame.data[i8 + 4] | BIT_3);
-    boolDataVector.push_back(frame.data[i8 + 5] | BIT_2); 
-    boolDataVector.push_back(frame.data[i8 + 6] | BIT_1);
-    boolDataVector.push_back(frame.data[i8 + 7] | BIT_0);
+    uint8_t bitmask = BIT_7;
+    for (unsigned bit = 0; bit < sizeof(uint8_t) * 8; bit++) { // 8 is the size of a byte in bits
+
+      // Checks if the current bit is set or not.
+      if ((frame.data[i] & bitmask) == bitmask) {
+        boolDataVector.push_back(true);
+      } else {
+        boolDataVector.push_back(false);
+      }
+
+      bitmask = bitmask >> 1;
+    }
   }
   return boolDataVector;
 }
@@ -125,7 +136,6 @@ DTMFFrame DTMF::convertBoolVectorToFrame(std::vector<bool> boolFrame) {
       frame.data[i] |= short(boolFrame.at(super_index)) << bit;
     }
   }
-
   return frame;
 }
 

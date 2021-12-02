@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <string>
 
 #ifndef TEST_SUITE
 #include "Controller.h"

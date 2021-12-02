@@ -6,11 +6,13 @@
 
 using json = nlohmann::json;
 
+#define ROSCOM_URI "tcp://localhost:1883"
+
 int main(int argc, char *argv[]) {
   DTMF *dtmf = new DTMF();
   DTMFFrame frame;
 
-  RosCommunicator roscom("tcp://localhost:1883");
+  RosCommunicator roscom(ROSCOM_URI);
   roscom.connect();
   while (true) {
 
@@ -18,24 +20,32 @@ int main(int argc, char *argv[]) {
       json jsonMessage;
       float linearVelocity = 0;
       float angularVelocity = 0;
-      switch (frame.data[0] ^ DATATYPE_MOVE) {
-        case MOVE_STOP:
-          break;
-        case MOVE_FORWARD:
-          angularVelocity = 0.5;
-          break;
-        case MOVE_BACKWARDS:
-          break;
-        case MOVE_RIGHT90:
-          break;
-        case MOVE_LEFT90:
-          break;
+      if (frame.data[0] & DATATYPE_MOVE == DATATYPE_MOVE) {
+
+        switch (frame.data[0] | DATATYPE_MOVE) {
+          case MOVE_STOP:
+            angularVelocity = 0;
+            linearVelocity = 0;
+            break;
+          case MOVE_FORWARD:
+            linearVelocity = 0.5;
+            break;
+          case MOVE_BACKWARDS:
+            linearVelocity = -0.5;
+            break;
+          case MOVE_RIGHT90:
+            angularVelocity = 0.5;
+            break;
+          case MOVE_LEFT90:
+            angularVelocity = -0.5;
+            break;
+        }
+        jsonMessage = {
+          { "linear", {{"x", linearVelocity}, {"y", 0.0}, {"z", 0}}},
+          { "angular", {{"x", 0.0}, {"y", 0.0}, {"z", angularVelocity}}}
+        };
+        roscom.publish_message(jsonMessage);
       }
-      jsonMessage = {
-        { "linear", {{"x", 0.0}, {"y", 0.0}, {"z", 0}}},
-        { "angular", {{"x", 0.0}, {"y", 0.0}, {"z", 0}}}
-      };
-      roscom.publish_message(jsonMessage);
     }
   }
 }
