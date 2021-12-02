@@ -27,6 +27,7 @@ int main(int argc, char *argv[]) {
       json jsonMessage;
       float linearVelocity = 0;
       float angularVelocity = 0;
+      std::cout << "Frame received" << std::endl;
       if (frame.data[0] & DATATYPE_MOVE == DATATYPE_MOVE) {
 
         switch (frame.data[0] | DATATYPE_MOVE) {
