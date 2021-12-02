@@ -103,7 +103,7 @@ void DTMF::receiver(std::atomic<bool> &cancellation_token) {
   while (!cancellation_token) {
     std::vector<bool> readData;
     DTMFFrame frame;
-    // readData = m_controller->read();
+    readData = m_controller->read();
     if (readData.size() > 0) {
       frame = convertBoolVectorToFrame(readData);
       m_receiveBufferMutex.lock();
@@ -118,6 +118,19 @@ void DTMF::receiver(std::atomic<bool> &cancellation_token) {
 
 std::vector<bool> DTMF::generateBooleanFrame(DTMFFrame &frame) {
   std::vector<bool> boolDataVector;
+
+  // Add the data response type in the first 4 bits of the frame to be sent.
+  for (unsigned i = 4; i < sizeof(uint8_t) * 8; i++) {
+    uint8_t bitmask = BIT_3;
+    if ((frame.frame_response_type & bitmask) == bitmask) {
+      boolDataVector.push_back(true);
+    } else {
+      boolDataVector.push_back(false);
+    }
+
+    bitmask = bitmask >> 1;
+  }
+
   for (unsigned i = 0; i < frame.data_size; i++) {
     uint8_t bitmask = BIT_7;
     for (unsigned bit = 0; bit < sizeof(uint8_t) * 8; bit++) { // 8 is the size of a byte in bits
@@ -137,13 +150,21 @@ std::vector<bool> DTMF::generateBooleanFrame(DTMFFrame &frame) {
 
 DTMFFrame DTMF::convertBoolVectorToFrame(std::vector<bool> boolFrame) {
   DTMFFrame frame;
-  frame.data_size  = boolFrame.size() / sizeof(uint8_t);
-  frame.data = new uint8_t[frame.data_size];
+  frame.data_size = unsigned(boolFrame.size() / (sizeof(uint8_t) * 8));
+  frame.data = new uint8_t(frame.data_size);
+  unsigned super_index = 0;
+
+  uint8_t responseType = DATA_NO_RES;
+  for (unsigned bit = 3; bit > 0; --bit) {
+    responseType |= short(boolFrame.at(super_index)) << bit;
+    super_index++;
+  } 
+
   for (unsigned i = 0; i < frame.data_size; i++) {
     frame.data[i] = 0;
-    for (unsigned bit = sizeof(uint8_t) - 1; bit >= 0; bit--) {
-      unsigned super_index = i * sizeof(uint8_t) + bit;
+    for (unsigned bit = (sizeof(uint8_t) * 8); bit > 0; --bit) {
       frame.data[i] |= short(boolFrame.at(super_index)) << bit;
+      super_index++;
     }
   }
   return frame;

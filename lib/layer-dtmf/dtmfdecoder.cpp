@@ -26,6 +26,8 @@ DtmfDecoder::DtmfDecoder(double sampleTime) : _sampleTime(sampleTime/1000.0)
 
     //Amplitude from previous sampling
     _CurrentAmp = vector<double>{0,0};
+
+    _cummulativeAmp = vector<double>{0,0};
     _prevAmp =  _CurrentAmp;
 
 
@@ -46,6 +48,8 @@ DtmfDecoder::DtmfDecoder(double sampleTime) : _sampleTime(sampleTime/1000.0)
         _dFilter = DigitalFilter(vector<filterCoefficients>{filter1, filter2, filter3});
 
 
+
+
 }
 
 
@@ -58,98 +62,118 @@ int DtmfDecoder::identifyDTMF(const Int16 *data, int count, double sampletime)
     //For knowing how many times the tone has come prior
 
     _sampleTime = sampletime/1000;
-//    cout << "amount of samples: " << count << endl;
+    //    cout << "amount of samples: " << count << endl;
 
     vector<double> dataVec;
     for(int i = 0; i < count; i++){
         dataVec.push_back(data[i]);
     }
 
-//   sf::Clock clock;
-//   vector<double> doublevec = _bandpass.sim(dataVec);
-//   cout << clock.getElapsedTime().asMilliseconds() << endl;
+    //   sf::Clock clock;
+    //   vector<double> doublevec = _bandpass.sim(dataVec);
+    //   cout << clock.getElapsedTime().asMilliseconds() << endl;
 
-   //Vil give fejl indtil filteret er lavet.
+    //Vil give fejl indtil filteret er lavet.
 
-   dataVec = _dFilter.simParallel(dataVec);
+    dataVec = _dFilter.simParallel(dataVec);
 
-   vector<complex<double>> complexSoundBuffer = realToComplexVector(dataVec,count);
-
-
-
-
-//   vector<double> testPrioriFFT;
-
-//   for (int i = 0; i < complexSoundBuffer.size(); i++){
-//       testPrioriFFT.push_back(complexSoundBuffer[i].real());
-//   }
-
-//   dumpDataToFile(testPrioriFFT, "/media/sf_Ubuntu_Shared_Folder", "PrioriFFT");
-
-   //complexSoundBuffer = fft(complexSoundBuffer);
-
-
-   complexSoundBuffer = fftw3(complexSoundBuffer);
-
-   vector<DtmfDecoder::signal> frequencyData = sequenceToSignals(complexSoundBuffer);
-
-
-//   vector<double> testPosterior;
-
-//   for(int i= 0; i < frequencyData.size(); i++){
-//       testPosterior.push_back(frequencyData.at(i).amplitude);
-//   }
-
-//   dumpDataToFile(testPosterior, "/media/sf_Ubuntu_Shared_Folder", "PosteriorFFT");
+    vector<complex<double>> complexSoundBuffer = realToComplexVector(dataVec,count);
 
 
 
-   vector<double> peaks = findSignalPeaks(frequencyData);
-   int tone;
 
-   if(peaks.at(0) == -1){
-       //cout << "ERROR: sound to low" << endl;
+    //   vector<double> testPrioriFFT;
 
-       //Important to know if the last error was amp block, for tailing error check.
-       _prevTone = -1;
-       return -1;
-   }
+    //   for (int i = 0; i < complexSoundBuffer.size(); i++){
+    //       testPrioriFFT.push_back(complexSoundBuffer[i].real());
+    //   }
 
-   tone = frequencyToDtmf(peaks[0], peaks[1]);
+    //   dumpDataToFile(testPrioriFFT, "/media/sf_Ubuntu_Shared_Folder", "PrioriFFT");
+
+    //complexSoundBuffer = fft(complexSoundBuffer);
 
 
-   if(tone == -2){
-       //cout << "ERROR: error margin too great" << endl;
+    complexSoundBuffer = fftw3(complexSoundBuffer);
 
-      return -2;
-   }
-
-   //If we begin sampling with a new tone, then delete the data from previous tone
-   //Testing, disregard checking if it does not match the previous number
-   if(_prevTone < 0){
-       //cout << "Tailer checker restarted" << endl;
-       //Initiate a double vector with values in its first vector
-       restartTEC();
-   }
+    vector<DtmfDecoder::signal> frequencyData = sequenceToSignals(complexSoundBuffer);
 
 
-   //If previous tone was amp block, then a tailing error is impossible.
-   if(tailingErrorCheck(tone) == -3 && _prevTone != -1){
-       //cout << "Tailing Tone: " << tone << endl;
-       return -3;
-   }
+    //   vector<double> testPosterior;
 
-   if(_prevTone == tone){
-       _comboCounterTEC++;
-   }else{
-       if(_prevTone < 0 && tone >= 0){
-           _comboCounterTEC++;
-       }
+    //   for(int i= 0; i < frequencyData.size(); i++){
+    //       testPosterior.push_back(frequencyData.at(i).amplitude);
+    //   }
 
-       _prevTone = tone;
-   }
+    //   dumpDataToFile(testPosterior, "/media/sf_Ubuntu_Shared_Folder", "PosteriorFFT");
 
-   return tone;
+
+
+    vector<double> peaks = findSignalPeaks(frequencyData);
+    int tone;
+
+    if(peaks.at(0) == -1){
+        //cout << "ERROR: sound to low" << endl;
+
+        //Important to know if the last error was amp block, for tailing error check.
+        _prevTone = -1;
+        _cummulativeAmp = vector<double>{0,0};
+        return -1;
+    }
+
+    tone = frequencyToDtmf(peaks[0], peaks[1]);
+
+
+    if(tone == -2){
+        //cout << "ERROR: error margin too great" << endl;
+        _cummulativeAmp = vector<double>{0,0};
+        return -2;
+    }
+
+    //If we begin sampling with a new tone, then delete the data from previous tone
+    //Testing, disregard checking if it does not match the previous number
+    if(_prevTone < 0){
+        //cout << "Tailer checker restarted" << endl;
+        //Initiate a double vector with values in its first vector
+        _cummulativeAmp = vector<double>{0,0};
+        restartTEC();
+    }
+
+
+    //If previous tone was amp block, then a tailing error is impossible.
+    if(tailingErrorCheck(tone) == -3 && _prevTone != -1){
+        //cout << "Tailing Tone: " << tone << endl;
+        _cummulativeAmp = vector<double>{0,0};
+        return -3;
+    }
+
+    if(_prevTone == tone){
+        _comboCounterTEC++;
+        _cummulativeAmp.at(0) += _CurrentAmp.at(0);
+        _cummulativeAmp.at(1) += _CurrentAmp.at(1);
+    }else{
+        // If tone is not equal to tone prior, then restart the _cummulativeAmp
+        _cummulativeAmp = vector<double>{0,0};
+        if(_prevTone < 0 && tone >= 0){
+            _comboCounterTEC++;
+            _cummulativeAmp.at(0) += _CurrentAmp.at(0);
+            _cummulativeAmp.at(1) += _CurrentAmp.at(1);
+        }
+
+        _prevTone = tone;
+
+    }
+
+    return tone;
+
+}
+
+void DtmfDecoder::UpdateAmpBlock()
+{
+
+    _ampBlockMarginLow = (_cummulativeAmp.at(0)/3.0)*AmpBlockPercent;
+    _ampBlockMarginHigh = (_cummulativeAmp.at(1)/3.0)*AmpBlockPercent;
+    //cout << "LOW BLOCK: " << _ampBlockMarginLow << "   :   HIGH BLOCK: " << _ampBlockMarginHigh << endl;
+    _cummulativeAmp = vector<double>{0,0};
 
 }
 
@@ -210,10 +234,9 @@ int DtmfDecoder::tailingErrorCheck(int tone)
     }else if((ratioPreviousAmpLOW < -localTEM)||(ratioPreviousAmpHIGH < -localTEM)){
         //If the ratio was too great, the data and should be lowered by an average.
         //cout << "   spike detection" << endl;
-        _CurrentAmp.at(0) = (_CurrentAmp.at(0)+_prevAmp.at(0))/2;
-        _CurrentAmp.at(1) = (_CurrentAmp.at(1)+_prevAmp.at(1))/2;
+        _prevAmp.at(0) = (_CurrentAmp.at(0)+_prevAmp.at(0))/2;
+        _prevAmp.at(1) = (_CurrentAmp.at(1)+_prevAmp.at(1))/2;
 
-        _prevAmp = _CurrentAmp;
         _prevWasTail = false;
         return tone;
 
@@ -348,7 +371,7 @@ vector<double> DtmfDecoder::findSignalPeaks(const vector<signal> & signaldata, d
 
     //cout << "AMP DATA : " << peakAmp.at(0) << "    :    HIGH    :    " << peakAmp.at(1) <<  endl;
 
-    if(peakAmp.at(0) < _ampthreshhold || peakAmp.at(1) < _ampthreshhold){
+    if(peakAmp.at(0) < _ampBlockMarginLow || peakAmp.at(1) < _ampBlockMarginHigh){
           peakFreqs[0] = -1;
     }
 
