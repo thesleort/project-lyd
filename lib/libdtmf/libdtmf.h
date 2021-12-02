@@ -15,7 +15,12 @@
 struct DTMFFrame {
   uint8_t data_size;
   uint8_t* data;
+  uint8_t frame_response_type;
 };
+
+#define DATA_NO_RES  0b00000000
+#define DATA_REQ_RES 0b00000001
+#define DATA_RES     0b00000010
 
 #define BIT_0 0b00000001
 #define BIT_1 0b00000010
@@ -52,6 +57,7 @@ class DTMF {
     void receiver(std::atomic<bool> &cancellation_token);
 
     std::atomic<bool> m_stopFlag;
+    std::atomic<bool> m_responseFlag;
 
     std::mutex m_transmitBufferMutex;
     std::mutex m_receiveBufferMutex;
