@@ -49,7 +49,6 @@ private:
     double _errorMargin = 7.0;
     int _repeatPadding = 1;
     int _downSampling  = 1;
-    int _ampthreshhold = 50000;
 
     int _ampBlockMarginLow = 10000;
     int _ampBlockMarginHigh = 10000;
@@ -80,8 +79,6 @@ private:
     fftw_complex *fftin, *fftout;
     fftw_plan my_plan;
 
-    //Bandpass filter
-    FIRfilter _bandpass;
 
 
     vector<complex<double>> realToComplexVector(vector<double>, int count);

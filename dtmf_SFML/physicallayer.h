@@ -28,19 +28,16 @@ public:
 private:
     bool soundPlaying = false;
 
-    int testIterator = 0; //KIS
-    int testInterator2 = 0; //KIS
-
     int _dtmfTone = -1;
+
     int _dtmfComboCounter = 0;
+
     int _comboMax = 3; //Ikke nul indekseret
 
     int slidingWindowIterator = 0; // Slide for inputing samples
 
     int slidingDecodeIterator = 0; //Slide for decoding samples
 
-    sf::Clock _clock; //DEbug object
-    sf::Clock timeSinceSoundPlayed; //The onprocess sample can first start 1 second after the last sound has played.
 
 
     sf::SoundBuffer _recordBuffer;
@@ -58,14 +55,10 @@ private:
 
     sem_t _inBufferMutex, _outBufferMutex;
 
-    sem_t _soundVectorMutex;//Testing purposes
-
     void encoding();
     //Initiation of encoding object
 
-    void decoding();
-
-    void decodingV2(); //Test version af Decoding koblet til prototype onProcessSamples
+    void decoding(); //Test version af Decoding koblet til prototype onProcessSamples
     DtmfDecoder _decodeObj;
     DtmfEncoder _dtmfEncoder;
     sf::SoundBuffer _soundbuffer;

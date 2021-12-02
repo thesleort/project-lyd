@@ -20,7 +20,6 @@ PhysicalLayer::PhysicalLayer(int durationSound, int durationRecord, int sampleti
 
     sem_init(&_inBufferMutex, 0, 1);
     sem_init(&_outBufferMutex, 0, 1);
-    sem_init(&_soundVectorMutex, 0, 1);
 
     //Initiate soundbuffer window
     _vectorRecordedBuffers = vector<sf::SoundBuffer>(SLIDEWINDOWSIZE+1);
@@ -30,11 +29,9 @@ PhysicalLayer::PhysicalLayer(int durationSound, int durationRecord, int sampleti
 
 
     new thread(&PhysicalLayer::encoding, this);
-    new thread(&PhysicalLayer::decodingV2, this);
+    new thread(&PhysicalLayer::decoding, this);
 
 
-
-    //new thread(&PhysicalLayer::recordMode, this);
     start();
 }
 
@@ -77,11 +74,7 @@ void PhysicalLayer::encoding()
      while(true){
 
          if (_outBuffer.size() > 0){
-             cout << "_outBuffer size: " << _outBuffer.size() << endl;
              soundPlaying = true;
-
-
-             //encoder.playDtmfTone(16);
 
              sem_wait(&_outBufferMutex);
 
@@ -90,7 +83,6 @@ void PhysicalLayer::encoding()
              _dtmfEncoder.playDtmfTone(_outBuffer.at(0));
 
 
-             //cout << _outBuffer.at(0) << endl;
              _outBuffer.erase(_outBuffer.begin());
 
              sem_post(&_outBufferMutex);
@@ -98,51 +90,21 @@ void PhysicalLayer::encoding()
          }else{
              if(soundPlaying == true){
              soundPlaying = false;
-             timeSinceSoundPlayed.restart();
              }
          }
      }
      return;
 }
 
-void PhysicalLayer::decoding() //Testing implementing Actual Decoding:
-{
-    int i = 0;
-
-
-    while(true){
-        sem_wait(&_inBufferMutex);
-
-        _inBuffer.push_back(i);
-
-        sem_post(&_inBufferMutex);
-
-        i++;
-        i = i % 16;
-    }
-    return;
-}
-
-void PhysicalLayer::decodingV2()
+void PhysicalLayer::decoding()
 {
     while(true){
         while(_vectorRecordedBuffers.at(slidingDecodeIterator).getSampleCount() == 0){} //0 -> No samples.
 
-        //cout << _vectorRecordedBuffers.at(slidingDecodeIterator).getSampleCount() << endl;
-
-        //Hele indsættelsen af _soundbuffer skal være i en linje, for at undgå threading fejl.
-
-        //cout << "decode samplesize: " <<_vectorRecordedBuffers[slidingDecodeIterator].getSampleCount() << endl;
-
-
         int i = _decodeObj.identifyDTMF(_vectorRecordedBuffers.at(slidingDecodeIterator).getSamples(), _vectorRecordedBuffers.at(slidingDecodeIterator).getSampleCount(),(_vectorRecordedBuffers.at(slidingDecodeIterator).getSampleCount()/RECORD_SAMPLERATE)*1000.0);
 
 
-
-        //cout << clock.getElapsedTime().asMilliseconds() << endl;
-
-
-        cout << "DTMF TONE: " << i << endl;
+        //cout << "DTMF TONE: " << i << endl;
 
 
         if(i >= 0 && i == _dtmfTone){
@@ -156,8 +118,8 @@ void PhysicalLayer::decodingV2()
 
                 sem_post(&_inBufferMutex);
 
-
                 //cout << "                                              COMBO BREAKER: " << i << endl;
+
                 _decodeObj.UpdateAmpBlock();
                 _dtmfComboCounter = 0;
             }
@@ -180,13 +142,6 @@ void PhysicalLayer::decodingV2()
 
         }
 
-//        _vectorSamples.clear();
-//        _soundbuffer = SoundBuffer();
-
-        //cout << "clocktime: " << clock.getElapsedTime().asMilliseconds() << endl;
-
-        //write identified tone to input buffer
-
     }
     return;
 
@@ -198,7 +153,6 @@ void PhysicalLayer::inputSampleToBuffer(const Int16 *samples, size_t sampleCount
     _vectorSamples.clear();
 
 
-    //cout <<  "sampletime Mikroseconds: " << clock.getElapsedTime().asMicroseconds() <<  "   : <3"  <<  endl;
 
     std::copy(samples, samples + sampleCount, std::back_inserter(_vectorSamples));
 
@@ -234,7 +188,7 @@ void PhysicalLayer::inputSampleToBuffer(const Int16 *samples, size_t sampleCount
 
 bool PhysicalLayer::onProcessSamples(const Int16* samples, std::size_t sampleCount)
 {
-    if(timeSinceSoundPlayed.getElapsedTime().asMilliseconds() > 1000 && soundPlaying == false){
+    if(soundPlaying == false){
     new thread(&PhysicalLayer::inputSampleToBuffer, this, samples, sampleCount);
     }
 
