@@ -137,8 +137,8 @@ void Controller::Transmit(vector<bool> msg) {
   //_outputBuffer->insert(_outputBuffer->begin(),intMsg.begin(),intMsg.end()); //insert on buffer
 
   // wait for any ack, can never receive old ack since we dont send msg without getting an ack
-
-  int k = _timeout;
+  int rtime = rand() % _timeout*0.00005*4000; //ca. 40k at s=2-> max 48k here
+  int k = _timeout +rtime;
 
   bool ACK = compareACK(seq);
   while (k > 0 && !ACK) { // timeout 10s or ACKreceived->continue
