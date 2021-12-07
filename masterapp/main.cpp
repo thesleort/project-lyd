@@ -17,8 +17,8 @@ int main(void) {
   frame.data_size = 1;
   frame.data = new uint8_t(frame.data_size);
 
-  frame.data[0] = DATATYPE_MOVE | MOVE_STOP;
-  dtmf->transmit(frame);
+  // frame.data[0] = DATATYPE_MOVE | MOVE_STOP;
+  // dtmf->transmit(frame);
   // // dtmf->transmit(frame);
 
   // std::mutex mutex;
@@ -43,45 +43,50 @@ int main(void) {
 
   bool inputLoop = true;
   while (inputLoop) {
-
+    // Assume a key has been pressed.
+    bool keypress = true;
     int c = getch();
     clear();
     
     switch (c) {
-    case 119:
+    case 114: // R
+      frame.data[0] = DATATYPE_INFO | INFO_ODOMETER;
+      frame.frame_response_type = DATA_REQUIRE_RESPONSE;
+      break;
+    case 119: // W
       frame.data[0] = DATATYPE_MOVE | MOVE_FORWARD;
-      dtmf->transmit(frame);
       printw("w");
       break;
-    case 115:
+    case 115: // S
       frame.data[0] = DATATYPE_MOVE | MOVE_BACKWARDS;
-      dtmf->transmit(frame);
       printw("s");
       break;
-    case 97:
+    case 97:  // A
       frame.data[0] = DATATYPE_MOVE | MOVE_LEFT90;
-      dtmf->transmit(frame);
       printw("a");
       break;
-    case 100:
+    case 100: // D
       frame.data[0] = DATATYPE_MOVE | MOVE_RIGHT90;
-      dtmf->transmit(frame);
       printw("d");
       break;
-    case 32:
+    case 32:  // Spacebar
       frame.data[0] = DATATYPE_MOVE | MOVE_STOP;
-      dtmf->transmit(frame);
       printw("spacebar");
       break;
-    case 27:
+    case 27: // Escape
       inputLoop = false;
       endwin();
       std::cout << "Program ended"<< std::endl;
-      break;
     default:
+      // If none of the keys above (except escape: 27), change keypress state.
+      keypress = false;
       break;
     };
-    
+
+    // Send message if key was pressed and there are no pending responses.
+    if (keypress && !dtmf->isWaitingResponse()) {
+      dtmf->transmit(frame);
+    }
   }
 
   return 0;
