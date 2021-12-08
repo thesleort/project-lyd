@@ -5,10 +5,11 @@
 #include "bytestuffer.h"
 #include "framegen.h"
 #include "physicallayer.h"
+#include "semaphore.h"
 
+#include <condition_variable>
 #include <vector>
 #include <mutex>
-#include "semaphore.h"
 #include <string>
 #include <thread>
 //add IFNDEF on COUTs to define debugmode
@@ -18,14 +19,15 @@ class Controller {
   Controller(double);
   ~Controller();
 
-  //setup for physical layer
-  void addOutput(vector<int> &);
-  void addInput(vector<int> &);
-
   //Buffer Read/Write/Check
   void write(vector<bool>);
   vector<bool>read();
   bool checkReceive();
+
+private:
+  //setup for physical layer
+  void addOutput(vector<int> &);
+  void addInput(vector<int> &);
 
   //autosetup
   void autoTransmit();
@@ -38,8 +40,6 @@ class Controller {
  //Testing
   void testTransmit();
   void printReceived();
-
-private:
   //Transmission
   void TransmitACK(vector<bool>); //Transmits ACK
   void Receive(vector<int>);      //gets split message from splitter, from inputbuffer
@@ -57,6 +57,13 @@ private:
   mutex _ACKstackLock;
   mutex _splitFramesLock;
   mutex _inbufferLock;
+
+  std::condition_variable m_cv_read;
+  std::mutex m_readMutex;
+  std::condition_variable m_cv_autoTransmit;
+  std::mutex m_autoTransmitMutex;
+  std::condition_variable m_cv_autoSplit;
+  std::mutex m_autoSplitMutex;
 
   //modules
   FrameGenerator *_FG;

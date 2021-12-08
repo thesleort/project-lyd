@@ -3,6 +3,7 @@
 #include <vector>
 #include <semaphore.h>
 #include <SFML/Audio.hpp>
+#include <condition_variable>
 #include "dtmfEncoder.h"
 #include "dtmfdecoder.h"
 
@@ -71,6 +72,12 @@ private:
     sf::SoundBuffer _soundbuffer;
 
     void inputSampleToBuffer(const sf::Int16 *samples, std::size_t sampleCount);
+
+    std::condition_variable m_cv_read;
+    std::mutex m_readMutex;
+
+    std::condition_variable m_cv_write;
+    std::mutex m_writeMutex;
 };
 
 #endif // PHYSICALLAYER_H

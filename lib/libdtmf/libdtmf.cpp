@@ -31,6 +31,9 @@ DTMF::~DTMF() {
   m_transmitThread->join();
   m_receiveThread->join();
 
+  delete m_controller;
+  delete m_transmitThread;
+  delete m_receiveThread;
   delete m_receiveBuffer;
   delete m_transmitBuffer;
 }
@@ -45,6 +48,7 @@ void DTMF::transmit(DTMFFrame frame, bool blocking) {
   m_transmitBufferMutex.lock();
   m_transmitBuffer->push_back(frame);
   m_transmitBufferMutex.unlock();
+  m_cv_transmitted.notify_all();
 }
 
 /**
@@ -54,7 +58,7 @@ void DTMF::transmit(DTMFFrame frame, bool blocking) {
  * @param frame A reference to the location of the frame
  * @param blocking Wait until a frame exists or not
  * 
- * @return const DTMFFrame 
+ * @return const uint16_t The size of the frame data in bytes.
  */
 const uint16_t DTMF::receive(DTMFFrame &frame, bool blocking) {
   u_int16_t frameSize = 0;
@@ -72,6 +76,10 @@ const uint16_t DTMF::receive(DTMFFrame &frame, bool blocking) {
   return frameSize;
 }
 
+const bool DTMF::isWaitingResponse() {
+  return m_waitingResponse;
+}
+
 /**
  * @brief Thread that will send everything one-by-one in the m_transmitBuffer.
  * To add to the transmit buffer simply use DTMF::transmit(...).
@@ -80,11 +88,21 @@ const uint16_t DTMF::receive(DTMFFrame &frame, bool blocking) {
  */
 void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
   while (!cancellation_token) {
+    std::unique_lock<std::mutex> lock(m_transmitMutex);
+    m_cv_transmitted.wait(lock);
     while (m_transmitBuffer->size() > 0) {
+
       if (m_transmitBufferMutex.try_lock()) {
         m_controller->write(generateBooleanFrame(m_transmitBuffer->at(0)));
+        // This postpones all other messages until a response message has been received.
+        if (m_transmitBuffer->at(0).frame_response_type == DATA_REQUIRE_RESPONSE) {
+          std::unique_lock<std::mutex> lock(m_waitingResponseMutex);
+          m_waitingResponse = true;
+          m_cv_waitingResponse.wait(lock);
+        }
         m_transmitBuffer->erase(m_transmitBuffer->begin());
         m_transmitBufferMutex.unlock();
+
       }
     }
     #ifdef WITH_SLEEP
@@ -106,6 +124,13 @@ void DTMF::receiver(std::atomic<bool> &cancellation_token) {
     readData = m_controller->read();
     if (readData.size() > 0) {
       frame = convertBoolVectorToFrame(readData);
+
+      // If it has received the response to a request, it will notify the
+      // transmit thread to allow for new messages to be sent.
+      if (frame.frame_response_type == DATA_RESPONSE) {
+        m_cv_waitingResponse.notify_all();
+        m_waitingResponse = false;
+      }
       m_receiveBufferMutex.lock();
       m_receiveBuffer->push_back(frame);
       m_receiveBufferMutex.unlock();
@@ -154,7 +179,7 @@ DTMFFrame DTMF::convertBoolVectorToFrame(std::vector<bool> boolFrame) {
   frame.data = new uint8_t(frame.data_size);
   unsigned super_index = 0;
 
-  uint8_t responseType = DATA_NO_RES;
+  uint8_t responseType = DATA_NO_RESPONSE;
   for (unsigned bit = 3; bit > 0; --bit) {
     responseType |= short(boolFrame.at(super_index)) << bit;
     super_index++;
