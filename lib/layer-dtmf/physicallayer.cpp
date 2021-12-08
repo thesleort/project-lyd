@@ -47,7 +47,6 @@ bool PhysicalLayer::readInBuffer(int& dtmf)
 {
     std::unique_lock<std::mutex> lock(m_readMutex);
     m_cv_read.wait(lock);
-    std::cout << "WAITING" << std::endl;
     if(_inBuffer.size() > 0){
         sem_wait(&_inBufferMutex);
 
@@ -157,7 +156,7 @@ void PhysicalLayer::decodingV2()
                 sem_wait(&_inBufferMutex);
  
                 _inBuffer.push_back(i);
-                cout << "DTMF TONE: " << i << endl;
+                // cout << "DTMF TONE: " << i << endl;
 
 
                 sem_post(&_inBufferMutex);

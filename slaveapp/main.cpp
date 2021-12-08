@@ -1,7 +1,5 @@
 #include <nlohmann/json.hpp>
-#ifndef TEST_MODE
 #include <iostream>
-#endif
 
 #include "libdtmf.h"
 #include "packet.h"
@@ -21,16 +19,17 @@ int main(int argc, char *argv[]) {
   RosCommunicator roscom(ROSCOM_URI);
   roscom.connect();
   #endif 
+
+  float linearVelocity = 0;
+  float angularVelocity = 0;
   while (true) {
 
     if (dtmf->receive(frame) > 0) {
       json jsonMessage;
-      float linearVelocity = 0;
-      float angularVelocity = 0;
-      std::cout << "Frame received" << std::endl;
-      if (frame.data[0] & DATATYPE_MOVE == DATATYPE_MOVE) {
+      std::cout << "Frame received: " << unsigned(frame.data[0]) << std::endl;
+      if ((frame.data[0] & DATATYPE_MOVE) == DATATYPE_MOVE) {
 
-        switch (frame.data[0] | DATATYPE_MOVE) {
+        switch (frame.data[0] & ~DATATYPE_MOVE) {
           case MOVE_STOP:
             angularVelocity = 0;
             linearVelocity = 0;
