@@ -1,6 +1,8 @@
 #ifndef ROSCOM_H
 #define ROSCOM_H
 
+#ifndef TEST_MODE
+
 #include <string>
 #include <mqtt/async_client.h>
 #include <nlohmann/json.hpp>
@@ -26,5 +28,5 @@ class RosCommunicator {
     mqtt::token_ptr m_token;
 
 };
-
+#endif
 #endif

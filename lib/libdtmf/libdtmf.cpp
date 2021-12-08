@@ -180,18 +180,19 @@ DTMFFrame DTMF::convertBoolVectorToFrame(std::vector<bool> boolFrame) {
   unsigned super_index = 0;
 
   uint8_t responseType = DATA_NO_RESPONSE;
-  for (unsigned bit = 3; bit > 0; --bit) {
+  for (int bit = 3; bit >= 0; --bit) {
     responseType |= short(boolFrame.at(super_index)) << bit;
     super_index++;
   } 
 
   for (unsigned i = 0; i < frame.data_size; i++) {
     frame.data[i] = 0;
-    for (unsigned bit = (sizeof(uint8_t) * 8); bit > 0; --bit) {
+    for (int bit = (sizeof(uint8_t) * 8) - 1; bit >= 0; --bit) {
       frame.data[i] |= short(boolFrame.at(super_index)) << bit;
       super_index++;
     }
   }
+
   return frame;
 }
 
