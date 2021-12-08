@@ -1,5 +1,5 @@
 #include <iostream>
-
+#ifndef TEST_MODE
 #include "roscom.h"
 
 RosCommunicator::RosCommunicator(std::string address) {
@@ -36,3 +36,5 @@ void RosCommunicator::publish_message(json j) {
     return;
   }
 }
+
+#endif
