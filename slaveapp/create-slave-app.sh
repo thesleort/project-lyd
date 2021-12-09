@@ -14,11 +14,11 @@ cp libdtmf.so* ../../slaveapp/lib
 cd ..
 cp */*.h ../slaveapp/include
 cp */*/*.h ../slaveapp/include
-cp libdtmf/libdtmf.h ../slaveapp/include
+cp layer-application/libdtmf.h ../slaveapp/include
 cd ../slaveapp
 
 # Compile slave application
 mkdir -p build
 cd build
-cmake -DTEST_MODE=OFF ..
+cmake -DTEST_MODE=ON ..
 make -j$(nproc)
