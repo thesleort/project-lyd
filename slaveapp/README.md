@@ -81,6 +81,8 @@ For at bevæge sig mellem vinduer, tryk først <kbd>ctrl</kbd>+<kbd>B</kbd> og s
 
 For at fjerne et vindue, kør: `exit`
 
+TMUX cheat sheet: https://tmuxcheatsheet.com/
+
 ## Step 8 - Start ROS
 
 ROS skal køre før kommandoer sendes videre til robotten.
@@ -93,6 +95,8 @@ var nummer 66. Derfor kan den køres ved at ekskvere *order 66*.
 ```
 
 Denne kommando kører kommando nummer 66 fra historikken.
+
+https://www.youtube.com/watch?v=sNjWpZmxDgg
 
 
 ## Step 9 - Kompilér `slaveapp`-delen projektet.
