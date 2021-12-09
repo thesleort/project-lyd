@@ -140,11 +140,11 @@ kompileres korrekt til næste test.
 
 Man kan ændre i filer vha. `nano`.
 
-I nano gemmer man vha.: `ctrl+O`.
+I nano gemmer man vha.: <kbd>ctrl</kbd>+<kbd>o</kbd>.
 
-Forlader en fil vha.: `ctrl+X`
+Forlader en fil vha.: <kbd>ctrl</kbd>+<kbd>x</kbd>
 
-Søger i en fil vha.: `ctrl+W`
+Søger i en fil vha.: <kbd>ctrl</kbd>+<kbd>w</kbd>
 
 ### Søgning efter tekst i alle filer
 
