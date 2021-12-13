@@ -11,7 +11,7 @@ OPTION(WITH_SLEEP "Add small wait state in all asynchronous threads" ON)
 
 add_library(dtmf SHARED
   # Main library interface file
-  libdtmf/libdtmf.cpp
+  layer-application/libdtmf.cpp
 )
 IF(WITH_SLEEP)
   MESSAGE(STATUS "Enabling sleep timers")
@@ -30,9 +30,9 @@ ELSE()
   target_sources(dtmf
     PUBLIC
     # DTMF decoder and encoder layer
-    layer-dtmf/dtmfdecoder.cpp
-    layer-dtmf/dtmfEncoder.cpp
-    layer-dtmf/physicallayer.cpp
+    layer-physical/dtmfdecoder.cpp
+    layer-physical/dtmfEncoder.cpp
+    layer-physical/physicallayer.cpp
 
     # Data transfer layer
     layer-data-transfer/Controller/Controller.cpp
@@ -42,16 +42,16 @@ ELSE()
     layer-data-transfer/FrameGenPlaceholder/framegen.cpp
 
     # Physical layer
-    layer-dtmf/dtmfdecoder.cpp
-    layer-dtmf/dtmfEncoder.cpp
-    layer-dtmf/physicallayer.cpp
-    layer-dtmf/digitalfilter.cpp
-    layer-dtmf/firfilter.cpp
+    layer-physical/dtmfdecoder.cpp
+    layer-physical/dtmfEncoder.cpp
+    layer-physical/physicallayer.cpp
+    layer-physical/digitalfilter.cpp
+    layer-physical/firfilter.cpp
   )
 ENDIF(TEST_SUITE)
 
 include_directories(dtmf
-  layer-dtmf
+  layer-physical
   layer-data-transfer/Controller
   layer-data-transfer/Cyclic
   layer-data-transfer/FrameGenPlaceholder
@@ -62,4 +62,4 @@ find_package(SFML 2 REQUIRED network audio graphics window system)
 target_link_libraries(dtmf sfml-graphics sfml-audio fftw3)
 
 set_target_properties(dtmf PROPERTIES SOVERSION 1)
-set_target_properties(dtmf PROPERTIES PUBLIC_HEADER libdtmf/libdtmf.h)
+set_target_properties(dtmf PROPERTIES PUBLIC_HEADER layer-application/libdtmf.h)

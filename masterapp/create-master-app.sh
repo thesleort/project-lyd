@@ -14,7 +14,7 @@ cp libdtmf.so* ../../masterapp/lib
 cd ..
 cp */*.h ../masterapp/include
 cp */*/*.h ../masterapp/include
-cp libdtmf/libdtmf.h ../masterapp/include
+cp layer-application/libdtmf.h ../masterapp/include
 cd ../masterapp
 
 # Compile master application
