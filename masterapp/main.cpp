@@ -46,7 +46,6 @@ int main(void) {
     // Assume a key has been pressed.
     bool keypress = true;
     int c = getch();
-    clear();
     
     switch (c) {
     case 114: // R
@@ -55,22 +54,31 @@ int main(void) {
       break;
     case 119: // W
       frame.data[0] = DATATYPE_MOVE | MOVE_FORWARD;
+    clear();
       printw("w");
       break;
     case 115: // S
       frame.data[0] = DATATYPE_MOVE | MOVE_BACKWARDS;
+
+    clear();
       printw("s");
       break;
     case 97:  // A
       frame.data[0] = DATATYPE_MOVE | MOVE_LEFT90;
+
+    clear();
       printw("a");
       break;
     case 100: // D
       frame.data[0] = DATATYPE_MOVE | MOVE_RIGHT90;
+
+    clear();
       printw("d");
       break;
     case 32:  // Spacebar
       frame.data[0] = DATATYPE_MOVE | MOVE_STOP;
+
+    clear();
       printw("spacebar");
       break;
     case 27: // Escape
@@ -86,6 +94,9 @@ int main(void) {
     // Send message if key was pressed and there are no pending responses.
     if (keypress && !dtmf->isWaitingResponse()) {
       dtmf->transmit(frame);
+    }
+    if (dtmf->receive(frame, false) > 0) {
+      printw("Linear velocity: %f - Angular velocity: %f", (float) frame.data[0] / 2.0, (float) frame.data[1] / 2.0);
     }
   }
 
