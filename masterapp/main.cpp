@@ -51,42 +51,41 @@ int main(void) {
     case 114: // R
       frame.data[0] = DATATYPE_INFO | INFO_ODOMETER;
       frame.frame_response_type = DATA_REQUIRE_RESPONSE;
+      clear();
+      printw("Requesting velocity information");
       break;
     case 119: // W
       frame.data[0] = DATATYPE_MOVE | MOVE_FORWARD;
-    clear();
+      clear();
       printw("w");
       break;
     case 115: // S
       frame.data[0] = DATATYPE_MOVE | MOVE_BACKWARDS;
-
-    clear();
+      clear();
       printw("s");
       break;
     case 97:  // A
       frame.data[0] = DATATYPE_MOVE | MOVE_LEFT90;
-
-    clear();
+      clear();
       printw("a");
       break;
     case 100: // D
       frame.data[0] = DATATYPE_MOVE | MOVE_RIGHT90;
-
-    clear();
+      clear();
       printw("d");
       break;
     case 32:  // Spacebar
       frame.data[0] = DATATYPE_MOVE | MOVE_STOP;
-
-    clear();
+      clear();
       printw("spacebar");
       break;
     case 27: // Escape
       inputLoop = false;
       endwin();
-      std::cout << "Program ended"<< std::endl;
+      std::cout << "Program ended"<< std::endl;    
     default:
-      // If none of the keys above (except escape: 27), change keypress state.
+      // clear();
+      // If none of the keys below (except escape: 27), change keypress state.
       keypress = false;
       break;
     };
