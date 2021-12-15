@@ -48,6 +48,11 @@ ssh ubuntu@192.168.13.216
 
 Login-password: `turtlebot`
 
+Kør derefter
+
+```bash
+sudo systemctl stop netplan-wpa-wlan0.service
+```
 
 ## Step 6 - Find projekt på turtlebotten
 
