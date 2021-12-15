@@ -46,39 +46,46 @@ int main(void) {
     // Assume a key has been pressed.
     bool keypress = true;
     int c = getch();
-    clear();
     
     switch (c) {
     case 114: // R
       frame.data[0] = DATATYPE_INFO | INFO_ODOMETER;
       frame.frame_response_type = DATA_REQUIRE_RESPONSE;
+      // clear();
+      printw("Requesting velocity information");
       break;
     case 119: // W
       frame.data[0] = DATATYPE_MOVE | MOVE_FORWARD;
+      clear();
       printw("w");
       break;
     case 115: // S
       frame.data[0] = DATATYPE_MOVE | MOVE_BACKWARDS;
+      clear();
       printw("s");
       break;
     case 97:  // A
       frame.data[0] = DATATYPE_MOVE | MOVE_LEFT90;
+      clear();
       printw("a");
       break;
     case 100: // D
       frame.data[0] = DATATYPE_MOVE | MOVE_RIGHT90;
+      clear();
       printw("d");
       break;
     case 32:  // Spacebar
       frame.data[0] = DATATYPE_MOVE | MOVE_STOP;
+      clear();
       printw("spacebar");
       break;
     case 27: // Escape
       inputLoop = false;
       endwin();
-      std::cout << "Program ended"<< std::endl;
+      std::cout << "Program ended"<< std::endl;    
     default:
-      // If none of the keys above (except escape: 27), change keypress state.
+      // clear();
+      // If none of the keys below (except escape: 27), change keypress state.
       keypress = false;
       break;
     };
@@ -86,6 +93,10 @@ int main(void) {
     // Send message if key was pressed and there are no pending responses.
     if (keypress && !dtmf->isWaitingResponse()) {
       dtmf->transmit(frame);
+      frame.frame_response_type = DATA_NO_RESPONSE;
+    }
+    if (dtmf->receive(frame, false) > 0) {
+      printw("Linear velocity: %f - Angular velocity: %f", (float) ((int8_t) frame.data[0]) / 2.0, (float) ((int8_t) frame.data[1]) / 2.0);
     }
   }
 

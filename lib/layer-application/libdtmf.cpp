@@ -143,16 +143,14 @@ void DTMF::receiver(std::atomic<bool> &cancellation_token) {
 
 std::vector<bool> DTMF::generateBooleanFrame(DTMFFrame &frame) {
   std::vector<bool> boolDataVector;
-
   // Add the data response type in the first 4 bits of the frame to be sent.
-  for (unsigned i = 4; i < sizeof(uint8_t) * 8; i++) {
-    uint8_t bitmask = BIT_3;
+  uint8_t bitmask = BIT_3;
+  for (unsigned i = 0; i < sizeof(uint8_t) * 4; i++) {
     if ((frame.frame_response_type & bitmask) == bitmask) {
       boolDataVector.push_back(true);
     } else {
       boolDataVector.push_back(false);
     }
-
     bitmask = bitmask >> 1;
   }
 
@@ -180,10 +178,11 @@ DTMFFrame DTMF::convertBoolVectorToFrame(std::vector<bool> boolFrame) {
   unsigned super_index = 0;
 
   uint8_t responseType = DATA_NO_RESPONSE;
-  for (int bit = 3; bit >= 0; --bit) {
+  for (int bit = 4; bit >= 1; --bit) {
     responseType |= short(boolFrame.at(super_index)) << bit;
     super_index++;
-  } 
+  }
+  frame.frame_response_type = responseType; 
 
   for (unsigned i = 0; i < frame.data_size; i++) {
     frame.data[i] = 0;
