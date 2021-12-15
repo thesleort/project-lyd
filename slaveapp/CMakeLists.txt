@@ -11,8 +11,6 @@ OPTION(TEST_MODE "For testing slaveapp on a PC" OFF)
 
 IF(TEST_MODE)
   ADD_DEFINITIONS(-DTEST_MODE)
-ELSE()
-  target_link_libraries(slaveapp paho-mqttpp3 paho-mqtt3as)
 ENDIF(TEST_MODE)
 
 add_executable(slaveapp
@@ -27,6 +25,12 @@ include_directories(slaveapp
 )
 
 find_package(nlohmann_json 3.2.0 REQUIRED)
+
+IF(TEST_MODE)
+ELSE()
+  target_link_libraries(slaveapp paho-mqttpp3 paho-mqtt3as)
+ENDIF(TEST_MODE)
+UNSET(TEST_MODE)
 
 target_link_libraries(slaveapp nlohmann_json::nlohmann_json)
 

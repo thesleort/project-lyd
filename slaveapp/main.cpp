@@ -19,18 +19,18 @@ int main(int argc, char *argv[]) {
   RosCommunicator roscom(ROSCOM_URI);
   roscom.connect();
 #endif
+  float linearVelocity = 0;
+  float angularVelocity = 0;
   while (true) {
 
     if (dtmf->receive(frame) > 0) {
       json jsonMessage;
-      float linearVelocity = 0;
-      float angularVelocity = 0;
       std::cout << "Frame received" << std::endl;
       switch (frame.frame_response_type) {
         case DATA_NO_RESPONSE: {
           if (frame.data[0] & DATATYPE_MOVE == DATATYPE_MOVE) {
 
-            switch (frame.data[0] | DATATYPE_MOVE) {
+            switch (frame.data[0] & ~DATATYPE_MOVE) {
             case MOVE_STOP:
               angularVelocity = 0;
               linearVelocity = 0;
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
           }
         }
         break;
-      case DATA_REQUIRE_RESPONSE: {
+        case DATA_REQUIRE_RESPONSE: {
           delete frame.data;
           int8_t linVel = linearVelocity * 2;
           int8_t angVel = angularVelocity * 2;
