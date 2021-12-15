@@ -96,7 +96,7 @@ int main(void) {
       frame.frame_response_type = DATA_NO_RESPONSE;
     }
     if (dtmf->receive(frame, false) > 0) {
-      printw("Linear velocity: %f - Angular velocity: %f", (float) ((int8_t) frame.data[0]) / 2.0, (float) ((int8_t) frame.data[1]) / 2.0);
+      printw("Linear velocity: %f - Angular velocity: %f", (float) ((int8_t) frame.data[0]) / 10.0, (float) ((int8_t) frame.data[1]) / 2.0);
     }
   }
 

@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
         break;
         case DATA_REQUIRE_RESPONSE: {
           delete frame.data;
-          int8_t linVel = linearVelocity * 2;
+          int8_t linVel = linearVelocity * 10;
           int8_t angVel = angularVelocity * 2;
           frame.data = new uint8_t(2);
           frame.data_size = 2;
