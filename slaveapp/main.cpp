@@ -28,18 +28,17 @@ int main(int argc, char *argv[]) {
       std::cout << "Frame received" << std::endl;
       switch (frame.frame_response_type) {
         case DATA_NO_RESPONSE: {
-          if (frame.data[0] & DATATYPE_MOVE == DATATYPE_MOVE) {
-
-            switch (frame.data[0] & ~DATATYPE_MOVE) {
+          if ((frame.data[0] & DATATYPE_MOVE) == DATATYPE_MOVE) {
+            switch (frame.data[0] & (~DATATYPE_MOVE)) {
             case MOVE_STOP:
               angularVelocity = 0;
               linearVelocity = 0;
               break;
             case MOVE_FORWARD:
-              linearVelocity += 0.5;
+              linearVelocity += 0.02;
               break;
             case MOVE_BACKWARDS:
-              linearVelocity += -0.5;
+              linearVelocity += -0.02;
               break;
             case MOVE_RIGHT90:
               angularVelocity += 0.5;
