@@ -178,7 +178,7 @@ DTMFFrame DTMF::convertBoolVectorToFrame(std::vector<bool> boolFrame) {
   unsigned super_index = 0;
 
   uint8_t responseType = DATA_NO_RESPONSE;
-  for (int bit = 4; bit >= 1; --bit) {
+  for (int bit = 3; bit >= 0; --bit) {
     responseType |= short(boolFrame.at(super_index)) << bit;
     super_index++;
   }
