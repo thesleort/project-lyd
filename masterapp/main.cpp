@@ -49,7 +49,7 @@ int main(void) {
     
     switch (c) {
     case 114: // R
-      frame.data[0] = DATATYPE_INFO | INFO_ODOMETER;
+      frame.data[0] = DATATYPE_INFO | INFO_VELOCITY;
       frame.frame_response_type = DATA_REQUIRE_RESPONSE;
       // clear();
       printw("Requesting velocity information");
@@ -91,12 +91,15 @@ int main(void) {
     };
 
     // Send message if key was pressed and there are no pending responses.
-    if (keypress && !dtmf->isWaitingResponse()) {
+    if (keypress) {
       dtmf->transmit(frame);
       frame.frame_response_type = DATA_NO_RESPONSE;
     }
     if (dtmf->receive(frame, false) > 0) {
       printw("Linear velocity: %f - Angular velocity: %f", (float) ((int8_t) frame.data[0]) / 10.0, (float) ((int8_t) frame.data[1]) / 2.0);
+      delete frame.data;
+      frame.data_size = 1;
+      frame.data = new uint8_t(frame.data_size);
     }
   }
 

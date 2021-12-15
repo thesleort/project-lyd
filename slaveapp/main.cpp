@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 
     if (dtmf->receive(frame) > 0) {
       json jsonMessage;
-      std::cout << "Frame received" << std::endl;
+      std::cout << "Frame received " << unsigned(frame.data[0]) << std::endl;
       switch (frame.frame_response_type) {
         case DATA_NO_RESPONSE: {
           if ((frame.data[0] & DATATYPE_MOVE) == DATATYPE_MOVE) {
@@ -60,15 +60,23 @@ int main(int argc, char *argv[]) {
         }
         break;
         case DATA_REQUIRE_RESPONSE: {
-          delete frame.data;
-          int8_t linVel = linearVelocity * 10;
-          int8_t angVel = angularVelocity * 2;
-          frame.data = new uint8_t(2);
-          frame.data_size = 2;
-          frame.data[0] = linVel;
-          frame.data[1] = angVel;
-          frame.frame_response_type = DATA_RESPONSE;
-          dtmf->transmit(frame);
+          std::cout << "require response" << std::endl;
+          if ((frame.data[0] & DATATYPE_INFO) == DATATYPE_INFO) {
+            std::cout << unsigned(frame.data[0] & DATATYPE_INFO) << ", " << unsigned(DATATYPE_INFO) << ", " << unsigned(frame.data[0] & (~DATATYPE_INFO)) << std::endl;
+            switch (frame.data[0] & (~DATATYPE_INFO)) {
+              case INFO_VELOCITY: {
+                delete frame.data;
+                int8_t linVel = linearVelocity * 10;
+                int8_t angVel = angularVelocity * 2;
+                frame.data = new uint8_t(2);
+                frame.data_size = 2;
+                frame.data[0] = linVel;
+                frame.data[1] = angVel;
+                frame.frame_response_type = DATA_RESPONSE;
+                dtmf->transmit(frame);
+              }
+            }
+          }
         }
       }
     }
