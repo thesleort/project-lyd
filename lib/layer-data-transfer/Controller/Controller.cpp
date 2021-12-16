@@ -317,9 +317,18 @@ void Controller::SplitBuffer() {
           frameStop = i;
           break;
         } else if(i>2) {
-            if(_inputBuffer->at(i) == _flagI && _inputBuffer->at(i - 1) == _etcI && _inputBuffer->at(i - 2) == _etcI){//deals with natural 0s before flags by accepting stop flag if it has 2 etc before it(natural 0 + stuff), cant break(at(-1)) because it requries i>2
-              frameStop = i;
-              break;
+            if(i<size-1){
+              if(_inputBuffer->at(i) == _flagI && _inputBuffer->at(i - 1) == _etcI && _inputBuffer->at(i - 2) == _etcI&&_inputBuffer->at(i + 1) == _flagI){//deals with natural 0s before flags in data
+                //if flag is after 0015, we do nothing/iterate
+              } else if(_inputBuffer->at(i) == _flagI && _inputBuffer->at(i - 1) == _etcI && _inputBuffer->at(i - 2) == _etcI){//deals with natural 0s before flags by accepting stop flag if it has 2 etc before it(natural 0 + stuff), cant break(at(-1)) because it requries i>2
+                frameStop = i;
+                break;
+              }
+            } else {
+              if(_inputBuffer->at(i) == _flagI && _inputBuffer->at(i - 1) == _etcI && _inputBuffer->at(i - 2) == _etcI){//deals with natural 0s before flags by accepting stop flag if it has 2 etc before it(natural 0 + stuff), cant break(at(-1)) because it requries i>2
+                frameStop = i;
+                break;
+              }
             }
         }
       }
@@ -342,6 +351,8 @@ void Controller::SplitBuffer() {
     _incomingFrames->push_back(frame);
     _splitFramesLock.unlock();
     _inputBuffer->erase(_inputBuffer->begin(), _inputBuffer->begin() + frameStop + 1); // fixes program. in erase range with begin(), the amount of erased elements is equal to It_last-It_first(so if framestop without +1 is used and framestop index is 2, only 2 elements are deleted from input)
+  } else if (size>60){
+    _inputBuffer->clear();
   }
   _inbufferLock.unlock();
 }
