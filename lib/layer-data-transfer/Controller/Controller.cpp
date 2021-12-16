@@ -351,6 +351,8 @@ void Controller::SplitBuffer() {
     _incomingFrames->push_back(frame);
     _splitFramesLock.unlock();
     _inputBuffer->erase(_inputBuffer->begin(), _inputBuffer->begin() + frameStop + 1); // fixes program. in erase range with begin(), the amount of erased elements is equal to It_last-It_first(so if framestop without +1 is used and framestop index is 2, only 2 elements are deleted from input)
+  } else if (size>60){
+    _inputBuffer->clear();
   }
   _inbufferLock.unlock();
 }
