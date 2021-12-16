@@ -27,32 +27,6 @@ int main(int argc, char const *argv[]) {
   controller2.addInput(inbuf);
   controller2.addOutput(outbuf);
 
-  vector<bool> msg = {1, 1, 1, 0, 1, 1, 1, 1};
-
-  controller2.write(msg);
-
-#ifdef _WIN32
-  Sleep(1000); // Windows sleep
-#else
-  sleep(10); // Linux sleep
-#endif
-  controller2.write(msg);
-
-#ifdef _WIN32
-  Sleep(1000); // Windows sleep
-#else
-  sleep(5); // Linux sleep
-#endif
-  vector<bool> msg2 = {1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1};
-  controller1.write(msg2);
-#ifdef _WIN32
-  Sleep(1000); // Windows sleep
-#else
-  sleep(5); // Linux sleep
-#endif
-  controller1.write(msg2);
-Sleep(5000);
-
   controller1.printReceived();
   
   controller2.printReceived();
