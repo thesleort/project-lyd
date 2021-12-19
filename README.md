@@ -11,7 +11,7 @@ Det bedste projekt
 They depend on this library.
 
 #### Application layer
-`/lib/libdtmf`
+`/lib/layer-application`
 
 Application layer of `libdtmf`. 
 This is the layer that will be exposed to the applications using it.
@@ -23,7 +23,7 @@ This layer turns a received sequence of bits into a frame that the application l
 Likewise it turns a frame that has to be sent into bits that the physical layer turn into sounds.
 
 #### DTMF Layer
-`/lib/layer-dtmf`
+`/lib/layer-physical`
 
 This layer is the physical layer. 
 It records incoming sounds and transforms them into data that the data transfer layer can work with.
@@ -84,6 +84,8 @@ To run the application
 The steps here are almost equivalent to the steps for the `masterapp`.
 Since the slave application also depends on `libdtmf`, a script `create-slave-app.sh` has been made.
 This will prepare all dependencies from `libdtmf` and compile the application in the `slaveapp/build` directory.
+
+By default the slave application is compiled for `TEST_MODE`. This can be changed in `create-slave-app.sh`.
 
 To update the app without recompiling `libdtmf` (after running `create-slave-app.sh`):
 ```bash
