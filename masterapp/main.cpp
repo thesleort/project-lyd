@@ -12,10 +12,10 @@
 int main(void) {
   std::cout << "Starting" << std::endl;
   DTMF *dtmf = new DTMF();
-  DTMFFrame frame;
+  DTMFPacket packet;
   std::cout << "DTMF started" << std::endl;
-  frame.data_size = 1;
-  frame.data = new uint8_t(frame.data_size);
+  packet.data_size = 1;
+  packet.data = new uint8_t(packet.data_size);
 
   // frame.data[0] = DATATYPE_MOVE | MOVE_STOP;
   // dtmf->transmit(frame);
@@ -49,33 +49,33 @@ int main(void) {
     
     switch (c) {
     case 114: // R
-      frame.data[0] = DATATYPE_INFO | INFO_VELOCITY;
-      frame.frame_response_type = DATA_REQUIRE_RESPONSE;
+      packet.data[0] = DATATYPE_INFO | INFO_VELOCITY;
+      packet.packet_response_type = DATA_REQUIRE_RESPONSE;
       // clear();
       printw("Requesting velocity information");
       break;
     case 119: // W
-      frame.data[0] = DATATYPE_MOVE | MOVE_FORWARD;
+      packet.data[0] = DATATYPE_MOVE | MOVE_FORWARD;
       clear();
       printw("w");
       break;
     case 115: // S
-      frame.data[0] = DATATYPE_MOVE | MOVE_BACKWARDS;
+      packet.data[0] = DATATYPE_MOVE | MOVE_BACKWARDS;
       clear();
       printw("s");
       break;
     case 97:  // A
-      frame.data[0] = DATATYPE_MOVE | MOVE_LEFT90;
+      packet.data[0] = DATATYPE_MOVE | MOVE_LEFT90;
       clear();
       printw("a");
       break;
     case 100: // D
-      frame.data[0] = DATATYPE_MOVE | MOVE_RIGHT90;
+      packet.data[0] = DATATYPE_MOVE | MOVE_RIGHT90;
       clear();
       printw("d");
       break;
     case 32:  // Spacebar
-      frame.data[0] = DATATYPE_MOVE | MOVE_STOP;
+      packet.data[0] = DATATYPE_MOVE | MOVE_STOP;
       clear();
       printw("spacebar");
       break;
@@ -92,14 +92,14 @@ int main(void) {
 
     // Send message if key was pressed and there are no pending responses.
     if (keypress) {
-      dtmf->transmit(frame);
-      frame.frame_response_type = DATA_NO_RESPONSE;
+      dtmf->transmit(packet);
+      packet.packet_response_type = DATA_NO_RESPONSE;
     }
-    if (dtmf->receive(frame, false) > 0) {
-      printw("Linear velocity: %f - Angular velocity: %f", (float) ((int8_t) frame.data[0]) / 10.0, (float) ((int8_t) frame.data[1]) / 2.0);
-      delete frame.data;
-      frame.data_size = 1;
-      frame.data = new uint8_t(frame.data_size);
+    if (dtmf->receive(packet, false) > 0) {
+      printw("Linear velocity: %f - Angular velocity: %f", (float) ((int8_t) packet.data[0]) / 10.0, (float) ((int8_t) packet.data[1]) / 2.0);
+      delete packet.data;
+      packet.data_size = 1;
+      packet.data = new uint8_t(packet.data_size);
     }
   }
 

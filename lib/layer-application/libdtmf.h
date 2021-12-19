@@ -13,10 +13,10 @@
 #include "Controller.h"
 #endif
 
-struct DTMFFrame {
+struct DTMFPacket {
   uint8_t data_size;
   uint8_t* data;
-  uint8_t frame_response_type;
+  uint8_t packet_response_type;
 };
 
 #define DATA_NO_RESPONSE      0b00000000
@@ -38,12 +38,12 @@ class DTMF {
     ~DTMF();
 
     #ifdef TEST_SUITE
-    DTMF(std::vector<DTMFFrame> *transmitBuffer, std::vector<DTMFFrame> *receiveBuffer);
+    DTMF(std::vector<DTMFPacket> *transmitBuffer, std::vector<DTMFPacket> *receiveBuffer);
     #endif
 
-    void transmit(DTMFFrame frame, bool blocking = true);
+    void transmit(DTMFPacket packet, bool blocking = true);
 
-    const uint16_t receive(DTMFFrame &frame, bool blocking = true);
+    const uint16_t receive(DTMFPacket &packet, bool blocking = true);
 
     const bool isWaitingResponse();
 
@@ -70,11 +70,11 @@ class DTMF {
 
     std::mutex m_transmitBufferMutex;
     std::mutex m_receiveBufferMutex;
-    std::vector<DTMFFrame> *m_transmitBuffer;
-    std::vector<DTMFFrame> *m_receiveBuffer;
+    std::vector<DTMFPacket> *m_transmitBuffer;
+    std::vector<DTMFPacket> *m_receiveBuffer;
 
-    std::vector<bool> generateBooleanFrame(DTMFFrame &frame);
-    DTMFFrame convertBoolVectorToFrame(std::vector<bool> boolFrame);
+    std::vector<bool> generateBooleanFrame(DTMFPacket &packet);
+    DTMFPacket convertBoolVectorToPacket(std::vector<bool> boolFrame);
 };
 
 #endif
