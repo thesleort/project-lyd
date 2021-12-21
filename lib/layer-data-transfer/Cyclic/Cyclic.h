@@ -9,7 +9,6 @@ class Cyclic {
   Cyclic(vector<bool>);
   void addDivisor(vector<bool>);
 
-  //vector<int> IntToVect(int);
   vector<bool> Encode(vector<bool>);
   bool Decode(vector<bool>, vector<bool>);
   vector<bool> remainder(vector<bool>, vector<bool>);

@@ -44,26 +44,11 @@ vector<bool> Cyclic::remainder(vector<bool> dataword, vector<bool> tail) {
       vector<bool> zerodiv(_divisor.size(), 0);
       longdivisor = zerodiv;
     }
-    //error detection:
-     //cout << "Iteration; "<< i<<" in: ";
-    //for(bool l: dataword){
-   //   cout << l;
-  //  }
-  //   cout << endl;
-    //------
 
     int startsize = longdivisor.size();
     for (int j = startsize; j < dataword.size(); j++) { //longdivisor filled with 0's till length matches dataword, this will copy the old dataword onto 0's during XOR
       longdivisor.push_back(0);
     }
-    //ED
-    //cout << "new longdivisor: ";
-   // for(bool l:longdivisor){
-   //     cout << l;
-   // }
-  // cout << endl;
-
-    //----
 
     vector<bool> newword;
     for (int j = 0; j < dataword.size(); j++) { //new word = XOR between longdivisor and dataword
@@ -73,13 +58,6 @@ vector<bool> Cyclic::remainder(vector<bool> dataword, vector<bool> tail) {
       newword.erase(newword.begin());
     }
     dataword = newword;
-
-    //ED
-    //for(bool l:dataword){
-    //    cout<<l;
-    // }
-   // cout << endl;
-    // ----
   }
 
   //after "divL" operations, dataword will be the remainder
@@ -92,7 +70,7 @@ vector<bool> Cyclic::Encode(vector<bool> dataword) {
 }
 
 bool Cyclic::Decode(vector<bool> dataword, vector<bool> tail) {
-  vector<bool> remains = remainder(dataword, tail); //remainder is dataword with tail from encoding 
+  vector<bool> remains = remainder(dataword, tail); //remainder is dataword with tail from encoding
   for (bool i : remains) {
     if (i) {
       return 0; //if remainder is 1 at any point there has been an error

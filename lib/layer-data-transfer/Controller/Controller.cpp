@@ -29,7 +29,6 @@ Controller::Controller(double s) {
   _CRChecker = new Cyclic({1, 0, 1, 1, 1});
 
   _timeout = (s / 0.00005); // implicit typecast :3
-  // sem_init(&_outbufferLock,0,1);
   receiveThread = new thread(&Controller::autoReceive, this);   // auto receive on _incomingframes->_RMSGBuffer
   splitThread = new thread(&Controller::autoSplitInput, this);  // auto split _inputbuffer into frames->_incomingframes
   transmitThread = new thread(&Controller::autoTransmit, this); // auto transmit on MSG from _outgoingMSGbuffer
@@ -46,7 +45,6 @@ Controller::~Controller() {
   delete _outgoingMessages;
   delete _pLayer;
 
-  // sem_destroy(&_outbufferLock);
   receiveThread->join();
   transmitThread->join();
   splitThread->join();
@@ -137,8 +135,6 @@ void Controller::Transmit(vector<bool> msg) {
   }
   _outbufferLock.unlock();
 
-  //_outputBuffer->insert(_outputBuffer->begin(),intMsg.begin(),intMsg.end()); //insert on buffer
-
   // wait for any ack, can never receive old ack since we dont send msg without getting an ack
   int rtime = rand() % _timeout*0.00005*4000; //ca. 40k at s=2-> max 48k here
   int k = _timeout +rtime;
@@ -148,12 +144,10 @@ void Controller::Transmit(vector<bool> msg) {
 #ifdef _WIN32
     Sleep(0.02); // Windows sleep
 #else
-    // usleep(2); // Linux sleep
     std::this_thread::sleep_for(std::chrono::microseconds(20));
 #endif
     ACK = compareACK(seq);
     k--;
-    // cout<<k<<endl;
   }
   if (!ACK) { // if no ACK is received either the frame or ack was lost or an error occurred
     Transmit(msg);

@@ -102,12 +102,11 @@ void DTMF::transmitter(std::atomic<bool> &cancellation_token) {
         }
         m_transmitBuffer->erase(m_transmitBuffer->begin());
         m_transmitBufferMutex.unlock();
-
       }
     }
-    #ifdef WITH_SLEEP
+#ifdef WITH_SLEEP
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_UTIME));
-    #endif
+#endif
   }
 }
 
@@ -135,9 +134,9 @@ void DTMF::receiver(std::atomic<bool> &cancellation_token) {
       m_receiveBuffer->push_back(packet);
       m_receiveBufferMutex.unlock();
     }
-    #ifdef WITH_SLEEP
+#ifdef WITH_SLEEP
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_UTIME));
-    #endif
+#endif
   }
 }
 
@@ -182,7 +181,7 @@ DTMFPacket DTMF::convertBoolVectorToPacket(std::vector<bool> boolFrame) {
     responseType |= short(boolFrame.at(super_index)) << bit;
     super_index++;
   }
-  packet.packet_response_type = responseType; 
+  packet.packet_response_type = responseType;
 
   for (unsigned i = 0; i < packet.data_size; i++) {
     packet.data[i] = 0;

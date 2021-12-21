@@ -80,7 +80,7 @@ vector<int> bytestuffer::stuff(vector<bool> in) {
 }
 
 vector<bool> bytestuffer::unstuff(vector<int> in) {
- 
+
   if (in.size() < 3) { //if empty vector is unstuffed(2 flags: size<3) we return a vector that is too small, which will be handled by framesplitter
     vector<bool> z = {0};
     return z;
@@ -96,8 +96,8 @@ vector<bool> bytestuffer::unstuff(vector<int> in) {
   vector<int> noflags;
   for (int i = 1; i < in.size() - 1; i++) {
     noflags.push_back(in.at(i));
-  } 
- 
+  }
+
   return intToBool(noflags);
 }
 
